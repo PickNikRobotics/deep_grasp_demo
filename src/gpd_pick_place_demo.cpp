@@ -45,6 +45,9 @@
 #include <rosparam_shortcuts/rosparam_shortcuts.h>
 #include <tf2_ros/transform_broadcaster.h>
 
+#include <moveit_task_constructor_msgs/GenerateDeepGraspPoseAction.h>
+#include <actionlib/client/simple_action_client.h>
+
 constexpr char LOGNAME[] = "moveit_task_constructor_demo";
 
 void spawnObject(moveit::planning_interface::PlanningSceneInterface& psi, const moveit_msgs::CollisionObject& object) {
@@ -102,37 +105,68 @@ int main(int argc, char** argv) {
 	ROS_INFO_NAMED(LOGNAME, "Init moveit_task_constructor_demo");
 	ros::init(argc, argv, "moveit_task_constructor_demo");
 	ros::NodeHandle nh;
-	ros::AsyncSpinner spinner(1);
-	spinner.start();
 
-	// Add table and object to planning scene
-	ros::Duration(1.0).sleep();  // Wait for ApplyPlanningScene service
-	moveit::planning_interface::PlanningSceneInterface psi;
-	ros::NodeHandle pnh("~");
-	if (pnh.param("spawn_table", true))
-	{
-		spawnObject(psi, createTable());
-	}
-	spawnObject(psi, createObject());
+	//////////////////////////////////
+	actionlib::SimpleActionClient<moveit_task_constructor_msgs::GenerateDeepGraspPoseAction> client("sample_grasps", true);
+	ROS_INFO("Waiting for grasp detection action server to start...");
+  client.waitForServer();
 
-	// Construct and run pick/place task
-	deep_grasp_demo::PickPlaceTask pick_place_task("pick_place_task", nh);
-	pick_place_task.loadParameters();
-	pick_place_task.init();
+  // test server connection
+  if(!client.isServerConnected())
+  {
+    ROS_ERROR("Grasp detection action server not connected!");
+  }
 
-	if (pick_place_task.plan()) {
-		ROS_INFO_NAMED(LOGNAME, "Planning succeded");
-		if (pnh.param("execute", false)) {
-			pick_place_task.execute();
-			ROS_INFO_NAMED(LOGNAME, "Execution complete");
-		} else {
-			ROS_INFO_NAMED(LOGNAME, "Execution disabled");
-		}
-	} else {
-		ROS_INFO_NAMED(LOGNAME, "Planning failed");
-	}
+	moveit_task_constructor_msgs::GenerateDeepGraspPoseGoal goal;
+  goal.action_name = "generate_grasps";
+  client.sendGoal(goal);
 
-	// Keep introspection alive
-	ros::waitForShutdown();
+  // get result within timeout
+  // TODO(bostoncleek): select timeout
+  client.waitForResult();
+	std::vector<geometry_msgs::PoseStamped> grasp_candidates;
+  if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+  {
+    grasp_candidates = client.getResult()->grasp_candidates;
+  }
+
+  ROS_INFO("Grasp Generator State: %s", client.getState().toString().c_str());
+  ROS_INFO("Grasp client received %lu candidates", grasp_candidates.size());
+	//////////////////////////////////
+
+
+
+	// ros::AsyncSpinner spinner(1);
+	// spinner.start();
+	//
+	// // Add table and object to planning scene
+	// ros::Duration(1.0).sleep();  // Wait for ApplyPlanningScene service
+	// moveit::planning_interface::PlanningSceneInterface psi;
+	// ros::NodeHandle pnh("~");
+	// if (pnh.param("spawn_table", true))
+	// {
+	// 	spawnObject(psi, createTable());
+	// }
+	// spawnObject(psi, createObject());
+	//
+	// // Construct and run pick/place task
+	// deep_grasp_demo::PickPlaceTask pick_place_task("pick_place_task", nh);
+	// pick_place_task.loadParameters();
+	// pick_place_task.init();
+	//
+	// if (pick_place_task.plan()) {
+	// 	ROS_INFO_NAMED(LOGNAME, "Planning succeded");
+	// 	if (pnh.param("execute", false)) {
+	// 		pick_place_task.execute();
+	// 		ROS_INFO_NAMED(LOGNAME, "Execution complete");
+	// 	} else {
+	// 		ROS_INFO_NAMED(LOGNAME, "Execution disabled");
+	// 	}
+	// } else {
+	// 	ROS_INFO_NAMED(LOGNAME, "Planning failed");
+	// }
+	//
+	// // Keep introspection alive
+	// ros::waitForShutdown();
 	return 0;
 }
