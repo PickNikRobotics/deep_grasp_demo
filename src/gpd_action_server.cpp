@@ -66,7 +66,7 @@ static std::string path_to_pcd_file;
 // static geometry_msgs::PoseStamped grasp1, grasp2;
 
 // TODO: Interface directly with gpd lib
-// TODO: Option to use pcd file or sensor data 
+// TODO: Option to use pcd file or sensor data
 
 namespace gpd_action_server
 {
@@ -139,7 +139,7 @@ public:
       result_.grasp_candidates.at(i).pose.position = msg->grasps.at(i).position;
       result_.grasp_candidates.at(i).pose.orientation = msg->grasps.at(i).orientation;
 
-      result_.scores.at(i) = msg->grasps.at(i).score;
+      result_.scores.at(i) = msg->grasps.at(i).score.data;
     }
 
     server_.setSucceeded(result_);
