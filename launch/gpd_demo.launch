@@ -4,6 +4,9 @@
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
   <arg if="$(arg debug)" name="launch_prefix" value="gdb -x $(find moveit_task_constructor_demo)/launch/gdb_settings.gdb --args" />
 
+  <!-- optional file for object -->
+  <arg name="path_to_pcd_file" value="$(find deep_grasp_demo)/config/cylinder.pcd"/>
+
   <!-- Run MTC pick and place using GPD-->
   <node launch-prefix="$(arg launch_prefix)" name="mtc_tutorial" pkg="deep_grasp_demo" type="gpd_pick_place_demo" output="screen">
     <param name="execute" value="true" />
@@ -12,5 +15,9 @@
 
   <!-- Handles the GPD lib -->
   <node launch-prefix="$(arg launch_prefix)" name="gpd_action_server" pkg="deep_grasp_demo" type="gpd_action_server" output="screen">
+    <param name="path_to_pcd_file" value="$(arg path_to_pcd_file)"/>
   </node>
+
+  <!-- gpd ros wrapper for now-->
+  <include file ="$(find gpd_ros)/launch/gpd_wrapper.launch"/>
 </launch>
