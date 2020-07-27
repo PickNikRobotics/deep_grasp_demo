@@ -43,7 +43,6 @@
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 
 // MTC
-#include <moveit/task_constructor/stages/deep_grasp_generator.h>
 #include <moveit/task_constructor/task.h>
 #include <moveit/task_constructor/stages/compute_ik.h>
 #include <moveit/task_constructor/stages/connect.h>
@@ -51,6 +50,7 @@
 #include <moveit/task_constructor/stages/generate_grasp_pose.h>
 #include <moveit/task_constructor/stages/generate_pose.h>
 #include <moveit/task_constructor/stages/generate_place_pose.h>
+#include <moveit/task_constructor/stages/gpd_generator.h>
 #include <moveit/task_constructor/stages/modify_planning_scene.h>
 #include <moveit/task_constructor/stages/move_relative.h>
 #include <moveit/task_constructor/stages/move_to.h>
