@@ -9,10 +9,13 @@ add_definitions(-W -Wall -Wextra
   -Wno-unused-parameter -Wno-unused-function)
 
 
+# add_compile_options(-fopenmp -fPIC -Wno-deprecated -Wenum-compare -Wno-ignored-attributes)
+# set(CMAKE_CXX_STANDARD 14)
+
+
 find_package(catkin REQUIRED COMPONENTS
 	actionlib
 	geometry_msgs
-	gpd_ros
 	moveit_core
 	moveit_ros_planning_interface
 	moveit_task_constructor_core
@@ -27,8 +30,23 @@ find_package(Eigen3 REQUIRED)
 find_package(PCL 1.8 REQUIRED)
 
 
+find_library(GPD_LIB NAMES gpd PATHS /usr/local/lib PATH_SUFFIXES lib NO_DEFAULT_PATH)
+if (GPD_LIB)
+  message(STATUS "Library GPD found in ${GPD_LIB}")
+else()
+  message(FATAL_ERROR "Library GPD not found")
+endif()
+
+find_path(GPD_INCLUDE_DIRS NAMES gpd PATHS /usr/local/include NO_DEFAULT_PATH)
+if (GPD_INCLUDE_DIRS)
+	message(STATUS "Include directory GPD found in ${GPD_INCLUDE_DIRS}")
+else()
+  message(FATAL_ERROR "Include directory GPD not found")
+endif()
+
+
 catkin_package(
-#  INCLUDE_DIRS include
+ INCLUDE_DIRS include
 #  LIBRARIES
 	CATKIN_DEPENDS
 		geometry_msgs
@@ -45,6 +63,7 @@ include_directories(
   SYSTEM
   ${EIGEN3_INCLUDE_DIRS}
 	${PCL_INCLUDE_DIRS}
+	${GPD_INCLUDE_DIRS}
 )
 
 
@@ -56,9 +75,9 @@ include_directories(
 add_executable(gpd_action_server src/gpd_action_server.cpp )
 target_link_libraries(gpd_action_server
                       ${catkin_LIBRARIES}
-											${gpd_ros_LIBRARIES}
 											${Eigen3_LIBRARIES}
 											${PCL_LIBRARIES}
+											${GPD_LIB}
 )
 
 add_executable(gpd_pick_place_demo src/gpd_pick_place_demo.cpp src/gpd_pick_place_task.cpp)

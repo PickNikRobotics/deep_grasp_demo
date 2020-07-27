@@ -10,7 +10,6 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>gpd_ros</build_depend>
   <build_depend>roscpp</build_depend>
 
   <depend>actionlib</depend>
