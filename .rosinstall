@@ -1,0 +1,12 @@
+- git:
+    local-name: moveit_task_constructor
+    uri: https://github.com/bostoncleek/moveit_task_constructor.git
+    version: pr-deep_grasp_stage
+- git:
+    local-name: deep_grasp_demo
+    uri: https://github.com/PickNikRobotics/deep_grasp_demo.git
+    version: gpd_ros
+- git:
+    local-name: gpd_ros
+    uri: https://github.com/bostoncleek/gpd_ros.git
+    version: master
