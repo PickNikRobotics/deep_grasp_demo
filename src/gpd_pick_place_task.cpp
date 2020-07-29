@@ -72,6 +72,9 @@ void PickPlaceTask::loadParameters() {
 	errors += !rosparam_shortcuts::get(LOGNAME, pnh, "surface_link", surface_link_);
 	support_surfaces_ = { surface_link_ };
 
+  // Deep grasp properties
+  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "action_name", action_name_);
+
 	// Pick/Place metrics
 	errors += !rosparam_shortcuts::get(LOGNAME, pnh, "approach_object_min_dist", approach_object_min_dist_);
 	errors += !rosparam_shortcuts::get(LOGNAME, pnh, "approach_object_max_dist", approach_object_max_dist_);
@@ -194,16 +197,7 @@ void PickPlaceTask::init() {
   ---- *               Generate Grasp Pose                *
 		 ***************************************************/
 		{
-			// Sample grasp pose
-			// auto stage = std::make_unique<stages::GenerateGraspPose>("generate grasp pose");
-			// stage->properties().configureInitFrom(Stage::PARENT);
-			// stage->properties().set("marker_ns", "grasp_pose");
-			// stage->setPreGraspPose(hand_open_pose_);
-			// stage->setObject(object);
-			// stage->setAngleDelta(M_PI / 12);
-			// stage->setMonitoredStage(current_state_ptr);  // Hook into current state
-
-      auto stage = std::make_unique<stages::DeepGraspPose>("generate grasp pose");
+      auto stage = std::make_unique<stages::DeepGraspPose<moveit_task_constructor_msgs::GenerateDeepGraspPoseAction>>(action_name_, "generate grasp pose");
       stage->properties().configureInitFrom(Stage::PARENT);
       stage->properties().set("marker_ns", "grasp_pose");
       stage->setPreGraspPose(hand_open_pose_);
