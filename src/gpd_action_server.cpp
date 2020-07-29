@@ -61,20 +61,31 @@
 #include <actionlib/server/simple_action_server.h>
 
 
-constexpr char LOGNAME[] = "gpd_action_server";
+static std::string LOGNAME = "gpd_action_server";
 static std::string path_to_pcd_file;
-// static geometry_msgs::PoseStamped grasp1, grasp2;
+static std::string cloud_frame_id;
+// static geometry_msgs::PoseStamped grasp1;
 
-// TODO: Interface directly with gpd lib
-// TODO: Option to use pcd file or sensor data
 
 namespace gpd_action_server
 {
+
+/**
+* @brief Generates grasp poses for a generator stage with MTC
+* @details Interfaces with the GPD lib using ROS messages and interfaces
+*          with MTC using a Action Server
+*/
 class GraspAction
 {
 public:
-  GraspAction(const ros::NodeHandle& nh, std::string server_name)
-       : nh_(nh), server_(nh_, server_name, false)
+  /**
+  * @brief Constructor
+  * @param nh - node handle
+  * @param action_name - action namespace
+  * @details Registers callbacks for the action server and for gpd_ros
+  */
+  GraspAction(ros::NodeHandle& nh, std::string action_name)
+       : nh_(nh), server_(nh_, action_name, false)
   {
     server_.registerGoalCallback(std::bind(&GraspAction::goalCallback, this));
     server_.registerPreemptCallback(std::bind(&GraspAction::preemptCallback, this));
@@ -85,78 +96,103 @@ public:
   }
 
 
+  /**
+  * @brief Action server goal callback
+  * @details Accepts goal from client, loads point cloud, and sends cloud to gpd_ros
+  */
   void goalCallback()
   {
-    goal_ = server_.acceptNewGoal()->action_name;
-    ROS_INFO("New goal accepted: %s", goal_.c_str());
+    goal_name_ = server_.acceptNewGoal()->action_name;
+    ROS_INFO_NAMED(LOGNAME, "New goal accepted: %s", goal_name_.c_str());
 
-    ROS_INFO("Loading cloud from file...");
+    ROS_INFO_NAMED(LOGNAME, "Loading cloud from file...");
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
 
     if (!pcl::io::loadPCDFile(path_to_pcd_file, *cloud.get()))
     {
-      ROS_INFO("Cloud loaded size: %lu", cloud->points.size());
+      ROS_INFO_NAMED(LOGNAME, "Cloud loaded size: %lu", cloud->points.size());
     }
 
     else
     {
-      ROS_ERROR("Failed to load cloud");
+      ROS_ERROR_NAMED(LOGNAME, "Failed to load cloud");
     }
 
     sensor_msgs::PointCloud2 cloud_msg;
     pcl::toROSMsg(*cloud.get(), cloud_msg);
 
-    // TODO: load this as a param
-    cloud_msg.header.frame_id = "panda_link0";
+    cloud_msg.header.frame_id = cloud_frame_id;
 
     gpd_cloud_pub_.publish(cloud_msg);
 
 
-    // send hard coded result for testing
-    // result_.grasp_candidates.resize(2);
-    // result_.grasp_candidates.at(0) = grasp1;
-    // result_.grasp_candidates.at(1) = grasp2;
+    // // send hard coded feedback/result for testing
+    // feedback_.grasp_candidates.resize(1);
+    // feedback_.costs.resize(1);
+    //
+    // feedback_.grasp_candidates.at(0) = grasp1;
+    // feedback_.costs.at(0) = 0.0;
+    //
+    // server_.publishFeedback(feedback_);
+    //
+    // result_.grasp_state = "success";
     // server_.setSucceeded(result_);
   }
 
 
+  /**
+  * @brief Preempt callback
+  * @details Preempts goal
+  */
   void preemptCallback()
   {
-    ROS_INFO("Preempted %s:", goal_.c_str());
+    ROS_INFO_NAMED(LOGNAME, "Preempted %s:", goal_name_.c_str());
     server_.setPreempted();
   }
 
-
+  /**
+  * @brief Grasp callback
+  * @param msg - Grasp configurations from gpd_ros
+  * @details Receives grasps from gpd_ros and sends feedback/results to MTC action server
+  */
   void graspCallBack(const gpd_ros::GraspConfigList::ConstPtr &msg)
   {
-    ROS_INFO("Grasp server received %lu grasp candidates", msg->grasps.size());
-    result_.grasp_candidates.resize(msg->grasps.size());
-    result_.scores.resize(msg->grasps.size());
+    ROS_INFO_NAMED(LOGNAME, "Grasp server received %lu grasp candidates", msg->grasps.size());
 
+    // Do not use grasps with score < 0
+    // Grasp is selected based on cost not score
+    // Invert score to represent grasp with lowest cost
     for(unsigned int i = 0; i < msg->grasps.size(); i++)
     {
-      result_.grasp_candidates.at(i).header.frame_id = msg->header.frame_id;
-      result_.grasp_candidates.at(i).pose.position = msg->grasps.at(i).position;
-      result_.grasp_candidates.at(i).pose.orientation = msg->grasps.at(i).orientation;
+      if (msg->grasps.at(i).score.data > 0.0)
+      {
+        geometry_msgs::PoseStamped grasp;
+        grasp.header.frame_id = msg->header.frame_id;
+        grasp.pose.position = msg->grasps.at(i).position;
+        grasp.pose.orientation = msg->grasps.at(i).orientation;
 
-      result_.scores.at(i) = msg->grasps.at(i).score.data;
+        feedback_.grasp_candidates.emplace_back(grasp);
+        feedback_.costs.emplace_back(static_cast<double>(1.0 / msg->grasps.at(i).score.data));
+      }
     }
 
+    server_.publishFeedback(feedback_);
+
+    result_.grasp_state = "success";
     server_.setSucceeded(result_);
   }
 
 private:
   ros::NodeHandle nh_;
-  ros::Subscriber deep_grasp_sub_;
+  ros::Subscriber deep_grasp_sub_;        
   ros::Publisher gpd_cloud_pub_;
 
-  std::string goal_;
+  std::string goal_name_;
   actionlib::SimpleActionServer<moveit_task_constructor_msgs::GenerateDeepGraspPoseAction> server_;
   moveit_task_constructor_msgs::GenerateDeepGraspPoseFeedback feedback_;
   moveit_task_constructor_msgs::GenerateDeepGraspPoseResult result_;
 };
 }
-
 
 
 int main(int argc, char** argv) {
@@ -165,12 +201,16 @@ int main(int argc, char** argv) {
   ros::NodeHandle nh;
   ros::NodeHandle pnh("~");
 
+  std::string action_name;
+
   size_t errors = 0;
 	errors += !rosparam_shortcuts::get(LOGNAME, pnh, "path_to_pcd_file", path_to_pcd_file);
-  rosparam_shortcuts::shutdownIfError(LOGNAME, errors);
-  ROS_INFO("Path to PCD file: %s", path_to_pcd_file.c_str());
+  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "action_name", action_name);
+  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "cloud_frame_id", cloud_frame_id);
 
-  std::string server_name = "sample_grasps";
+  rosparam_shortcuts::shutdownIfError(LOGNAME, errors);
+  ROS_INFO_NAMED(LOGNAME, "Path to PCD file: %s", path_to_pcd_file.c_str());
+
 
   // // hard code grasp pose for now
   // grasp1.header.frame_id = "object";
@@ -178,13 +218,9 @@ int main(int argc, char** argv) {
   // grasp1.pose.position.y = 0.0;
   // grasp1.pose.position.z = 0.0;
   // grasp1.pose.orientation.w = 1.0;
-  //
-  // grasp2 = grasp1;
-  // grasp2.pose.position.z = 0.0;
-  // grasp2.pose.orientation.z = 0.259;
-  // grasp2.pose.orientation.w = 0.966;
 
-  gpd_action_server::GraspAction grasp_action(nh, server_name);
+
+  gpd_action_server::GraspAction grasp_action(nh, action_name);
   ros::spin();
 
 	return 0;
