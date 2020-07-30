@@ -16,7 +16,7 @@ Complete the [Getting Started Tutorial](https://ros-planning.github.io/moveit_tu
     rosdep install --from-paths . --ignore-src --rosdistro $ROS_DISTRO
 
     catkin build
-    
+
 ## Run
 ### Grasp Pose Detection and MTC Panda demo
 ```

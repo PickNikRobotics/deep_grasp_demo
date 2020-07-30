@@ -7,7 +7,8 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- *  * Redistributions of source code must retain the above copyright notice, this
+ *  * Redistributions of source code must retain the above copyright notice,
+ *this
  *    list of conditions and the following disclaimer.
  *
  *  * Redistributions in binary form must reproduce the above copyright notice,
@@ -20,7 +21,8 @@
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *ARE
  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
@@ -39,24 +41,24 @@
 
 // MoveIt
 #include <moveit/planning_scene/planning_scene.h>
-#include <moveit/robot_model/robot_model.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <moveit/robot_model/robot_model.h>
 
 // MTC
-#include <moveit/task_constructor/task.h>
+#include <moveit/task_constructor/solvers/cartesian_path.h>
+#include <moveit/task_constructor/solvers/pipeline_planner.h>
 #include <moveit/task_constructor/stages/compute_ik.h>
 #include <moveit/task_constructor/stages/connect.h>
 #include <moveit/task_constructor/stages/current_state.h>
 #include <moveit/task_constructor/stages/generate_grasp_pose.h>
-#include <moveit/task_constructor/stages/generate_pose.h>
 #include <moveit/task_constructor/stages/generate_place_pose.h>
+#include <moveit/task_constructor/stages/generate_pose.h>
 #include <moveit/task_constructor/stages/gpd_generator.h>
 #include <moveit/task_constructor/stages/modify_planning_scene.h>
 #include <moveit/task_constructor/stages/move_relative.h>
 #include <moveit/task_constructor/stages/move_to.h>
 #include <moveit/task_constructor/stages/predicate_filter.h>
-#include <moveit/task_constructor/solvers/cartesian_path.h>
-#include <moveit/task_constructor/solvers/pipeline_planner.h>
+#include <moveit/task_constructor/task.h>
 #include <moveit_task_constructor_msgs/ExecuteTaskSolutionAction.h>
 #include <moveit_task_constructor_msgs/GenerateDeepGraspPoseAction.h>
 
@@ -67,63 +69,64 @@
 
 #pragma once
 
-namespace deep_grasp_demo{
+namespace deep_grasp_demo
+{
 using namespace moveit::task_constructor;
 
 class PickPlaceTask
 {
 public:
-	PickPlaceTask(const std::string& task_name, const ros::NodeHandle& nh);
-	~PickPlaceTask() = default;
+  PickPlaceTask(const std::string& task_name, const ros::NodeHandle& nh);
+  ~PickPlaceTask() = default;
 
-	void loadParameters();
+  void loadParameters();
 
-	void init();
+  void init();
 
-	bool plan();
+  bool plan();
 
-	bool execute();
+  bool execute();
 
 private:
-	ros::NodeHandle nh_;
+  ros::NodeHandle nh_;
 
-	std::string task_name_;
-	moveit::task_constructor::TaskPtr task_;
+  std::string task_name_;
+  moveit::task_constructor::TaskPtr task_;
 
-	// planning group properties
-	std::string arm_group_name_;
-	std::string eef_name_;
-	std::string hand_group_name_;
-	std::string hand_frame_;
+  // planning group properties
+  std::string arm_group_name_;
+  std::string eef_name_;
+  std::string hand_group_name_;
+  std::string hand_frame_;
 
-	// object + surface
-	std::vector<std::string> support_surfaces_;
-	std::string object_reference_frame_;
-	std::string surface_link_;
-	std::string object_name_;
-	std::string world_frame_;
-	std::vector<double> object_dimensions_;
+  // object + surface
+  std::vector<std::string> support_surfaces_;
+  std::string object_reference_frame_;
+  std::string surface_link_;
+  std::string object_name_;
+  std::string world_frame_;
+  std::vector<double> object_dimensions_;
 
-	// Predefined pose targets
-	std::string hand_open_pose_;
-	std::string hand_close_pose_;
-	std::string arm_home_pose_;
+  // Predefined pose targets
+  std::string hand_open_pose_;
+  std::string hand_close_pose_;
+  std::string arm_home_pose_;
 
-	// Deep grasp properties
-	std::string action_name_;
+  // Deep grasp properties
+  std::string action_name_;
 
-	// Execution
-	actionlib::SimpleActionClient<moveit_task_constructor_msgs::ExecuteTaskSolutionAction> execute_;
+  // Execution
+  actionlib::SimpleActionClient<moveit_task_constructor_msgs::ExecuteTaskSolutionAction> execute_;
 
-	// Pick metrics
-	Eigen::Isometry3d grasp_frame_transform_;
-	double approach_object_min_dist_;
-	double approach_object_max_dist_;
-	double lift_object_min_dist_;
-	double lift_object_max_dist_;
+  // Pick metrics
+  Eigen::Isometry3d grasp_frame_transform_;
+  double approach_object_min_dist_;
+  double approach_object_max_dist_;
+  double lift_object_min_dist_;
+  double lift_object_max_dist_;
 
-	// Place metrics
-	geometry_msgs::Pose place_pose_;
-	double place_surface_offset_;
+  // Place metrics
+  geometry_msgs::Pose place_pose_;
+  double place_surface_offset_;
 };
-}  // namespace moveit_task_constructor_demo
+}  // namespace deep_grasp_demo
