@@ -124,32 +124,6 @@ public:
     ROS_INFO_NAMED(LOGNAME, "New goal accepted: %s", goal_name_.c_str());
 
     sampleGrasps();
-
-    // geometry_msgs::PoseStamped grasp1;
-    // // grasp1.header.frame_id = "object";
-    // // grasp1.pose.position.x = 0.0;
-    // // grasp1.pose.position.y = 0.0;
-    // // grasp1.pose.position.z = 0.0;
-    // // grasp1.pose.orientation.w = 1.0;
-    //
-    // grasp1.header.frame_id = frame_id_;
-    // grasp1.pose.position.x = 0.5;
-    // grasp1.pose.position.y = -0.25;
-    // grasp1.pose.position.z = 0.125;
-    // grasp1.pose.orientation.w = 1.0;
-    //
-    //
-    // // send hard coded feedback/result for testing
-    // feedback_.grasp_candidates.resize(1);
-    // feedback_.costs.resize(1);
-    //
-    // feedback_.grasp_candidates.at(0) = grasp1;
-    // feedback_.costs.at(0) = 0.0;
-    //
-    // server_->publishFeedback(feedback_);
-    //
-    // result_.grasp_state = "success";
-    // server_->setSucceeded(result_);
   }
 
 
@@ -218,8 +192,7 @@ private:
   std::unique_ptr<gpd::GraspDetector> grasp_detector_;        // used to run the GPD algorithm
   std::unique_ptr<gpd::util::Cloud> cloud_camera_;            // stores point cloud with (optional) camera information
 };
-}
-
+} // namespace gpd_action_server
 
 
 int main(int argc, char** argv) {
@@ -232,16 +205,3 @@ int main(int argc, char** argv) {
 
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-//
