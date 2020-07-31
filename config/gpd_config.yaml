@@ -54,7 +54,7 @@ sample_above_plane = 0
 #   nn_radius: the radius for the neighborhood search
 #   num_orientations: the number of robot hand orientations to evaluate
 #   rotation_axes: the axes about which the point neighborhood gets rotated
-num_samples = 30
+num_samples = 50
 num_threads = 4
 nn_radius = 0.01
 num_orientations = 8
@@ -103,4 +103,4 @@ plot_candidates = 0
 plot_filtered_candidates = 0
 plot_valid_grasps = 0
 plot_clustered_grasps = 0
-plot_selected_grasps = 0
+plot_selected_grasps = 1
