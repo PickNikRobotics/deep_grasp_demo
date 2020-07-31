@@ -3,18 +3,15 @@ project(deep_grasp_demo)
 
 add_compile_options(-std=c++14)
 
-add_definitions(-W -Wall -Wextra
-  -Wwrite-strings -Wunreachable-code -Wpointer-arith
-  -Winit-self -Wredundant-decls
-  -Wno-unused-parameter -Wno-unused-function)
-
-
-# add_compile_options(-fopenmp -fPIC -Wno-deprecated -Wenum-compare -Wno-ignored-attributes)
-# set(CMAKE_CXX_STANDARD 14)
+# add_definitions(-W -Wall -Wextra
+#   -Wwrite-strings -Wunreachable-code -Wpointer-arith
+#   -Winit-self -Wredundant-decls
+#   -Wno-unused-parameter -Wno-unused-function)
 
 
 find_package(catkin REQUIRED COMPONENTS
 	actionlib
+	eigen_conversions
 	geometry_msgs
 	moveit_core
 	moveit_ros_planning_interface
@@ -28,7 +25,6 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.8 REQUIRED)
-
 
 find_library(GPD_LIB NAMES gpd PATHS /usr/local/lib PATH_SUFFIXES lib NO_DEFAULT_PATH)
 if (GPD_LIB)
@@ -49,6 +45,7 @@ catkin_package(
  INCLUDE_DIRS include
 #  LIBRARIES
 	CATKIN_DEPENDS
+	  eigen_conversions
 		geometry_msgs
 		moveit_task_constructor_msgs
 		pcl_conversions
