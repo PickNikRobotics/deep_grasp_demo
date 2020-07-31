@@ -1,8 +1,7 @@
 tui enable
 set breakpoint pending on
-# b pick_task.cpp:186
-# b pick_task.cpp:201
-# b pick_task.cpp:207
-# b compute_ik.cpp:200
-# b simple_grasp.cpp:62
+b gpd_generator.h:282
+b gpd_generator.h:288
+b gpd_pick_place_task.cpp:210
+b gpd_pick_place_task.cpp:220
 run
