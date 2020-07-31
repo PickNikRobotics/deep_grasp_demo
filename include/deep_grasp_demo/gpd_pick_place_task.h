@@ -58,6 +58,7 @@
 #include <moveit/task_constructor/solvers/cartesian_path.h>
 #include <moveit/task_constructor/solvers/pipeline_planner.h>
 #include <moveit_task_constructor_msgs/ExecuteTaskSolutionAction.h>
+#include <moveit_task_constructor_msgs/GenerateDeepGraspPoseAction.h>
 
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/server/simple_action_server.h>
@@ -107,6 +108,9 @@ private:
 	std::string hand_open_pose_;
 	std::string hand_close_pose_;
 	std::string arm_home_pose_;
+
+  // Deep grasp properties
+  std::string action_name_;
 
 	// Execution
 	actionlib::SimpleActionClient<moveit_task_constructor_msgs::ExecuteTaskSolutionAction> execute_;

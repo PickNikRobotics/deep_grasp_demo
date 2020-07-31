@@ -36,6 +36,7 @@
 
 // ROS
 #include <ros/ros.h>
+#include <eigen_conversions/eigen_msg.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <rosparam_shortcuts/rosparam_shortcuts.h>
@@ -58,21 +59,17 @@
 // GPD
 #include <gpd/util/cloud.h>
 #include <gpd/grasp_detector.h>
-#include <gpd/candidate/hand.h>
-#include <gpd/candidate/hand_geometry.h>
 
 // Action Server
 #include <moveit_task_constructor_msgs/GenerateDeepGraspPoseAction.h>
 #include <actionlib/server/simple_action_server.h>
 
-
 constexpr char LOGNAME[] = "gpd_action_server";
 
-// TODO: Interface directly with gpd lib
-// TODO: Option to use pcd file or sensor data
 
 namespace gpd_action_server
 {
+
 class GraspAction
 {
 public:
@@ -81,6 +78,7 @@ public:
     loadParameters();
     init();
   }
+
 
   void loadParameters()
   {
@@ -92,12 +90,13 @@ public:
     errors += !rosparam_shortcuts::get(LOGNAME, pnh, "path_to_gpd_config", path_to_gpd_config_);
     errors += !rosparam_shortcuts::get(LOGNAME, pnh, "action_name", action_name_);
     errors += !rosparam_shortcuts::get(LOGNAME, pnh, "view_point", view_point_);
+    errors += !rosparam_shortcuts::get(LOGNAME, pnh, "frame_id", frame_id_);
     rosparam_shortcuts::shutdownIfError(LOGNAME, errors);
 
     ROS_INFO("Path to PCD file: %s", path_to_pcd_file_.c_str());
     ROS_INFO("Path to GPD file: %s", path_to_gpd_config_.c_str());
-
   }
+
 
   void init()
   {
@@ -107,95 +106,100 @@ public:
     server_->registerPreemptCallback(std::bind(&GraspAction::preemptCallback, this));
     server_->start();
 
-    // GPD point cloud camera
-    // load cloud from file
-    // pcl::PointCloud<pcl::PointXYZRGB>::Ptr
-    // gpd::util::PointCloudRGB::Ptr cloud(new gpd::util::PointCloudRGB);
-
-
-    gpd::util::PointCloudPointNormal::Ptr cloud(new gpd::util::PointCloudPointNormal);
-
-    // ROS_INFO("Loading cloud from file...");
-    // if (pcl::io::loadPCDFile(path_to_pcd_file_, *cloud.get()) == -1){
-    //   ROS_ERROR("Failed to load cloud");
-    // }
-    // else{
-    //   ROS_INFO("Cloud loaded size: %lu", cloud->points.size());
-    // }
-
+    // GPD point cloud camera, load cylinder from file
     // set camera view origin
     // assume cloud was taken using one camera
-    // Eigen::Vector3d temp_mat;
-    // temp_mat << view_point_.at(0), view_point_.at(1), view_point_.at(2);
     Eigen::Matrix3Xd camera_view_point(3,1);
-    // camera_view_point.col(0) = temp_mat;
-
-    cloud_camera_.reset(new gpd::util::Cloud(cloud, 0, camera_view_point));
-
-    // gpd::util::Cloud cloud_cam(path_to_pcd_file_, camera_view_point);
-
-    // gpd::util::Cloud cloud_cam(cloud, 0, camera_view_point);
+    camera_view_point << view_point_.at(0), view_point_.at(1), view_point_.at(2);
+    cloud_camera_.reset(new gpd::util::Cloud(path_to_pcd_file_, camera_view_point));
 
     // Grasp detector
-    // gpd::GraspDetector grasp_d(path_to_gpd_config_);
-
-
+    grasp_detector_.reset(new gpd::GraspDetector(path_to_gpd_config_));
   }
-
 
 
   void goalCallback()
   {
-    // goal_ = server_.acceptNewGoal()->action_name;
-    // ROS_INFO("New goal accepted: %s", goal_.c_str());
+    goal_name_ = server_->acceptNewGoal()->action_name;
+    ROS_INFO_NAMED(LOGNAME, "New goal accepted: %s", goal_name_.c_str());
+
+    sampleGrasps();
+
+    // geometry_msgs::PoseStamped grasp1;
+    // // grasp1.header.frame_id = "object";
+    // // grasp1.pose.position.x = 0.0;
+    // // grasp1.pose.position.y = 0.0;
+    // // grasp1.pose.position.z = 0.0;
+    // // grasp1.pose.orientation.w = 1.0;
     //
-    // ROS_INFO("Loading cloud from file...");
-    // pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+    // grasp1.header.frame_id = frame_id_;
+    // grasp1.pose.position.x = 0.5;
+    // grasp1.pose.position.y = -0.25;
+    // grasp1.pose.position.z = 0.125;
+    // grasp1.pose.orientation.w = 1.0;
     //
-    // if (!pcl::io::loadPCDFile(path_to_pcd_file, *cloud.get()))
-    // {
-    //   ROS_INFO("Cloud loaded size: %lu", cloud->points.size());
-    // }
     //
-    // else
-    // {
-    //   ROS_ERROR("Failed to load cloud");
-    // }
+    // // send hard coded feedback/result for testing
+    // feedback_.grasp_candidates.resize(1);
+    // feedback_.costs.resize(1);
     //
-    // sensor_msgs::PointCloud2 cloud_msg;
-    // pcl::toROSMsg(*cloud.get(), cloud_msg);
+    // feedback_.grasp_candidates.at(0) = grasp1;
+    // feedback_.costs.at(0) = 0.0;
     //
-    // // TODO: load this as a param
-    // cloud_msg.header.frame_id = "panda_link0";
+    // server_->publishFeedback(feedback_);
     //
-    // gpd_cloud_pub_.publish(cloud_msg);
+    // result_.grasp_state = "success";
+    // server_->setSucceeded(result_);
   }
 
 
   void preemptCallback()
   {
-    // ROS_INFO("Preempted %s:", goal_.c_str());
-    // server_.setPreempted();
+    ROS_INFO_NAMED(LOGNAME, "Preempted %s:", goal_name_.c_str());
+    server_->setPreempted();
   }
 
 
-  // void graspCallBack(const gpd_ros::GraspConfigList::ConstPtr &msg)
-  // {
-  //   ROS_INFO("Grasp server received %lu grasp candidates", msg->grasps.size());
-  //   result_.grasp_candidates.resize(msg->grasps.size());
-  //   result_.scores.resize(msg->grasps.size());
-  //
-  //   for(unsigned int i = 0; i < msg->grasps.size(); i++)
-  //   {
-  //     result_.grasp_candidates.at(i).header.frame_id = msg->header.frame_id;
-  //     result_.grasp_candidates.at(i).pose.position = msg->grasps.at(i).position;
-  //     result_.grasp_candidates.at(i).pose.orientation = msg->grasps.at(i).orientation;
-  //
-  //     result_.scores.at(i) = msg->grasps.at(i).score.data;
-  //   }
-  //
-  //   server_.setSucceeded(result_);
-  // }
+  void sampleGrasps()
+  {
+    std::vector<std::unique_ptr<gpd::candidate::Hand>> grasps;          // detect grasp poses
+    grasp_detector_->preprocessPointCloud(*cloud_camera_.get());        // preprocess the point cloud
+    grasps = grasp_detector_->detectGrasps(*cloud_camera_.get());       // detect grasps in the point cloud
+
+    // Use grasps with score > 0
+    std::vector<unsigned int> grasp_id;
+    for(unsigned int i = 0; i < grasps.size(); i++){
+      if (grasps.at(i)->getScore() > 0.0){
+        grasp_id.push_back(i);
+      }
+    }
+
+    if(grasp_id.empty()){
+      result_.grasp_state = "failed";
+      server_->setAborted(result_);
+      return;
+    }
+
+    for(auto id : grasp_id){
+      geometry_msgs::PoseStamped grasp_pose;
+      grasp_pose.header.frame_id = frame_id_;
+      tf::pointEigenToMsg(grasps.at(id)->getPosition(), grasp_pose.pose.position);
+
+      Eigen::Quaterniond hand_orientation(grasps.at(id)->getOrientation());
+      tf::quaternionEigenToMsg(hand_orientation, grasp_pose.pose.orientation);
+
+      feedback_.grasp_candidates.emplace_back(grasp_pose);
+
+      // Grasp is selected based on cost not score
+      // Invert score to represent grasp with lowest cost
+      feedback_.costs.emplace_back(static_cast<double>(1.0 / grasps.at(id)->getScore()));
+    }
+
+    server_->publishFeedback(feedback_);
+    result_.grasp_state = "success";
+    server_->setSucceeded(result_);
+  }
+
 
 private:
   ros::NodeHandle nh_;
@@ -206,13 +210,13 @@ private:
 
   std::string path_to_pcd_file_;
   std::string path_to_gpd_config_;
-  std::string action_name_;
+  std::string goal_name_;
+  std::string action_name_;                                   // action namespace
+  std::string frame_id_;                                      // frame of point cloud/grasps
 
-  std::vector<double> view_point_;           // origin of the camera
-
-  // gpd::GraspDetector grasp_detector_;     // used to run the GPD algorithm
+  std::vector<double> view_point_;                            // origin of the camera
+  std::unique_ptr<gpd::GraspDetector> grasp_detector_;        // used to run the GPD algorithm
   std::unique_ptr<gpd::util::Cloud> cloud_camera_;            // stores point cloud with (optional) camera information
-
 };
 }
 
@@ -224,8 +228,20 @@ int main(int argc, char** argv) {
   ros::NodeHandle nh;
 
   gpd_action_server::GraspAction grasp_action(nh);
-
-  // ros::spin();
+  ros::spin();
 
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+//

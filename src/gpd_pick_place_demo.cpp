@@ -108,36 +108,6 @@ int main(int argc, char** argv) {
 	ros::init(argc, argv, "moveit_task_constructor_demo");
 	ros::NodeHandle nh;
 
-	//////////////////////////////////
-	// actionlib::SimpleActionClient<moveit_task_constructor_msgs::GenerateDeepGraspPoseAction> client("sample_grasps", true);
-	// ROS_INFO("Waiting for grasp detection action server to start...");
-  // client.waitForServer();
-	//
-  // // test server connection
-  // if(!client.isServerConnected())
-  // {
-  //   ROS_ERROR("Grasp detection action server not connected!");
-  // }
-	//
-	// moveit_task_constructor_msgs::GenerateDeepGraspPoseGoal goal;
-  // goal.action_name = "generate_grasps";
-  // client.sendGoal(goal);
-	//
-  // // get result within timeout
-  // // TODO(bostoncleek): select timeout
-  // client.waitForResult();
-	// std::vector<geometry_msgs::PoseStamped> grasp_candidates;
-  // if (client.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-  // {
-  //   grasp_candidates = client.getResult()->grasp_candidates;
-  // }
-	//
-  // ROS_INFO("Grasp Generator State: %s", client.getState().toString().c_str());
-  // ROS_INFO("Grasp client received %lu candidates", grasp_candidates.size());
-	//////////////////////////////////
-
-
-
 	ros::AsyncSpinner spinner(1);
 	spinner.start();
 
@@ -160,8 +130,8 @@ int main(int argc, char** argv) {
 		ROS_INFO_NAMED(LOGNAME, "Planning succeded");
 		if (pnh.param("execute", false)) {
 
-			ROS_INFO("Press any key to execute");
-			std::cin.get();
+			// ROS_INFO("Press any key to execute");
+			// std::cin.get();
 
 			pick_place_task.execute();
 			ROS_INFO_NAMED(LOGNAME, "Execution complete");
