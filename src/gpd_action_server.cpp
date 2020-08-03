@@ -30,9 +30,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
- /* Author: Boston Cleek
-    Desc:   GPD action server
- */
+/* Author: Boston Cleek
+   Desc:   GPD action server
+*/
 
 // ROS
 #include <ros/ros.h>
@@ -66,10 +66,8 @@
 
 constexpr char LOGNAME[] = "gpd_action_server";
 
-
 namespace gpd_action_server
 {
-
 /**
 * @brief Generates grasp poses for a generator stage with MTC
 * @details Interfaces with the GPD lib using ROS messages and interfaces
@@ -78,7 +76,6 @@ namespace gpd_action_server
 class GraspAction
 {
 public:
-
   /**
   * @brief <brief>
   * @brief Constructor
@@ -86,7 +83,7 @@ public:
   * @details loads parameters, registers callbacks for the action server,
              and initializes GPD
   */
-  GraspAction(const ros::NodeHandle &nh) : nh_(nh)
+  GraspAction(const ros::NodeHandle& nh) : nh_(nh)
   {
     loadParameters();
     init();
@@ -98,7 +95,7 @@ public:
   void loadParameters()
   {
     ROS_INFO_NAMED(LOGNAME, "Loading grasp action server parameters");
-  	ros::NodeHandle pnh("~");
+    ros::NodeHandle pnh("~");
 
     size_t errors = 0;
     errors += !rosparam_shortcuts::get(LOGNAME, pnh, "path_to_pcd_file", path_to_pcd_file_);
@@ -120,7 +117,8 @@ public:
   void init()
   {
     // action server
-    server_.reset(new actionlib::SimpleActionServer<moveit_task_constructor_msgs::GenerateDeepGraspPoseAction>(nh_, action_name_, false));
+    server_.reset(new actionlib::SimpleActionServer<moveit_task_constructor_msgs::GenerateDeepGraspPoseAction>(
+        nh_, action_name_, false));
     server_->registerGoalCallback(std::bind(&GraspAction::goalCallback, this));
     server_->registerPreemptCallback(std::bind(&GraspAction::preemptCallback, this));
     server_->start();
@@ -128,7 +126,7 @@ public:
     // GPD point cloud camera, load cylinder from file
     // set camera view origin
     // assume cloud was taken using one camera
-    Eigen::Matrix3Xd camera_view_point(3,1);
+    Eigen::Matrix3Xd camera_view_point(3, 1);
     camera_view_point << view_point_.at(0), view_point_.at(1), view_point_.at(2);
     cloud_camera_.reset(new gpd::util::Cloud(path_to_pcd_file_, camera_view_point));
 
@@ -163,29 +161,33 @@ public:
   * @details Compose grasp candidates, the candidates are sent back to the client
   *          using the feedback message. Only candidates with a positive grasp
   *          score are used. If there is at least one candidate with a positive
-  *          score the result is set to success else it is a failure. 
+  *          score the result is set to success else it is a failure.
   */
   void sampleGrasps()
   {
-    std::vector<std::unique_ptr<gpd::candidate::Hand>> grasps;          // detect grasp poses
-    grasp_detector_->preprocessPointCloud(*cloud_camera_.get());        // preprocess the point cloud
-    grasps = grasp_detector_->detectGrasps(*cloud_camera_.get());       // detect grasps in the point cloud
+    std::vector<std::unique_ptr<gpd::candidate::Hand>> grasps;     // detect grasp poses
+    grasp_detector_->preprocessPointCloud(*cloud_camera_);   // preprocess the point cloud
+    grasps = grasp_detector_->detectGrasps(*cloud_camera_);  // detect grasps in the point cloud
 
     // Use grasps with score > 0
     std::vector<unsigned int> grasp_id;
-    for(unsigned int i = 0; i < grasps.size(); i++){
-      if (grasps.at(i)->getScore() > 0.0){
+    for (unsigned int i = 0; i < grasps.size(); i++)
+    {
+      if (grasps.at(i)->getScore() > 0.0)
+      {
         grasp_id.push_back(i);
       }
     }
 
-    if(grasp_id.empty()){
+    if (grasp_id.empty())
+    {
       result_.grasp_state = "failed";
       server_->setAborted(result_);
       return;
     }
 
-    for(auto id : grasp_id){
+    for (auto id : grasp_id)
+    {
       geometry_msgs::PoseStamped grasp_pose;
       grasp_pose.header.frame_id = frame_id_;
       tf::pointEigenToMsg(grasps.at(id)->getPosition(), grasp_pose.pose.position);
@@ -205,34 +207,34 @@ public:
     server_->setSucceeded(result_);
   }
 
-
 private:
   ros::NodeHandle nh_;
 
-  std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::GenerateDeepGraspPoseAction>> server_;      // action server
-  moveit_task_constructor_msgs::GenerateDeepGraspPoseFeedback feedback_;                                                  // action feedback message
-  moveit_task_constructor_msgs::GenerateDeepGraspPoseResult result_;                                                      // action result message
+  std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::GenerateDeepGraspPoseAction>>
+      server_;                                                            // action server
+  moveit_task_constructor_msgs::GenerateDeepGraspPoseFeedback feedback_;  // action feedback message
+  moveit_task_constructor_msgs::GenerateDeepGraspPoseResult result_;      // action result message
 
-  std::string path_to_pcd_file_;                              // path to cylinder pcd file
-  std::string path_to_gpd_config_;                            // path to GPD config file
-  std::string goal_name_;                                     // action name
-  std::string action_name_;                                   // action namespace
-  std::string frame_id_;                                      // frame of point cloud/grasps
+  std::string path_to_pcd_file_;    // path to cylinder pcd file
+  std::string path_to_gpd_config_;  // path to GPD config file
+  std::string goal_name_;           // action name
+  std::string action_name_;         // action namespace
+  std::string frame_id_;            // frame of point cloud/grasps
 
-  std::vector<double> view_point_;                            // origin of the camera
-  std::unique_ptr<gpd::GraspDetector> grasp_detector_;        // used to run the GPD algorithm
-  std::unique_ptr<gpd::util::Cloud> cloud_camera_;            // stores point cloud with (optional) camera information
+  std::vector<double> view_point_;                      // origin of the camera
+  std::unique_ptr<gpd::GraspDetector> grasp_detector_;  // used to run the GPD algorithm
+  std::unique_ptr<gpd::util::Cloud> cloud_camera_;      // stores point cloud with (optional) camera information
 };
-} // namespace gpd_action_server
+}  // namespace gpd_action_server
 
-
-int main(int argc, char** argv) {
-	ROS_INFO_NAMED(LOGNAME, "Init gpd_action_server");
-	ros::init(argc, argv, "gpd_server");
+int main(int argc, char** argv)
+{
+  ROS_INFO_NAMED(LOGNAME, "Init gpd_action_server");
+  ros::init(argc, argv, "gpd_server");
   ros::NodeHandle nh;
 
   gpd_action_server::GraspAction grasp_action(nh);
   ros::spin();
 
-	return 0;
+  return 0;
 }
