@@ -1,13 +1,14 @@
 /*********************************************************************
  * BSD 3-Clause License
  *
- * Copyright (c) 2019 PickNik LLC.
+ * Copyright (c) 2020 PickNik LLC.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- *  * Redistributions of source code must retain the above copyright notice, this
+ *  * Redistributions of source code must retain the above copyright notice,
+ *this
  *    list of conditions and the following disclaimer.
  *
  *  * Redistributions in binary form must reproduce the above copyright notice,
@@ -20,7 +21,8 @@
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *ARE
  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
@@ -39,8 +41,8 @@
 
 // MoveIt
 #include <moveit/planning_scene/planning_scene.h>
-#include <moveit/robot_model/robot_model.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <moveit/robot_model/robot_model.h>
 
 // MTC
 #include <moveit/task_constructor/task.h>
@@ -48,15 +50,13 @@
 #include <moveit/task_constructor/stages/connect.h>
 #include <moveit/task_constructor/stages/current_state.h>
 #include <moveit/task_constructor/stages/generate_grasp_pose.h>
-#include <moveit/task_constructor/stages/generate_pose.h>
 #include <moveit/task_constructor/stages/generate_place_pose.h>
 #include <moveit/task_constructor/stages/gpd_generator.h>
 #include <moveit/task_constructor/stages/modify_planning_scene.h>
 #include <moveit/task_constructor/stages/move_relative.h>
 #include <moveit/task_constructor/stages/move_to.h>
 #include <moveit/task_constructor/stages/predicate_filter.h>
-#include <moveit/task_constructor/solvers/cartesian_path.h>
-#include <moveit/task_constructor/solvers/pipeline_planner.h>
+#include <moveit/task_constructor/task.h>
 #include <moveit_task_constructor_msgs/ExecuteTaskSolutionAction.h>
 #include <moveit_task_constructor_msgs/GenerateDeepGraspPoseAction.h>
 
