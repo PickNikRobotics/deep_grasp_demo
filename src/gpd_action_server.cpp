@@ -70,16 +70,31 @@ constexpr char LOGNAME[] = "gpd_action_server";
 namespace gpd_action_server
 {
 
+/**
+* @brief Generates grasp poses for a generator stage with MTC
+* @details Interfaces with the GPD lib using ROS messages and interfaces
+*          with MTC using a Action Server
+*/
 class GraspAction
 {
 public:
+
+  /**
+  * @brief <brief>
+  * @brief Constructor
+  * @param nh - node handle
+  * @details loads parameters, registers callbacks for the action server,
+             and initializes GPD
+  */
   GraspAction(const ros::NodeHandle &nh) : nh_(nh)
   {
     loadParameters();
     init();
   }
 
-
+  /**
+  * @brief Loads parameters for action server and GPD
+  */
   void loadParameters()
   {
     ROS_INFO_NAMED(LOGNAME, "Loading grasp action server parameters");
@@ -97,7 +112,11 @@ public:
     ROS_INFO("Path to GPD file: %s", path_to_gpd_config_.c_str());
   }
 
-
+  /**
+  * @brief Initialize action server callbacks and GPD
+  * @details The point cloud (frame: panda_link0) is loaded from a file and
+  *          the camera's origin relative to the point cloud is assumed to be at (0,0,0).
+  */
   void init()
   {
     // action server
@@ -117,7 +136,10 @@ public:
     grasp_detector_.reset(new gpd::GraspDetector(path_to_gpd_config_));
   }
 
-
+  /**
+  * @brief Action server goal callback
+  * @details Accepts goal from client and samples grasp candidates
+  */
   void goalCallback()
   {
     goal_name_ = server_->acceptNewGoal()->action_name;
@@ -126,14 +148,23 @@ public:
     sampleGrasps();
   }
 
-
+  /**
+  * @brief Preempt callback
+  * @details Preempts goal
+  */
   void preemptCallback()
   {
     ROS_INFO_NAMED(LOGNAME, "Preempted %s:", goal_name_.c_str());
     server_->setPreempted();
   }
 
-
+  /**
+  * @brief Samples grasp candidates using GPD
+  * @details Compose grasp candidates, the candidates are sent back to the client
+  *          using the feedback message. Only candidates with a positive grasp
+  *          score are used. If there is at least one candidate with a positive
+  *          score the result is set to success else it is a failure. 
+  */
   void sampleGrasps()
   {
     std::vector<std::unique_ptr<gpd::candidate::Hand>> grasps;          // detect grasp poses
@@ -178,13 +209,13 @@ public:
 private:
   ros::NodeHandle nh_;
 
-  std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::GenerateDeepGraspPoseAction>> server_;
-  moveit_task_constructor_msgs::GenerateDeepGraspPoseFeedback feedback_;
-  moveit_task_constructor_msgs::GenerateDeepGraspPoseResult result_;
+  std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::GenerateDeepGraspPoseAction>> server_;      // action server
+  moveit_task_constructor_msgs::GenerateDeepGraspPoseFeedback feedback_;                                                  // action feedback message
+  moveit_task_constructor_msgs::GenerateDeepGraspPoseResult result_;                                                      // action result message
 
-  std::string path_to_pcd_file_;
-  std::string path_to_gpd_config_;
-  std::string goal_name_;
+  std::string path_to_pcd_file_;                              // path to cylinder pcd file
+  std::string path_to_gpd_config_;                            // path to GPD config file
+  std::string goal_name_;                                     // action name
   std::string action_name_;                                   // action namespace
   std::string frame_id_;                                      // frame of point cloud/grasps
 
