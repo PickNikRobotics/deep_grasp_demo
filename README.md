@@ -10,7 +10,7 @@ This branch interfaces with the GPD library directly. If you want to see the dem
 Complete the [Getting Started Tutorial](https://ros-planning.github.io/moveit_tutorials/doc/getting_started/getting_started.html). This package also requires [GPD](https://github.com/atenpas/gpd).
 
     wstool init
-    wstool merge https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/gpd_lib/.rosinstall
+    wstool merge https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/master/.rosinstall
     wstool update
 
     rosdep install --from-paths . --ignore-src --rosdistro $ROS_DISTRO
