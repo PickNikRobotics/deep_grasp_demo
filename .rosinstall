@@ -1,0 +1,4 @@
+- git:
+    local-name: deep_grasp_demo
+    uri: https://github.com/PickNikRobotics/deep_grasp_demo.git
+    version: gpd_lib
