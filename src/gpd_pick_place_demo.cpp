@@ -129,10 +129,6 @@ int main(int argc, char** argv) {
 	if (pick_place_task.plan()) {
 		ROS_INFO_NAMED(LOGNAME, "Planning succeded");
 		if (pnh.param("execute", false)) {
-
-			// ROS_INFO("Press any key to execute");
-			// std::cin.get();
-
 			pick_place_task.execute();
 			ROS_INFO_NAMED(LOGNAME, "Execution complete");
 		} else {
