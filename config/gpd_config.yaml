@@ -1,9 +1,7 @@
 # Path to config file for robot hand geometry
-# hand_geometry_filename = /home/bostoncleek/GPD/gpd/cfg/hand_geometry.cfg
 hand_geometry_filename = 0
 
 # Path to config file for volume and image geometry
-# image_geometry_filename = /home/bostoncleek/GPD/gpd/cfg/image_geometry_15channels.cfg
 image_geometry_filename = 0
 
 # ==== Robot Hand Geometry ====
