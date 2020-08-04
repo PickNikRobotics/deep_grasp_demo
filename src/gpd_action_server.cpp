@@ -7,8 +7,7 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- *  * Redistributions of source code must retain the above copyright notice,
- *this
+ *  * Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  *
  *  * Redistributions in binary form must reproduce the above copyright notice,
@@ -21,8 +20,7 @@
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *ARE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
@@ -40,10 +38,9 @@
 #include <ros/ros.h>
 #include <eigen_conversions/eigen_msg.h>
 #include <geometry_msgs/PoseStamped.h>
-#include <pcl_conversions/pcl_conversions.h>
-#include <ros/ros.h>
-#include <rosparam_shortcuts/rosparam_shortcuts.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <rosparam_shortcuts/rosparam_shortcuts.h>
+#include <pcl_conversions/pcl_conversions.h>
 
 // C++
 #include <functional>
@@ -52,9 +49,9 @@
 #include <iostream>
 
 // PCL
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
 
 // Eigen
 #include <Eigen/Dense>
@@ -64,6 +61,7 @@
 #include <gpd/grasp_detector.h>
 
 // Action Server
+#include <moveit_task_constructor_msgs/GenerateDeepGraspPoseAction.h>
 #include <actionlib/server/simple_action_server.h>
 
 constexpr char LOGNAME[] = "gpd_action_server";
