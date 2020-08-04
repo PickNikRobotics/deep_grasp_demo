@@ -22,12 +22,17 @@ This package also requires [GPD](https://github.com/atenpas/gpd). An important n
     catkin build
 
 ### 2) Modify Config
-Under `config/gpd_congfig.yaml` navigate to line 32 and update `weights_file` to contain absolute file path to the location of the [lenet params](https://github.com/atenpas/gpd/tree/master/models/lenet/15channels/params) directory in the GPD install. 
+Under `config/gpd_congfig.yaml` navigate to line 32 and update `weights_file` to contain absolute file path to the location of the [lenet params](https://github.com/atenpas/gpd/tree/master/models/lenet/15channels/params) directory in the GPD install.
 
 
 
 ## Run
 ### Grasp Pose Detection and MTC Panda demo
+
+```
+roslaunch moveit_task_constructor_demo demo.launch
+```
+
 ```
 roslaunch deep_grasp_demo gpd_demo.launch
 ```
