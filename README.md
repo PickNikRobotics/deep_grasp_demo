@@ -14,7 +14,7 @@ This package also requires [GPD](https://github.com/atenpas/gpd). An important n
 ### 1) Required Packages
 
     wstool init
-    wstool merge https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/master/.rosinstall
+    wstool merge https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/gpd_lib/.rosinstall
     wstool update
 
     rosdep install --from-paths . --ignore-src --rosdistro $ROS_DISTRO
@@ -32,7 +32,6 @@ Under `config/gpd_congfig.yaml` navigate to line 32 and update `weights_file` to
 ```
 roslaunch moveit_task_constructor_demo demo.launch
 ```
-
 ```
 roslaunch deep_grasp_demo gpd_demo.launch
 ```
