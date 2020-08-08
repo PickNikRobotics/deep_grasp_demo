@@ -46,6 +46,7 @@
 
 // C++
 #include <string>
+#include <iostream>
 
 // OpenCV
 #include <opencv2/opencv.hpp>
@@ -84,7 +85,7 @@ public:
   void colorCallback(const sensor_msgs::Image::ConstPtr &msg)
   {
     if (save_rbg_){
-      saveImage(msg, "object_rgb.jpg");
+      saveImage(msg, "object_rgb.png");
       save_rbg_ = false;
     }
   }
@@ -92,7 +93,7 @@ public:
   void depthCallback(const sensor_msgs::Image::ConstPtr &msg)
   {
     if (save_depth_){
-      saveImage(msg, "object_depth.jpg");
+      saveImage(msg, "object_depth.png");
       save_depth_ = false;
     }
   }
@@ -109,12 +110,39 @@ public:
   {
     cv_bridge::CvImagePtr cv_ptr;
     cv_ptr = cv_bridge::toCvCopy(msg, msg->encoding);
-    if (cv::imwrite(image_dir_ + image_name, cv_ptr->image)){
+
+    // imwrite() saves image as BGR
+    cv::Mat img_converted;
+
+    if (msg->encoding == "rgb8"){
+      cv_ptr->image.convertTo(img_converted, CV_8UC3); // convert to BGR
+    }
+
+    else if (msg->encoding == "32FC1"){
+      cv_ptr->image.convertTo(img_converted, CV_8UC3, 255.0); // conver to BGR and scale
+    }
+
+    else{
+      ROS_ERROR_NAMED(LOGNAME, "Image encoding not recognized (encoding): %s", msg->encoding.c_str());
+    }
+
+
+    if (cv::imwrite(image_dir_ + image_name, img_converted)){
       ROS_INFO_NAMED(LOGNAME, "Saving image %s (encoding): %s ", image_name.c_str(), msg->encoding.c_str());
     }
     else {
       ROS_WARN_NAMED(LOGNAME, "Image %s not saved", image_name.c_str());
     }
+
+    // std::string depth_img_filename = "/home/bostoncleek/gqcnn_ws/src/gqcnn_demo/data/images/object_depth.png";
+    // // std::string depth_img_filename = "/home/bostoncleek/gqcnn_ws/src/gqcnn_demo/data/images/object_rgb.png";
+    //
+    // cv::Mat img = cv::imread(depth_img_filename);
+    //
+    // cv::imshow("Display window1", cv_ptr->image);
+    // // cv::imshow("Display window2", img_converted);
+    // cv::imshow("Display window3", img);
+    // cv::waitKey(0);
   }
 
 private:
