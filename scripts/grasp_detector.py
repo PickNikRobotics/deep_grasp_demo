@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 
 camera_intr_filename = "/home/bostoncleek/gqcnn_ws/src/gqcnn_demo/config/calib/kinect.intr"
-color_img_filename = "/home/bostoncleek/gqcnn_ws/src/gqcnn_demo/data/images/object_rgb.jpg"
-depth_img_filename = "/home/bostoncleek/gqcnn_ws/src/gqcnn_demo/data/images/object_depth.jpg"
+color_img_filename = "/home/bostoncleek/gqcnn_ws/src/gqcnn_demo/data/images/object_rgb.png"
+depth_img_filename = "/home/bostoncleek/gqcnn_ws/src/gqcnn_demo/data/images/object_depth.png"
 
 model_name = "GQCNN-4.0-PJ"
 model_dir = "/home/bostoncleek/dex-net/deps/gqcnn/models/GQCNN-4.0-PJ"
@@ -11,6 +11,7 @@ config_filename = "/home/bostoncleek/dex-net/deps/gqcnn/cfg/examples/replication
 import json
 import os
 import cv2
+import numpy as np
 
 
 from autolab_core import YamlConfig, Logger
@@ -49,16 +50,22 @@ if __name__ == "__main__":
 
     inpaint_rescale_factor = config["inpaint_rescale_factor"]
 
-    # sensor
+    # # sensor
     camera_intr = CameraIntrinsics.load(camera_intr_filename)
 
     # images
     color_cvmat = cv2.imread(color_img_filename)
-    depth_cvmat = cv2.imread(depth_img_filename)
+    depth_cvmat = cv2.imread(depth_img_filename) # load as 8UC3
+    depth_cvmat = cv2.cvtColor(depth_cvmat, cv2.COLOR_BGR2GRAY) # 8UC1
+    depth_cvmat = depth_cvmat.astype(np.float32) * 1.0/255.0 # 32FC1
+
+    # cv2.imshow('img', color_cvmat)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
     # create wrapped BerkeleyAutomation/perception RGB and depth images
-    color_im = ColorImage(color_cvmat, frame=camera_intr.frame, encoding="rgb8")
-    depth_im = ColorImage(depth_cvmat, frame=camera_intr.frame, encoding="rgb8")
+    color_im = ColorImage(color_cvmat, frame=camera_intr.frame, encoding="bgr8")
+    depth_im = DepthImage(depth_cvmat, frame=camera_intr.frame)
 
     # check image sizes.
     if (color_im.height != depth_im.height or color_im.width != depth_im.width):
@@ -69,8 +76,8 @@ if __name__ == "__main__":
         print(msg)
 
 
-
-
+    # assume not mask is provided
+    segmask = depth_im.invalid_pixel_mask().inverse()
 
 
 
