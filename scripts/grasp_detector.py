@@ -10,12 +10,21 @@ config_filename = "/home/bostoncleek/dex-net/deps/gqcnn/cfg/examples/replication
 
 import json
 import os
+import time
 import cv2
 import numpy as np
-
+from matplotlib import pyplot as plt
 
 from autolab_core import YamlConfig, Logger
-from perception import (BinaryImage, CameraIntrinsics, ColorImage, DepthImage, RgbdImage)
+from perception import (BinaryImage, CameraIntrinsics, ColorImage, DepthImage,
+                        RgbdImage)
+from visualization import Visualizer2D as vis
+
+from gqcnn.grasping import (RobustGraspingPolicy,
+                            CrossEntropyRobustGraspingPolicy, RgbdImageState,
+                            FullyConvolutionalGraspingPolicyParallelJaw,
+                            FullyConvolutionalGraspingPolicySuction)
+from gqcnn.utils import GripperMode
 
 
 if __name__ == "__main__":
@@ -48,8 +57,6 @@ if __name__ == "__main__":
     policy_config = config["policy"]
     policy_config["metric"]["gqcnn_model"] = model_dir
 
-    inpaint_rescale_factor = config["inpaint_rescale_factor"]
-
     # # sensor
     camera_intr = CameraIntrinsics.load(camera_intr_filename)
 
@@ -75,13 +82,47 @@ if __name__ == "__main__":
                    depth_im.width)
         print(msg)
 
-
     # assume not mask is provided
-    segmask = depth_im.invalid_pixel_mask().inverse()
+    # segmask = depth_im.invalid_pixel_mask().inverse()
+    segmask = BinaryImage(255 *
+                          np.ones(depth_im.shape).astype(np.uint8),
+                          frame=color_im.frame)
 
+    # inpaint images.
+    # color_im = color_im.inpaint(
+    #     rescale_factor=config["inpaint_rescale_factor"])
+    # depth_im = depth_im.inpaint(
+    #     rescale_factor=config["inpaint_rescale_factor"])
 
+    # Aggregate color and depth images into a single
+    # BerkeleyAutomation/perception `RgbdImage`.
+    rgbd_im = RgbdImage.from_color_and_depth(color_im, depth_im)
 
+    state = RgbdImageState(rgbd_im, camera_intr, segmask=segmask)
 
+    # vis.imshow(segmask)
+    # vis.imshow(rgbd_im)
+    # vis.show()
+
+    policy = CrossEntropyRobustGraspingPolicy(policy_config)
+
+    # Query policy.
+    policy_start = time.time()
+    action = policy(state)
+    print("Planning took %.3f sec" % (time.time() - policy_start))
+
+    print("Gripper pose: ", action.grasp.pose())
+
+    # Vis final grasp.
+    if policy_config["vis"]["final_grasp"]:
+        vis.figure(size=(10, 10))
+        vis.imshow(rgbd_im.depth,
+                   vmin=policy_config["vis"]["vmin"],
+                   vmax=policy_config["vis"]["vmax"])
+        vis.grasp(action.grasp, scale=2.5, show_center=False, show_axis=True)
+        vis.title("Planned grasp at depth {0:.3f}m with Q={1:.3f}".format(
+            action.grasp.depth, action.q_value))
+        vis.show()
 
 
 
