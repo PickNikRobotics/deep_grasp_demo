@@ -8,9 +8,12 @@ add_definitions(-W -Wall -Wextra
   -Winit-self -Wredundant-decls
   -Wno-unused-parameter -Wno-unused-function)
 
+
 find_package(catkin REQUIRED COMPONENTS
 	cv_bridge
+	geometry_msgs
 	image_transport
+	message_generation
 	roscpp
 	rosparam_shortcuts
 	rospy
@@ -19,12 +22,28 @@ find_package(catkin REQUIRED COMPONENTS
 	std_srvs
 )
 
+
 find_package(OpenCV 3.2 REQUIRED)
+
+add_service_files(
+  FILES
+  GQCNNGrasp.srv
+)
+
+
+generate_messages(
+  DEPENDENCIES
+	geometry_msgs
+  std_msgs
+)
+
 
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES gqcnn_demo
  CATKIN_DEPENDS
+ 	geometry_msgs
+	message_runtime
  	roscpp
 	rospy
 	sensor_msgs
@@ -49,10 +68,12 @@ target_link_libraries(gqcnn_action_server
 	${OpenCV_LIBRARIES}
 )
 
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+
+catkin_install_python(PROGRAMS
+  src/gqcnn_server
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 
 install(TARGETS gqcnn_action_server
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
