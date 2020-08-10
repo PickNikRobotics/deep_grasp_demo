@@ -1,0 +1,118 @@
+#!/usr/bin/env python
+
+# /*********************************************************************
+#  * BSD 3-Clause License
+#  *
+#  * Copyright (c) 2020 PickNik LLC.
+#  * All rights reserved.
+#  *
+#  * Redistribution and use in source and binary forms, with or without
+#  * modification, are permitted provided that the following conditions are met:
+#  *
+#  *  * Redistributions of source code must retain the above copyright notice, this
+#  *    list of conditions and the following disclaimer.
+#  *
+#  *  * Redistributions in binary form must reproduce the above copyright notice,
+#  *    this list of conditions and the following disclaimer in the documentation
+#  *    and/or other materials provided with the distribution.
+#  *
+#  *  * Neither the name of the copyright holder nor the names of its
+#  *    contributors may be used to endorse or promote products derived from
+#  *    this software without specific prior written permission.
+#  *
+#  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+#  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+#  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+#  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+#  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+#  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#  *********************************************************************/
+#
+# /* Author: Boston Cleek
+#    Desc:   The server calls a script running the GQCNN
+# */
+
+# Python
+import subprocess
+import numpy as np
+
+# ROS
+import rospy
+from geometry_msgs.msg import PoseStamped
+from gqcnn_demo.srv import GQCNNGrasp, GQCNNGraspResponse
+
+
+class GraspServer():
+    """ Advertise a grasp candidate service """
+
+    def __init__(self):
+        """ Constructor """
+
+        self.grasp_serv = rospy.Service('gqcnn_grasp', GQCNNGrasp, self.handle_grasp)
+
+
+    def handle_grasp(self, req):
+        """  Callback for GQCNNGrasp sevice
+
+        Creates a subprocess (python3 script running the GQCNN) to compose the
+        grasp candidate and q_value
+
+        Args:
+            req (GQCNNGrasp): input is a string for the name of the request
+
+        Return:
+            GQCNNGraspResponse (geometry_msgs/PoseStamped and float64): the 6DOF
+                grasp pose and the score representing the probability of success
+        """
+
+        rospy.loginfo("GQCNN service activated: %s", req.name)
+
+        ######################################################################
+        # start subprocess
+        # TODO: read in from ros param
+        # TODO: pass additional args to python3 script
+        file_path = "/home/bostoncleek/gqcnn_ws/src/gqcnn_demo/scripts/grasp_detector.py"
+        proc = subprocess.Popen(['python3', file_path], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+
+        # sends data to stdin, read data from stdout, waits until process reaches end of file
+        proc_out = proc.communicate()[0]
+        # end subproces
+        ######################################################################
+
+        data = proc_out.splitlines()
+        print(data)
+
+        frame = data[0]
+        position = np.fromstring(data[1][1:len(data[1])-1], dtype=np.float64, sep=',')
+        orientation = np.fromstring(data[2][1:len(data[2])-1], dtype=np.float64, sep=',')
+        q_val = float(data[3])
+
+        grasp_pose = PoseStamped()
+        grasp_pose.header.frame_id = frame
+        grasp_pose.pose.position.x = position[0]
+        grasp_pose.pose.position.y = position[1]
+        grasp_pose.pose.position.z = position[2]
+
+        grasp_pose.pose.orientation.x = orientation[0]
+        grasp_pose.pose.orientation.y = orientation[1]
+        grasp_pose.pose.orientation.z = orientation[2]
+        grasp_pose.pose.orientation.w = orientation[3]
+
+        return GQCNNGraspResponse(grasp_pose, q_val)
+
+
+def main():
+    rospy.init_node('gqcnn_server')
+    grasp_server = GraspServer()
+    rospy.spin()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        pass
