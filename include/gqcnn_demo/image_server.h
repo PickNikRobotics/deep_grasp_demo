@@ -31,37 +31,62 @@
  *********************************************************************/
 
 /* Author: Boston Cleek
-   Desc:   GQCNN action server
+   Desc:   Image server
 */
 
 
-#include <gqcnn_demo/image_server.h>
+// ROS
+#include <ros/ros.h>
+#include <rosparam_shortcuts/rosparam_shortcuts.h>
+#include <sensor_msgs/Image.h>
+#include <std_srvs/Empty.h>
+#include <image_transport/image_transport.h>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
 
-constexpr char LOGNAME[] = "gqcnn_action_server";
+// C++
+#include <string>
+
+// OpenCV
+#include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 
-
-
-int main(int argc, char** argv)
+namespace gqcnn_demo
 {
-  ROS_INFO_NAMED(LOGNAME, "Init gqcnn_action_server");
-  ros::init(argc, argv, "gqcnn_server");
-  ros::NodeHandle nh;
+constexpr char LOGNAME[] = "image_server";
 
-  gqcnn_demo::ImageServer image_server(nh);
-  ros::spin();
+class ImageServer
+{
+public:
+  ImageServer(ros::NodeHandle& nh);
 
-  return 0;
-}
+  void loadParameters();
+
+  void init();
+
+  void colorCallback(const sensor_msgs::Image::ConstPtr &msg);
+
+  void depthCallback(const sensor_msgs::Image::ConstPtr &msg);
+
+  bool saveCallback(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
+
+  void saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::string &image_name);
 
 
+private:
+  ros::NodeHandle nh_;
+  ros::Subscriber color_img_sub_;
+  ros::Subscriber depth_img_sub_;
+  ros::ServiceServer saver_srv_;
 
+  std::string color_img_topic_;
+  std::string depth_img_topic_;
+  std::string image_dir_;
 
+  bool save_rbg_;
+  bool save_depth_;
+};
 
-
-
-
-
-
-
-//
+} // namespace gqcnn_demo
