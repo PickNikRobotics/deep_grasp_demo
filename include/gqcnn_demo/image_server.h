@@ -34,6 +34,7 @@
    Desc:   Image server
 */
 
+#pragma once
 
 // ROS
 #include <ros/ros.h>
