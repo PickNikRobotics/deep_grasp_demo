@@ -84,7 +84,7 @@ class GraspServer():
         ######################################################################
 
         data = proc_out.splitlines()
-        print(data)
+        # print(data)
 
         frame = data[0]
         position = np.fromstring(data[1][1:len(data[1])-1], dtype=np.float64, sep=',')
