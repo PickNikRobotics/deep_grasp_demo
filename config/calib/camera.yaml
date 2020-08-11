@@ -1,0 +1,6 @@
+# camera extrinsics
+# transformation from camera link to optical frame [x y z qw qx qy qz]
+trans_cam_opt: [0.0, 0.0, 0.0, 0.5, -0.5, 0.5, -0.5]
+
+# transformation from base link to optical frame [x y z qw qx qy qz]
+trans_base_cam: [0.0, -0.25, 0.04, 0.0, 0.0, 0.0, 0.0]
