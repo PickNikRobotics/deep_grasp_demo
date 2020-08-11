@@ -75,7 +75,7 @@ class GraspServer():
         # start subprocess
         # TODO: read in from ros param
         # TODO: pass additional args to python3 script
-        file_path = "/home/bostoncleek/gqcnn_ws/src/gqcnn_demo/scripts/grasp_detector.py"
+        file_path = "/home/bostoncleek/GPD_ws/src/gqcnn_demo/scripts/grasp_detector.py"
         proc = subprocess.Popen(['python3', file_path], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
         # sends data to stdin, read data from stdout, waits until process reaches end of file
@@ -84,7 +84,7 @@ class GraspServer():
         ######################################################################
 
         data = proc_out.splitlines()
-        # print(data)
+        print(data)
 
         frame = data[0]
         position = np.fromstring(data[1][1:len(data[1])-1], dtype=np.float64, sep=',')
@@ -93,14 +93,16 @@ class GraspServer():
 
         grasp_pose = PoseStamped()
         grasp_pose.header.frame_id = frame
+        # position [x y z]
         grasp_pose.pose.position.x = position[0]
         grasp_pose.pose.position.y = position[1]
         grasp_pose.pose.position.z = position[2]
 
-        grasp_pose.pose.orientation.x = orientation[0]
-        grasp_pose.pose.orientation.y = orientation[1]
-        grasp_pose.pose.orientation.z = orientation[2]
-        grasp_pose.pose.orientation.w = orientation[3]
+        # orientation [qw qx qy qz]
+        grasp_pose.pose.orientation.w = orientation[0]
+        grasp_pose.pose.orientation.x = orientation[1]
+        grasp_pose.pose.orientation.y = orientation[2]
+        grasp_pose.pose.orientation.z = orientation[3]
 
         return GQCNNGraspResponse(grasp_pose, q_val)
 
