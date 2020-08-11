@@ -50,7 +50,7 @@
 #include <moveit/task_constructor/stages/generate_grasp_pose.h>
 #include <moveit/task_constructor/stages/generate_pose.h>
 #include <moveit/task_constructor/stages/generate_place_pose.h>
-#include <moveit/task_constructor/stages/gpd_generator.h>
+#include <moveit/task_constructor/stages/deep_grasp_pose.h>
 #include <moveit/task_constructor/stages/modify_planning_scene.h>
 #include <moveit/task_constructor/stages/move_relative.h>
 #include <moveit/task_constructor/stages/move_to.h>
@@ -58,7 +58,7 @@
 #include <moveit/task_constructor/solvers/cartesian_path.h>
 #include <moveit/task_constructor/solvers/pipeline_planner.h>
 #include <moveit_task_constructor_msgs/ExecuteTaskSolutionAction.h>
-#include <moveit_task_constructor_msgs/GenerateDeepGraspPoseAction.h>
+#include <moveit_task_constructor_msgs/SampleGraspPosesAction.h>
 
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/server/simple_action_server.h>

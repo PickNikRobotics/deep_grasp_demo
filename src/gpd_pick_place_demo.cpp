@@ -47,7 +47,7 @@
 
 #include <iostream>
 
-#include <moveit_task_constructor_msgs/GenerateDeepGraspPoseAction.h>
+#include <moveit_task_constructor_msgs/SampleGraspPosesAction.h>
 #include <actionlib/client/simple_action_client.h>
 
 constexpr char LOGNAME[] = "moveit_task_constructor_demo";

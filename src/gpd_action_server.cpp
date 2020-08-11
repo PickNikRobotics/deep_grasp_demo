@@ -61,7 +61,7 @@
 #include <gpd/grasp_detector.h>
 
 // Action Server
-#include <moveit_task_constructor_msgs/GenerateDeepGraspPoseAction.h>
+#include <moveit_task_constructor_msgs/SampleGraspPosesAction.h>
 #include <actionlib/server/simple_action_server.h>
 
 constexpr char LOGNAME[] = "gpd_action_server";
@@ -117,7 +117,7 @@ public:
   void init()
   {
     // action server
-    server_.reset(new actionlib::SimpleActionServer<moveit_task_constructor_msgs::GenerateDeepGraspPoseAction>(
+    server_.reset(new actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>(
         nh_, action_name_, false));
     server_->registerGoalCallback(std::bind(&GraspAction::goalCallback, this));
     server_->registerPreemptCallback(std::bind(&GraspAction::preemptCallback, this));
@@ -210,10 +210,10 @@ public:
 private:
   ros::NodeHandle nh_;
 
-  std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::GenerateDeepGraspPoseAction>>
+  std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>>
       server_;                                                            // action server
-  moveit_task_constructor_msgs::GenerateDeepGraspPoseFeedback feedback_;  // action feedback message
-  moveit_task_constructor_msgs::GenerateDeepGraspPoseResult result_;      // action result message
+  moveit_task_constructor_msgs::SampleGraspPosesFeedback feedback_;  // action feedback message
+  moveit_task_constructor_msgs::SampleGraspPosesResult result_;      // action result message
 
   std::string path_to_pcd_file_;    // path to cylinder pcd file
   std::string path_to_gpd_config_;  // path to GPD config file
@@ -226,6 +226,8 @@ private:
   std::unique_ptr<gpd::util::Cloud> cloud_camera_;      // stores point cloud with (optional) camera information
 };
 }  // namespace gpd_action_server
+
+
 
 int main(int argc, char** argv)
 {
