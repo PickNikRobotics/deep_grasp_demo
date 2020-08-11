@@ -1,18 +1,25 @@
 <?xml version="1.0"?>
 <launch>
 
-  <node name="gqcnn_server" pkg="gqcnn_demo" type="gqcnn_server" output="screen"/>
+  <!-- Action namespace -->
+  <arg name="action_name" default="generate_grasps"/>
+  <arg name="frame_id" value="panda_link0" doc="frame of the grasps"/>
 
-
-  <!-- <arg name="image_dir" value="$(find gqcnn_demo)/data/images/" doc="directory to save images"/>
+  <!-- file paths -->
+  <arg name="image_dir" value="$(find gqcnn_demo)/data/images/" doc="directory to save images"/>
   <arg name="color_img_topic" value="/camera/rgb/image_raw" doc="topic name for raw color image"/>
-  <arg name="depth_img_topic" value="/camera/depth/image_raw" doc="topic name for raw depth image"/> -->
+  <arg name="depth_img_topic" value="/camera/depth/image_raw" doc="topic name for raw depth image"/>
 
-  <!-- Action server handles interaction with GQCNN and MTC -->
-  <!-- <node name="gqcnn_action_server" pkg="gqcnn_demo" type="gqcnn_action_server" output="screen">
+  <!-- Action server handles interaction with GQCNN server and MTC -->
+  <node name="gqcnn_action_server" pkg="gqcnn_demo" type="gqcnn_action_server" output="screen">
+    <param name="action_name" value="$(arg action_name)"/>
+    <param name="frame_id" value="$(arg frame_id)"/>
     <param name="image_dir" value="$(arg image_dir)"/>
     <param name="color_img_topic" value="$(arg color_img_topic)"/>
     <param name="depth_img_topic" value="$(arg depth_img_topic)"/>
-  </node> -->
+  </node>
+
+  <!-- GQCNN server handles interaction with the GQCNN -->
+  <node name="gqcnn_server" pkg="gqcnn_demo" type="gqcnn_server" output="screen"/>
 
 </launch>
