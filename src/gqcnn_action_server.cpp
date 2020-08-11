@@ -34,11 +34,76 @@
    Desc:   GQCNN action server
 */
 
+// ROS
+#include <ros/ros.h>
+#include <rosparam_shortcuts/rosparam_shortcuts.h>
+#include <geometry_msgs/PoseStamped.h>
+
+// C++
+// #include <functional>
+#include <memory>
+
+// Action Server
+#include <moveit_task_constructor_msgs/GenerateDeepGraspPoseAction.h>
+#include <actionlib/server/simple_action_server.h>
 
 #include <gqcnn_demo/image_server.h>
+#include <gqcnn_demo/GQCNNGrasp.h>
+
+
+
 
 constexpr char LOGNAME[] = "gqcnn_action_server";
 
+
+namespace gqcnn_demo
+{
+class GraspAction
+{
+public:
+  GraspAction(const ros::NodeHandle& nh) : nh_(nh), q_val_(0.0)
+  {
+    loadParameters();
+    init();
+  }
+
+  void loadParameters()
+  {
+
+  }
+
+  void init()
+  {
+    gqcnn_client_ = nh_.serviceClient<gqcnn_demo::GQCNNGrasp>("gqcnn_grasp");
+
+    gqcnn_demo::GQCNNGrasp grasp_srv;
+    grasp_srv.request.name = "gqcnn";
+
+    ros::service::waitForService("gqcnn_grasp", ros::Duration(3.0));
+
+    if(gqcnn_client_.call(grasp_srv)){
+      ROS_INFO_NAMED(LOGNAME, "Called gqcnn_grasp service, waiting for response...");
+      grasp_ = grasp_srv.response.grasp;
+      q_val_ = grasp_srv.response.q_val;
+      ROS_INFO_NAMED(LOGNAME, "Results recieved");
+    }
+
+    else{
+      ROS_WARN_NAMED(LOGNAME, "Failed to call gqcnn_grasp service");
+    }
+  }
+
+
+private:
+  ros::NodeHandle nh_;
+  ros::ServiceClient gqcnn_client_;
+
+  geometry_msgs::PoseStamped grasp_;
+  double q_val_;
+
+
+};
+} // namespace gqcnn_demo
 
 
 
@@ -48,7 +113,10 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "gqcnn_server");
   ros::NodeHandle nh;
 
-  gqcnn_demo::ImageServer image_server(nh);
+  // TODO: add async spinner
+
+  // gqcnn_demo::ImageServer image_server(nh);
+  gqcnn_demo::GraspAction grasp_action(nh);
   ros::spin();
 
   return 0;
