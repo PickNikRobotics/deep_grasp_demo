@@ -10,10 +10,15 @@ add_definitions(-W -Wall -Wextra
 
 
 find_package(catkin REQUIRED COMPONENTS
+	actionlib
 	cv_bridge
 	geometry_msgs
 	image_transport
 	message_generation
+	moveit_core
+	moveit_ros_planning_interface
+	moveit_task_constructor_core
+	moveit_task_constructor_msgs
 	roscpp
 	rosparam_shortcuts
 	rospy
@@ -44,6 +49,7 @@ catkin_package(
  CATKIN_DEPENDS
  	geometry_msgs
 	message_runtime
+	moveit_task_constructor_msgs
  	roscpp
 	rospy
 	sensor_msgs
@@ -82,10 +88,19 @@ add_executable(gqcnn_action_server
                src/gqcnn_action_server.cpp
 )
 
-
 target_link_libraries(gqcnn_action_server
   ${catkin_LIBRARIES}
 	${PROJECT_NAME}
+)
+
+
+add_executable(gqcnn_pick_place_demo
+               src/gqcnn_pick_place_demo.cpp
+							 src/gqcnn_pick_place_task.cpp
+)
+
+target_link_libraries(gqcnn_pick_place_demo
+                      ${catkin_LIBRARIES}
 )
 
 
@@ -96,7 +111,7 @@ catkin_install_python(PROGRAMS
 )
 
 
-install(TARGETS gqcnn_action_server
+install(TARGETS gqcnn_action_server gqcnn_pick_place_demo
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
