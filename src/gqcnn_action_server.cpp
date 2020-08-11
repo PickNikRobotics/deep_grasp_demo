@@ -42,11 +42,17 @@
 // C++
 // #include <functional>
 #include <memory>
+#include <vector>
+#include <iostream>
+
+// Eigen
+#include <Eigen/Geometry>
 
 // Action Server
-#include <moveit_task_constructor_msgs/GenerateDeepGraspPoseAction.h>
+#include <moveit_task_constructor_msgs/SampleGraspPosesAction.h>
 #include <actionlib/server/simple_action_server.h>
 
+// gqcnn demo
 #include <gqcnn_demo/image_server.h>
 #include <gqcnn_demo/GQCNNGrasp.h>
 
@@ -69,39 +75,130 @@ public:
 
   void loadParameters()
   {
+    ROS_INFO_NAMED(LOGNAME, "Loading grasp action server parameters");
+    ros::NodeHandle pnh("~");
 
+    size_t errors = 0;
+    errors += !rosparam_shortcuts::get(LOGNAME, pnh, "trans_cam_opt", transform_cam_opt_);
+    errors += !rosparam_shortcuts::get(LOGNAME, pnh, "trans_base_cam", trans_base_cam_);
+
+    errors += !rosparam_shortcuts::get(LOGNAME, pnh, "action_name", action_name_);
+    errors += !rosparam_shortcuts::get(LOGNAME, pnh, "frame_id", frame_id_);
+    rosparam_shortcuts::shutdownIfError(LOGNAME, errors);
   }
 
   void init()
   {
-    gqcnn_client_ = nh_.serviceClient<gqcnn_demo::GQCNNGrasp>("gqcnn_grasp");
+    // action server
+    server_.reset(new actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>(
+        nh_, action_name_, false));
+    server_->registerGoalCallback(std::bind(&GraspAction::goalCallback, this));
+    server_->registerPreemptCallback(std::bind(&GraspAction::preemptCallback, this));
+    server_->start();
 
+    // gqcnn service
+    gqcnn_client_ = nh_.serviceClient<gqcnn_demo::GQCNNGrasp>("gqcnn_grasp");
+    ros::service::waitForService("gqcnn_grasp", ros::Duration(3.0));
+  }
+
+  void goalCallback()
+  {
+    goal_name_ = server_->acceptNewGoal()->action_name;
+    ROS_INFO_NAMED(LOGNAME, "New goal accepted: %s", goal_name_.c_str());
+
+    sampleGrasps();
+  }
+
+  void preemptCallback()
+  {
+    ROS_INFO_NAMED(LOGNAME, "Preempted %s:", goal_name_.c_str());
+    server_->setPreempted();
+  }
+
+  void sampleGrasps()
+  {
     gqcnn_demo::GQCNNGrasp grasp_srv;
     grasp_srv.request.name = "gqcnn";
-
-    ros::service::waitForService("gqcnn_grasp", ros::Duration(3.0));
 
     if(gqcnn_client_.call(grasp_srv)){
       ROS_INFO_NAMED(LOGNAME, "Called gqcnn_grasp service, waiting for response...");
       grasp_ = grasp_srv.response.grasp;
       q_val_ = grasp_srv.response.q_val;
       ROS_INFO_NAMED(LOGNAME, "Results recieved");
+
+      // transform grasp from camera optical link into frame_id (panda_link0)
+      // the demo is using fake_controllers there is no tf data for the camera
+      // convert PoseStamped to transform (optical link to grasp)
+      const Eigen::Isometry3d transform_opt_grasp = Eigen::Translation3d(grasp_.pose.position.x,
+                                                                   grasp_.pose.position.y,
+                                                                   grasp_.pose.position.z) *
+                                                Eigen::Quaterniond(grasp_.pose.orientation.w,
+                                                                   grasp_.pose.orientation.x,
+                                                                   grasp_.pose.orientation.y,
+                                                                   grasp_.pose.orientation.z);
+
+      // the 6dof grasp pose in frame_id (panda_link0)
+      const Eigen::Isometry3d transform_base_grasp = trans_base_cam_ * transform_cam_opt_ * transform_opt_grasp;
+      const Eigen::Vector3d trans = transform_base_grasp.translation();
+      const Eigen::Quaterniond rot(transform_base_grasp.rotation());
+
+      // conver back to PoseStamped
+      grasp_.header.frame_id = frame_id_;
+      grasp_.pose.position.x = trans.x();
+      grasp_.pose.position.y = trans.y();
+      grasp_.pose.position.z = trans.z();
+
+      grasp_.pose.orientation.w = rot.w();
+      grasp_.pose.orientation.x = rot.x();
+      grasp_.pose.orientation.y = rot.y();
+      grasp_.pose.orientation.z = rot.z();
+
+      // grasp_.pose.orientation.w = 1.0;
+      // grasp_.pose.orientation.x = 0.0;
+      // grasp_.pose.orientation.y = 0.0;
+      // grasp_.pose.orientation.z = 0.0;
+
+
+      std::cout << "Grasp : " << grasp_ << std::endl;
+
+      // send feedback to action client
+      feedback_.grasp_candidates.emplace_back(grasp_);
+
+      // q_val_ (probability of success), if there is more than one grasp
+      // the cost = 1.0 - q_val_ to represent cost
+      feedback_.costs.emplace_back(q_val_);
+
+      server_->publishFeedback(feedback_);
+      result_.grasp_state = "success";
+      server_->setSucceeded(result_);
     }
 
     else{
       ROS_WARN_NAMED(LOGNAME, "Failed to call gqcnn_grasp service");
+      result_.grasp_state = "failed";
+      server_->setAborted(result_);
     }
   }
 
 
 private:
   ros::NodeHandle nh_;
-  ros::ServiceClient gqcnn_client_;
+  ros::ServiceClient gqcnn_client_;  // gqcnn service client
 
-  geometry_msgs::PoseStamped grasp_;
-  double q_val_;
+  std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>>
+      server_;                                                            // action server
+  moveit_task_constructor_msgs::SampleGraspPosesFeedback feedback_;  // action feedback message
+  moveit_task_constructor_msgs::SampleGraspPosesResult result_;      // action result message
 
+  geometry_msgs::PoseStamped grasp_;  // best grasp
+  double q_val_;                      // probability of success
 
+  std::string goal_name_;           // action name
+  std::string action_name_;         // action namespace
+  std::string frame_id_;            // frame of point cloud/grasps
+
+  Eigen::Isometry3d trans_base_cam_;    // transformation from camera link to optical frame
+  Eigen::Isometry3d transform_cam_opt_; // transformation from base link to optical frame
 };
 } // namespace gqcnn_demo
 
