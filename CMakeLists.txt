@@ -27,7 +27,7 @@ find_package(catkin REQUIRED COMPONENTS
 	std_srvs
 )
 
-
+find_package(Eigen3 REQUIRED)
 find_package(OpenCV 3.2 REQUIRED)
 
 add_service_files(
@@ -55,12 +55,14 @@ catkin_package(
 	sensor_msgs
 	std_msgs
  DEPENDS
+  EIGEN3
  	OpenCV
 )
 
 
 include_directories(
 	SYSTEM
+  ${EIGEN3_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
 )
 
@@ -91,6 +93,7 @@ add_executable(gqcnn_action_server
 target_link_libraries(gqcnn_action_server
   ${catkin_LIBRARIES}
 	${PROJECT_NAME}
+  ${Eigen3_LIBRARIES}
 )
 
 
