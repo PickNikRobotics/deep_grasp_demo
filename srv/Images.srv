@@ -1,0 +1,6 @@
+# Request a depth and rgb images
+# Input is file names to save them as
+# Output is whether they were saved successfully
+string depth_file
+string color_file
+---
