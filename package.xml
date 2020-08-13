@@ -24,7 +24,6 @@
   <depend>rosparam_shortcuts</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
-  <depend>std_srvs</depend>
 
   <exec_depend>message_runtime</exec_depend>
 
