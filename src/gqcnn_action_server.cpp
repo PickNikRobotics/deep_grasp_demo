@@ -142,7 +142,7 @@ public:
       const Eigen::Vector3d trans = transform_base_grasp.translation();
       const Eigen::Quaterniond rot(transform_base_grasp.rotation());
 
-      // conver back to PoseStamped
+      // convert back to PoseStamped
       grasp_.header.frame_id = frame_id_;
       grasp_.pose.position.x = trans.x();
       grasp_.pose.position.y = trans.y();
@@ -197,8 +197,8 @@ private:
   std::string action_name_;         // action namespace
   std::string frame_id_;            // frame of point cloud/grasps
 
-  Eigen::Isometry3d trans_base_cam_;    // transformation from camera link to optical frame
-  Eigen::Isometry3d transform_cam_opt_; // transformation from base link to optical frame
+  Eigen::Isometry3d trans_base_cam_;    // transformation from base link to camera link
+  Eigen::Isometry3d transform_cam_opt_; // transformation from camera link to optical link
 };
 } // namespace gqcnn_demo
 
@@ -210,7 +210,8 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "gqcnn_server");
   ros::NodeHandle nh;
 
-  // TODO: add async spinner
+  // ros::AsyncSpinner spinner(1);
+  // spinner.start();
 
   // gqcnn_demo::ImageServer image_server(nh);
   gqcnn_demo::GraspAction grasp_action(nh);
