@@ -68,7 +68,8 @@ void ImageServer::init()
 void ImageServer::colorCallback(const sensor_msgs::Image::ConstPtr &msg)
 {
   if (save_rbg_){
-    saveImage(msg, "object_rgb.png");
+    // saveImage(msg, "object_rgb.png");
+    saveImage(msg, color_file_);
     save_rbg_ = false;
   }
 }
@@ -77,17 +78,22 @@ void ImageServer::colorCallback(const sensor_msgs::Image::ConstPtr &msg)
 void ImageServer::depthCallback(const sensor_msgs::Image::ConstPtr &msg)
 {
   if (save_depth_){
-    saveImage(msg, "object_depth.png");
+    // saveImage(msg, "object_depth.png");
+    saveImage(msg, depth_file_);
     save_depth_ = false;
   }
 }
 
 
-bool ImageServer::saveCallback(std_srvs::Empty::Request&, std_srvs::Empty::Response&)
+bool ImageServer::saveCallback(gqcnn_demo::Images::Request& req, gqcnn_demo::Images::Response& res)
 {
   ROS_INFO_NAMED(LOGNAME, "Saving image service active");
   save_rbg_ = true;
   save_depth_ = true;
+
+  color_file_ = req.color_file;
+  depth_file_ = req.depth_file;
+
   return true;
 }
 

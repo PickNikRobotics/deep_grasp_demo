@@ -40,7 +40,6 @@
 #include <ros/ros.h>
 #include <rosparam_shortcuts/rosparam_shortcuts.h>
 #include <sensor_msgs/Image.h>
-#include <std_srvs/Empty.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
@@ -52,6 +51,8 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+
+#include <gqcnn_demo/Images.h>
 
 
 namespace gqcnn_demo
@@ -71,7 +72,7 @@ public:
 
   void depthCallback(const sensor_msgs::Image::ConstPtr &msg);
 
-  bool saveCallback(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
+  bool saveCallback(gqcnn_demo::Images::Request& req, gqcnn_demo::Images::Response& res);
 
   void saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::string &image_name);
 
@@ -85,6 +86,9 @@ private:
   std::string color_img_topic_;
   std::string depth_img_topic_;
   std::string image_dir_;
+
+  std::string depth_file_;
+  std::string color_file_;
 
   bool save_rbg_;
   bool save_depth_;
