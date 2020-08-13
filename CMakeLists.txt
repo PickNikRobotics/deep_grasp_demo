@@ -24,7 +24,6 @@ find_package(catkin REQUIRED COMPONENTS
 	rospy
 	sensor_msgs
 	std_msgs
-	std_srvs
 )
 
 find_package(Eigen3 REQUIRED)
@@ -33,6 +32,7 @@ find_package(OpenCV 3.2 REQUIRED)
 add_service_files(
   FILES
   GQCNNGrasp.srv
+  Images.srv
 )
 
 
