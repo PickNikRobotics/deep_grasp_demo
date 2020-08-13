@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-
   <!-- Action namespace -->
   <arg name="action_name" default="generate_grasps"/>
   <arg name="frame_id" value="panda_link0" doc="frame of the grasps"/>
@@ -29,5 +28,4 @@
 
   <!-- GQCNN server handles interaction with the GQCNN -->
   <node name="gqcnn_server" pkg="gqcnn_demo" type="gqcnn_server" output="screen"/>
-
 </launch>
