@@ -37,9 +37,12 @@
 # */
 
 
-camera_intr_filename = "/home/bostoncleek/gqcnn_ws/src/gqcnn_demo/config/calib/kinect.intr"
-color_img_filename = "/home/bostoncleek/gqcnn_ws/src/gqcnn_demo/data/images/object_rgb.png"
-depth_img_filename = "/home/bostoncleek/gqcnn_ws/src/gqcnn_demo/data/images/object_depth.png"
+camera_intr_filename = "/home/bostoncleek/GPD_ws/src/gqcnn_demo/config/calib/camera.intr"
+# color_img_filename = "/home/bostoncleek/GPD_ws/src/gqcnn_demo/data/images/object_rgb.png"
+# depth_img_filename = "/home/bostoncleek/GPD_ws/src/gqcnn_demo/data/images/object_depth.png"
+
+color_img_filename = "/home/bostoncleek/GPD_ws/src/gqcnn_demo/data/images/rgb_clamp.png"
+depth_img_filename = "/home/bostoncleek/GPD_ws/src/gqcnn_demo/data/images/depth_clamp.png"
 
 model_name = "GQCNN-4.0-PJ"
 model_dir = "/home/bostoncleek/dex-net/deps/gqcnn/models/GQCNN-4.0-PJ"
@@ -148,10 +151,10 @@ if __name__ == "__main__":
     # policy_start = time.time()
     # action = policy(state)
     # print("Planning took %.3f sec" % (time.time() - policy_start))
-
+    #
     # print("Gripper pose: ", action.grasp.pose())
-
-    # Vis final grasp.
+    #
+    # # # Vis final grasp.
     # if policy_config["vis"]["final_grasp"]:
     #     vis.figure(size=(10, 10))
     #     vis.imshow(rgbd_im.depth,
@@ -162,27 +165,34 @@ if __name__ == "__main__":
     #         action.grasp.depth, action.q_value))
     #     vis.show()
 
+    # [x y z]
     # print("Position: ", action.grasp.pose().position)
+    # [qw qx qy qz]
     # print("Orientation: ", action.grasp.pose().quaternion)
     # print("Frame: ", action.grasp.pose().to_frame)
     # print("Q value: ", action.q_value)
 
+    # position = np.array([0.5, -0.25, 0.125])
+    # position = np.array([0.0, 0.0, 0.0])
+    # orientation = np.array([ 0.0, 0.0, 0.0, 1.0])
 
-    position = np.array([-4.57311577e-04, -1.43138524e-01, 5.06934174e-01])
-    orientation = np.array([ 0.4442379, 0.55013879, -0.4442379, 0.55013879])
-    frame = "camera_depth_optical_frame"
+    # position = np.array([-4.57311577e-04, -1.43138524e-01, 5.06934174e-01])
+    # orientation = np.array([ 0.4442379, 0.55013879, -0.4442379, 0.55013879])
+
+    position = np.array([-0.07420506,  0.01438083,  0.63765122])
+    orientation = np.array([-0.35717916,  0.61026473,  0.35717916,  0.61026473])
+
+    frame = "camera_optical_link"
     q_value = 0.0
 
     position = position.tolist()
     orientation = orientation.tolist()
 
+    # sys.stdout.flush()
     sys.stdout.write(frame + '\n')
     sys.stdout.write(str(position) + '\n')
     sys.stdout.write(str(orientation) + '\n')
     sys.stdout.write(str(q_value) + '\n')
-
-
-
 
 
 
