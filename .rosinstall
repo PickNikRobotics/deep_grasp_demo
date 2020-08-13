@@ -1,0 +1,16 @@
+- git:
+    local-name: gqcnn_demp
+    uri: https://github.com/bostoncleek/gqcnn-grasping.git
+    version: master
+- git:
+    local-name: moveit_task_constructor
+    uri: https://github.com/bostoncleek/moveit_task_constructor.git
+    version: pr-deep_grasp_stage
+- git:
+    local-name: panda_moveit_config
+    uri: https://github.com/tahsinkose/panda_moveit_config.git
+    version: melodic-devel
+- git:
+    local-name: franka_ros
+    uri: https://github.com/tahsinkose/franka_ros.git
+    version: simulation
