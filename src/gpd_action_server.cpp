@@ -228,9 +228,6 @@ private:
 };
 }  // namespace gpd_action_server
 
-typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudRGBA;
-
-
 int main(int argc, char** argv)
 {
   ROS_INFO_NAMED(LOGNAME, "Init gpd_action_server");
