@@ -34,6 +34,7 @@
    Desc:   GPD action server
 */
 
+
 // ROS
 #include <ros/ros.h>
 #include <eigen_conversions/eigen_msg.h>
@@ -227,6 +228,7 @@ private:
 };
 }  // namespace gpd_action_server
 
+typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudRGBA;
 
 
 int main(int argc, char** argv)
@@ -235,8 +237,11 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "gpd_server");
   ros::NodeHandle nh;
 
+  ros::AsyncSpinner spinner(1);
+  spinner.start();
+
   gpd_action_server::GraspAction grasp_action(nh);
-  ros::spin();
+  ros::waitForShutdown();
 
   return 0;
 }
