@@ -35,18 +35,18 @@
 
 
   <link name="camera_link">
-      <visual>
+      <!-- <visual>
        <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}"/>
         <geometry>
-         <mesh filename="package://gqcnn_demo/meshes/kinect.dae"/>
+         <mesh filename="package://gqcnn_demo/meshes/camera/kinect.dae"/>
         </geometry>
       </visual>
       <collision>
-        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}"/>
         <geometry>
-          <box size="0.07271 0.27794 0.073"/>
+          <mesh filename="package://gqcnn_demo/meshes/camera/kinect.dae"/>
         </geometry>
-      </collision>
+      </collision> -->
       <inertial>
         <mass value="0.564" />
         <origin xyz="0 0 0" />

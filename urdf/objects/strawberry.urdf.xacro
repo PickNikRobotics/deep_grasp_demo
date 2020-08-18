@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="strawberry">
+  <link name="strawberry">
+  <visual>
+     <geometry>
+	       <mesh filename="package://gqcnn_demo/meshes/objects/strawberry.dae"/>
+	     </geometry>
+  </visual>
+  <collision>
+    <geometry>
+       <mesh filename="package://gqcnn_demo/meshes/objects/strawberry.dae"/>
+	   </geometry>
+  </collision>
+	<inertial>
+		<mass value="0.018"/>
+		<inertia ixx="0.1" iyy="0.1" izz="0.1" ixy="0.0" ixz="0.0" iyz="0.0"/>
+	</inertial>
+  </link>
+
+  <gazebo reference="strawberry">
+      <dampingFactor>0.005</dampingFactor>
+      <kp>1000000</kp>
+      <kd>1.0</kd>
+      <mu1>1000.0</mu1>
+      <mu2>1000.0</mu2>
+      <minDepth>0.001</minDepth>
+  </gazebo>
+</robot>

@@ -2,14 +2,14 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="bar_clamp">
   <link name="bar_clamp">
     <visual>
-       <geometry>
-	  <mesh filename="package://gqcnn_demo/meshes/objects/bar_clamp.dae"/>
-	</geometry>
+      <geometry>
+	      <mesh filename="package://gqcnn_demo/meshes/objects/bar_clamp.dae"/>
+	    </geometry>
     </visual>
     <collision>
-       <geometry>
-       <mesh filename="package://gqcnn_demo/meshes/objects/bar_clamp.dae"/>
-	</geometry>
+      <geometry>
+        <mesh filename="package://gqcnn_demo/meshes/objects/bar_clamp.dae"/>
+	    </geometry>
     </collision>
 	<inertial>
 		<mass value="0.05"/>
@@ -21,8 +21,8 @@
       <dampingFactor>0.005</dampingFactor>
       <kp>1000000</kp>
       <kd>1.0</kd>
-      <mu1>100.0</mu1>
-      <mu2>100.0</mu2>
+      <mu1>1000.0</mu1>
+      <mu2>1000.0</mu2>
       <minDepth>0.001</minDepth>
   </gazebo>
 </robot>
