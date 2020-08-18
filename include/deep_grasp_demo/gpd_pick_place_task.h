@@ -34,6 +34,8 @@
    Desc:   A demo to show MoveIt Task Constructor using GPD in action
 */
 
+#pragma once
+
 // ROS
 #include <ros/ros.h>
 
@@ -64,8 +66,6 @@
 #include <actionlib/server/simple_action_server.h>
 
 #include <eigen_conversions/eigen_msg.h>
-
-#pragma once
 
 namespace deep_grasp_demo
 {
