@@ -347,7 +347,7 @@ void PickPlaceTask::init()
       geometry_msgs::PoseStamped p;
       p.header.frame_id = object_reference_frame_;
       p.pose = place_pose_;
-      p.pose.position.z += 0.5 * object_dimensions_[0] + place_surface_offset_;
+      p.pose.position.z += 0.5 * object_dimensions_.at(0) + place_surface_offset_;
       stage->setPose(p);
       stage->setMonitoredStage(attach_object_stage);  // Hook into attach_object_stage
 
