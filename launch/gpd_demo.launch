@@ -6,18 +6,26 @@
 
   <!-- Action namespace -->
   <arg name="action_name" default="generate_grasps"/>
-  <arg name="frame_id" value="panda_link0" doc="frame of the point cloud and grasps"/>
+  <arg name="frame_id" value="panda_link0" doc="frame of the grasps sent to MTC"/>
+  <arg name="point_cloud_topic" value="/camera/depth/color/points" doc="point cloud topic name"/>
+
 
   <!-- file paths -->
-  <arg name="path_to_pcd_file" value="$(find deep_grasp_demo)/config/cylinder.pcd" doc="path to point cloud file"/>
+  <!-- <arg name="path_to_pcd_file" value="$(find deep_grasp_demo)/config/cylinder.pcd" doc="path to point cloud file"/> -->
   <arg name="path_to_gpd_config" value="$(find deep_grasp_demo)/config/gpd_config.yaml" doc="path to GPD config and gripper params file"/>
 
 
   <!-- Run MTC pick and place using GPD-->
-  <node launch-prefix="$(arg launch_prefix)" name="mtc_tutorial" pkg="deep_grasp_demo" type="gpd_pick_place_demo" output="screen">
+  <!-- <node launch-prefix="$(arg launch_prefix)" name="mtc_tutorial" pkg="deep_grasp_demo" type="gpd_pick_place_demo" output="screen">
     <param name="execute" value="true" />
     <param name="action_name" value="$(arg action_name)"/>
-    <rosparam command="load" file="$(find moveit_task_constructor_demo)/config/panda_config.yaml" />
+    <rosparam command="load" file="$(find gqcnn_demo)/config/pickplace/panda_object.yaml" />
+  </node> -->
+
+  <node name="mtc_tutorial" pkg="gqcnn_demo" type="gqcnn_pick_place_demo" output="screen">
+      <param name="execute" value="true" />
+      <param name="action_name" value="$(arg action_name)"/>
+      <rosparam command="load" file="$(find gqcnn_demo)/config/pickplace/panda_object.yaml" />
   </node>
 
   <!-- Handles the GPD lib -->
@@ -26,7 +34,9 @@
     <rosparam param="view_point">[0.0, 0.0, 0.0]</rosparam>
     <param name="action_name" value="$(arg action_name)"/>
     <param name="frame_id" value="$(arg frame_id)"/>
-    <param name="path_to_pcd_file" value="$(arg path_to_pcd_file)"/>
+    <param name="point_cloud_topic" value="$(arg point_cloud_topic)"/>
+    <!-- <param name="path_to_pcd_file" value="$(arg path_to_pcd_file)"/> -->
     <param name="path_to_gpd_config" value="$(arg path_to_gpd_config)"/>
+    <rosparam command="load" file="$(find gqcnn_demo)/config/calib/camera.yaml" />
   </node>
 </launch>
