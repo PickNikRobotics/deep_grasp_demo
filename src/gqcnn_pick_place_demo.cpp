@@ -47,6 +47,7 @@
 
 #include <iostream>
 
+#include <geometric_shapes/shape_operations.h>
 #include <moveit_task_constructor_msgs/SampleGraspPosesAction.h>
 #include <actionlib/client/simple_action_client.h>
 
@@ -57,6 +58,7 @@ void spawnObject(moveit::planning_interface::PlanningSceneInterface& psi, const 
   if (!psi.applyCollisionObject(object))
     throw std::runtime_error("Failed to spawn object: " + object.id);
 }
+
 
 moveit_msgs::CollisionObject createTable()
 {
@@ -79,8 +81,11 @@ moveit_msgs::CollisionObject createTable()
   object.primitives[0].dimensions = table_dimensions;
   pose.position.z -= 0.5 * table_dimensions[2];  // align surface with world
   object.primitive_poses.push_back(pose);
+  object.operation = moveit_msgs::CollisionObject::ADD;
+
   return object;
 }
+
 
 moveit_msgs::CollisionObject createObject()
 {
@@ -103,8 +108,82 @@ moveit_msgs::CollisionObject createObject()
   object.primitives[0].dimensions = object_dimensions;
   pose.position.z += 0.5 * object_dimensions[0];
   object.primitive_poses.push_back(pose);
+  object.operation = moveit_msgs::CollisionObject::ADD;
+
   return object;
 }
+
+
+moveit_msgs::CollisionObject createCamera()
+{
+  ros::NodeHandle pnh("~");
+  std::string camera_name, camera_reference_frame, camera_mesh_file;
+  geometry_msgs::Pose pose;
+  std::size_t error = 0;
+  error += !rosparam_shortcuts::get(LOGNAME, pnh, "camera_name", camera_name);
+  error += !rosparam_shortcuts::get(LOGNAME, pnh, "camera_mesh_file", camera_mesh_file);
+  error += !rosparam_shortcuts::get(LOGNAME, pnh, "camera_reference_frame", camera_reference_frame);
+  error += !rosparam_shortcuts::get(LOGNAME, pnh, "camera_pose", pose);
+  rosparam_shortcuts::shutdownIfError(LOGNAME, error);
+
+  shapes::Mesh* obj_mesh = shapes::createMeshFromResource(camera_mesh_file);
+
+  shapes::ShapeMsg mesh_msg;
+  shapes::constructMsgFromShape(obj_mesh, mesh_msg);
+  shape_msgs::Mesh mesh = boost::get<shape_msgs::Mesh>(mesh_msg);
+
+  moveit_msgs::CollisionObject object;
+  object.id = camera_name;
+  object.header.frame_id = camera_reference_frame;
+  object.meshes.emplace_back(mesh);
+  object.mesh_poses.emplace_back(pose);
+  object.operation = moveit_msgs::CollisionObject::ADD;
+
+  return object;
+}
+
+
+moveit_msgs::CollisionObject createObjectMesh()
+{
+  ros::NodeHandle pnh("~");
+  std::string object_name, object_reference_frame, object_mesh_file;
+  std::vector<double> object_dimensions;
+  geometry_msgs::Pose pose;
+  std::size_t error = 0;
+  error += !rosparam_shortcuts::get(LOGNAME, pnh, "object_name", object_name);
+  error += !rosparam_shortcuts::get(LOGNAME, pnh, "object_mesh_file", object_mesh_file);
+  error += !rosparam_shortcuts::get(LOGNAME, pnh, "object_reference_frame", object_reference_frame);
+  error += !rosparam_shortcuts::get(LOGNAME, pnh, "object_dimensions", object_dimensions);
+  error += !rosparam_shortcuts::get(LOGNAME, pnh, "object_pose", pose);
+  rosparam_shortcuts::shutdownIfError(LOGNAME, error);
+
+  shapes::Mesh* obj_mesh = shapes::createMeshFromResource(object_mesh_file);
+
+  shapes::ShapeMsg mesh_msg;
+  shapes::constructMsgFromShape(obj_mesh, mesh_msg);
+  shape_msgs::Mesh mesh = boost::get<shape_msgs::Mesh>(mesh_msg);
+
+  moveit_msgs::CollisionObject object;
+  object.id = object_name;
+  object.header.frame_id = object_reference_frame;
+  object.meshes.emplace_back(mesh);
+  object.mesh_poses.emplace_back(pose);
+  object.operation = moveit_msgs::CollisionObject::ADD;
+
+  // moveit_msgs::CollisionObject object;
+  // object.id = object_name;
+  // object.header.frame_id = object_reference_frame;
+  // object.primitives.resize(1);
+  // object.primitives[0].type = shape_msgs::SolidPrimitive::BOX;
+  // object.primitives[0].dimensions = object_dimensions;
+  // pose.position.z += 0.5 * object_dimensions[0];
+  // object.primitive_poses.push_back(pose);
+  // object.operation = moveit_msgs::CollisionObject::ADD;
+
+  return object;
+}
+
+
 
 int main(int argc, char** argv)
 {
@@ -123,7 +202,14 @@ int main(int argc, char** argv)
   {
     spawnObject(psi, createTable());
   }
+
+  if (pnh.param("spawn_camera", true))
+  {
+    spawnObject(psi, createCamera());
+  }
+
   spawnObject(psi, createObject());
+  // spawnObject(psi, createObjectMesh());
 
   // Construct and run pick/place task
   gqcnn_demo::PickPlaceTask pick_place_task("pick_place_task", nh);
@@ -135,6 +221,8 @@ int main(int argc, char** argv)
     ROS_INFO_NAMED(LOGNAME, "Planning succeded");
     if (pnh.param("execute", false))
     {
+      std::cin.get();
+
       pick_place_task.execute();
       ROS_INFO_NAMED(LOGNAME, "Execution complete");
     }
