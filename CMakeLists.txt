@@ -8,7 +8,6 @@ add_definitions(-W -Wall -Wextra
   -Winit-self -Wredundant-decls
   -Wno-unused-parameter -Wno-unused-function)
 
-
 find_package(catkin REQUIRED COMPONENTS
 	actionlib
 	eigen_conversions
@@ -39,10 +38,9 @@ else()
   message(FATAL_ERROR "Include directory GPD not found")
 endif()
 
-
 catkin_package(
  INCLUDE_DIRS include
-#  LIBRARIES
+ LIBRARIES ${PROJECT_NAME}
 	CATKIN_DEPENDS
 	  eigen_conversions
 		geometry_msgs
@@ -53,7 +51,6 @@ catkin_package(
 		PCL
 )
 
-
 include_directories(
   SYSTEM
   ${EIGEN3_INCLUDE_DIRS}
@@ -61,13 +58,26 @@ include_directories(
 	${GPD_INCLUDE_DIRS}
 )
 
-
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(gpd_action_server src/gpd_action_server.cpp )
+# add_library(
+#   ${PROJECT_NAME}
+#   src/${PROJECT_NAME}/process_cloud.cpp
+# )
+
+# target_link_libraries(
+#   ${PROJECT_NAME}
+#   ${catkin_LIBRARIES}
+# 	${PCL_LIBRARIES}
+# )
+
+add_executable(gpd_action_server
+               src/gpd_action_server.cpp
+)
+
 target_link_libraries(gpd_action_server
                       ${catkin_LIBRARIES}
 											${Eigen3_LIBRARIES}
@@ -75,15 +85,25 @@ target_link_libraries(gpd_action_server
 											${GPD_LIB}
 )
 
-# add_executable(gpd_pick_place_demo src/gpd_pick_place_demo.cpp src/gpd_pick_place_task.cpp)
-# target_link_libraries(gpd_pick_place_demo
-#                       ${catkin_LIBRARIES}
-# )
-#
-# install(TARGETS gpd_action_server gpd_pick_place_demo
+add_executable(gpd_pick_place_demo
+               src/gpd_pick_place_demo.cpp
+							 src/gpd_pick_place_task.cpp
+)
+
+target_link_libraries(gpd_pick_place_demo
+                      ${catkin_LIBRARIES}
+)
+
+install(TARGETS gpd_action_server gpd_pick_place_demo
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+# install(TARGETS ${PROJECT_NAME}
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
 # )
 
 install(DIRECTORY include/${PROJECT_NAME}/
