@@ -138,10 +138,12 @@ public:
                                                                    grasp_.pose.orientation.z);
 
       // the 6dof grasp pose in frame_id (panda_link0)
+      // TODO compose this T once in init()
       const Eigen::Isometry3d transform_base_grasp = trans_base_cam_ * transform_cam_opt_ * transform_opt_grasp;
       const Eigen::Vector3d trans = transform_base_grasp.translation();
       const Eigen::Quaterniond rot(transform_base_grasp.rotation());
 
+      // TODO grasp_ should not be a memeber
       // convert back to PoseStamped
       grasp_.header.frame_id = frame_id_;
       grasp_.pose.position.x = trans.x();
@@ -210,13 +212,14 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "gqcnn_server");
   ros::NodeHandle nh;
 
-  // ros::AsyncSpinner spinner(1);
-  // spinner.start();
+  ros::AsyncSpinner spinner(1);
+  spinner.start();
 
   // gqcnn_demo::ImageServer image_server(nh);
   gqcnn_demo::GraspAction grasp_action(nh);
-  ros::spin();
+  // ros::spin();
 
+  ros::waitForShutdown();
   return 0;
 }
 
