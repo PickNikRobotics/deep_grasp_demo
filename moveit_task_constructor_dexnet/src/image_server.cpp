@@ -1,7 +1,7 @@
 /*********************************************************************
  * BSD 3-Clause License
  *
- * Copyright (c) 2020 PickNik LLC.
+ * Copyright (c) 2020 PickNik Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,9 +34,9 @@
    Desc:   Image server
 */
 
-#include <gqcnn_demo/image_server.h>
+#include <moveit_task_constructor_dexnet/image_server.h>
 
-namespace gqcnn_demo
+namespace moveit_task_constructor_dexnet
 {
 
 ImageServer::ImageServer(ros::NodeHandle& nh) : nh_(nh), save_rbg_(false), save_depth_(false)
@@ -85,7 +85,7 @@ void ImageServer::depthCallback(const sensor_msgs::Image::ConstPtr &msg)
 }
 
 
-bool ImageServer::saveCallback(gqcnn_demo::Images::Request& req, gqcnn_demo::Images::Response& res)
+bool ImageServer::saveCallback(moveit_task_constructor_dexnet::Images::Request& req, moveit_task_constructor_dexnet::Images::Response& res)
 {
   ROS_INFO_NAMED(LOGNAME, "Saving image service active");
   save_rbg_ = true;
@@ -126,4 +126,4 @@ void ImageServer::saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::
     ROS_WARN_NAMED(LOGNAME, "Image %s not saved", image_name.c_str());
   }
 }
-} // namespace gqcnn_demo
+} // namespace moveit_task_constructor_dexnet
