@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>deep_grasp_demo</name>
+  <version>0.0.1</version>
+  <description> MoveIt task constructor demo using deep grasp generators </description>
+
+  <maintainer email="boston@picknik.ai">Boston Cleek</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+
+  <depend>actionlib</depend>
+  <depend>eigen_conversions</depend>
+  <depend>geometry_msgs</depend>
+  <depend>moveit_task_constructor_core</depend>
+  <depend>moveit_task_constructor_msgs</depend>
+  <depend>moveit_ros_planning_interface</depend>
+  <depend>moveit_core</depend>
+  <depend>sensor_msgs</depend>
+  <depend>rosparam_shortcuts</depend>
+
+  <exec_depend version_gte="0.7.4">panda_moveit_config</exec_depend>
+
+  <export>
+  </export>
+</package>
