@@ -1,7 +1,7 @@
 /*********************************************************************
  * BSD 3-Clause License
  *
- * Copyright (c) 2020 PickNik LLC.
+ * Copyright (c) 2020 PickNik Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,6 @@
 /* Author: Boston Cleek
    Desc:   GPD action server
 */
-
 
 // ROS
 #include <ros/ros.h>
@@ -70,11 +69,10 @@
 #include <actionlib/server/simple_action_server.h>
 
 
-constexpr char LOGNAME[] = "gpd_action_server";
+constexpr char LOGNAME[] = "grasp_cloud_detection";
 
-namespace gpd_action_server
+namespace moveit_task_constructor_gpd
 {
-
 typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudRGBA;
 typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloudRGB;
 
@@ -84,7 +82,7 @@ typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloudRGB;
 * @details Interfaces with the GPD lib using ROS messages and interfaces
 *          with MTC using a Action Server
 */
-class GraspAction
+class GraspDetection
 {
 public:
   /**
@@ -94,7 +92,7 @@ public:
   * @details loads parameters, registers callbacks for the action server,
              and initializes GPD
   */
-  GraspAction(const ros::NodeHandle& nh) : nh_(nh), goal_active_(false)
+  GraspDetection(const ros::NodeHandle& nh) : nh_(nh), goal_active_(false)
   {
     loadParameters();
     init();
@@ -133,12 +131,12 @@ public:
     // action server
     server_.reset(new actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>(
         nh_, action_name_, false));
-    server_->registerGoalCallback(std::bind(&GraspAction::goalCallback, this));
-    server_->registerPreemptCallback(std::bind(&GraspAction::preemptCallback, this));
+    server_->registerGoalCallback(std::bind(&GraspDetection::goalCallback, this));
+    server_->registerPreemptCallback(std::bind(&GraspDetection::preemptCallback, this));
     server_->start();
 
     // point cloud subscriber
-    cloud_sub_ = nh_.subscribe(point_cloud_topic_, 1, &GraspAction::cloudCallback, this);
+    cloud_sub_ = nh_.subscribe(point_cloud_topic_, 1, &GraspDetection::cloudCallback, this);
     // cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("filtered_cloud", 1, true);
 
     // GPD point cloud camera, load cylinder from file
@@ -349,31 +347,19 @@ private:
   Eigen::Isometry3d trans_base_cam_;    // transformation from base link to camera link
   Eigen::Isometry3d transform_cam_opt_; // transformation from camera link to optical link
 };
-}  // namespace gpd_action_server
+}  // namespace moveit_task_constructor_gpd
 
 
 int main(int argc, char** argv)
 {
-  ROS_INFO_NAMED(LOGNAME, "Init gpd_action_server");
-  ros::init(argc, argv, "gpd_server");
+  ROS_INFO_NAMED(LOGNAME, "Init grasp_cloud_detection");
+  ros::init(argc, argv, "grasp_cloud_detection");
   ros::NodeHandle nh;
-
-  // sensor_msgs::PointCloud2 msg;
-  // PointCloudRGBA::Ptr cloud(new PointCloudRGBA);
-  // pcl::fromROSMsg(msg, *cloud);
-  //
-  // Eigen::Matrix3Xd camera_view_point(3,1);
-  // // gpd::util::Cloud cloud_cam(cloud, 0, camera_view_point);
-  // std::unique_ptr<gpd::util::Cloud> cloud_camera;
-  // cloud_camera.reset(new gpd::util::Cloud(cloud, 0, camera_view_point));
-
-  // pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  // pcl::fromROSMsg(msg, *cloud);
 
   ros::AsyncSpinner spinner(1);
   spinner.start();
 
-  gpd_action_server::GraspAction grasp_action(nh);
+  moveit_task_constructor_gpd::GraspDetection grasp_detection(nh);
   ros::waitForShutdown();
 
   return 0;
