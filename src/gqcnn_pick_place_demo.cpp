@@ -221,8 +221,6 @@ int main(int argc, char** argv)
     ROS_INFO_NAMED(LOGNAME, "Planning succeded");
     if (pnh.param("execute", false))
     {
-      std::cin.get();
-
       pick_place_task.execute();
       ROS_INFO_NAMED(LOGNAME, "Execution complete");
     }
