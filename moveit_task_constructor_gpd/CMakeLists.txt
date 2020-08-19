@@ -1,26 +1,27 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(deep_grasp_demo)
+project(moveit_task_constructor_gpd)
 
+# C++ 14
 add_compile_options(-std=c++14)
 
+# Warnings
 add_definitions(-W -Wall -Wextra
   -Wwrite-strings -Wunreachable-code -Wpointer-arith
   -Winit-self -Wredundant-decls
   -Wno-unused-parameter -Wno-unused-function)
 
+# Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
 	actionlib
 	eigen_conversions
 	geometry_msgs
-	moveit_core
-	moveit_ros_planning_interface
-	moveit_task_constructor_core
 	moveit_task_constructor_msgs
 	roscpp
 	rosparam_shortcuts
 	sensor_msgs
 )
 
+# System dependencies are found with CMake's conventions
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.8 REQUIRED)
 
@@ -38,19 +39,26 @@ else()
   message(FATAL_ERROR "Include directory GPD not found")
 endif()
 
+###################################
+## Catkin specific configuration ##
+###################################
 catkin_package(
- INCLUDE_DIRS include
- LIBRARIES ${PROJECT_NAME}
 	CATKIN_DEPENDS
 	  eigen_conversions
 		geometry_msgs
 		moveit_task_constructor_msgs
 		sensor_msgs
- DEPENDS
+ 	DEPENDS
  		EIGEN3
 		PCL
 )
 
+###########
+## Build ##
+###########
+
+# Specify additional locations of header files
+# Your package locations should be listed before other locations
 include_directories(
   SYSTEM
   ${EIGEN3_INCLUDE_DIRS}
@@ -59,57 +67,59 @@ include_directories(
 )
 
 include_directories(
-  include
+  # include
   ${catkin_INCLUDE_DIRS}
 )
 
-# add_library(
-#   ${PROJECT_NAME}
-#   src/${PROJECT_NAME}/process_cloud.cpp
-# )
-
-# target_link_libraries(
-#   ${PROJECT_NAME}
-#   ${catkin_LIBRARIES}
-# 	${PCL_LIBRARIES}
-# )
-
-add_executable(gpd_action_server
-               src/gpd_action_server.cpp
+# Declare a C++ executable
+add_executable(grasp_cloud_detection
+               src/grasp_cloud_detection.cpp
 )
 
-target_link_libraries(gpd_action_server
+# Specify libraries to link a library or executable target against
+target_link_libraries(grasp_cloud_detection
                       ${catkin_LIBRARIES}
 											${Eigen3_LIBRARIES}
 											${PCL_LIBRARIES}
 											${GPD_LIB}
 )
 
-add_executable(gpd_pick_place_demo
-               src/gpd_pick_place_demo.cpp
-							 src/gpd_pick_place_task.cpp
+#############
+## Install ##
+#############
+
+# Mark executables and/or libraries for installation
+install(
+  TARGETS
+    grasp_cloud_detection
+  ARCHIVE DESTINATION
+    ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION
+    ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION
+    ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-target_link_libraries(gpd_pick_place_demo
-                      ${catkin_LIBRARIES}
-)
-
-install(TARGETS gpd_action_server gpd_pick_place_demo
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-
-# install(TARGETS ${PROJECT_NAME}
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+# # Mark cpp header files for installation
+# install(
+#   DIRECTORY
+#     include/${PROJECT_NAME}/
+#   DESTINATION
+#     ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 # )
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+# Mark roslaunch files for installation
+install(
+  DIRECTORY
+    launch
+  DESTINATION
+    ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
-install(DIRECTORY config launch
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+# Mark config files for installation
+install(
+  DIRECTORY
+    config
+  DESTINATION
+    ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
