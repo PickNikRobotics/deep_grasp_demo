@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>gqcnn_demo</name>
+  <name>moveit_task_constructor_dexnet</name>
   <version>0.0.1</version>
-  <description>GQ-CNN to select a grasp candidate</description>
+  <description>MoveIt task constructor pick and place using a GQ-CNN to select a grasp candidate</description>
 
-  <maintainer email="boston@picknik.ai">bostoncleek</maintainer>
+  <maintainer email="boston@picknik.ai">Boston Cleek</maintainer>
+  <author email="boston@picknik.ai">Boston Cleek</author>
 
   <license>BSD</license>
 
@@ -14,20 +15,12 @@
   <depend>actionlib</depend>
   <depend>cv_bridge</depend>
   <depend>geometry_msgs</depend>
-  <depend>moveit_task_constructor_core</depend>
   <depend>moveit_task_constructor_msgs</depend>
-  <depend>moveit_ros_planning_interface</depend>
-  <depend>moveit_core</depend>
   <depend>image_transport</depend>
   <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>rosparam_shortcuts</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
-
   <exec_depend>message_runtime</exec_depend>
-
-  <export>
-
-  </export>
 </package>
