@@ -1,7 +1,7 @@
 /*********************************************************************
  * BSD 3-Clause License
  *
- * Copyright (c) 2020 PickNik LLC.
+ * Copyright (c) 2020 PickNik Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,22 +52,17 @@
 #include <moveit_task_constructor_msgs/SampleGraspPosesAction.h>
 #include <actionlib/server/simple_action_server.h>
 
-// gqcnn demo
-#include <gqcnn_demo/image_server.h>
-#include <gqcnn_demo/GQCNNGrasp.h>
+#include <moveit_task_constructor_dexnet/image_server.h>
+#include <moveit_task_constructor_dexnet/GQCNNGrasp.h>
 
+constexpr char LOGNAME[] = "grasp_image_detection";
 
-
-
-constexpr char LOGNAME[] = "gqcnn_action_server";
-
-
-namespace gqcnn_demo
+namespace moveit_task_constructor_dexnet
 {
-class GraspAction
+class GraspDetection
 {
 public:
-  GraspAction(const ros::NodeHandle& nh) : nh_(nh), q_val_(0.0)
+  GraspDetection(const ros::NodeHandle& nh) : nh_(nh), q_val_(0.0)
   {
     loadParameters();
     init();
@@ -92,12 +87,12 @@ public:
     // action server
     server_.reset(new actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>(
         nh_, action_name_, false));
-    server_->registerGoalCallback(std::bind(&GraspAction::goalCallback, this));
-    server_->registerPreemptCallback(std::bind(&GraspAction::preemptCallback, this));
+    server_->registerGoalCallback(std::bind(&GraspDetection::goalCallback, this));
+    server_->registerPreemptCallback(std::bind(&GraspDetection::preemptCallback, this));
     server_->start();
 
     // gqcnn service
-    gqcnn_client_ = nh_.serviceClient<gqcnn_demo::GQCNNGrasp>("gqcnn_grasp");
+    gqcnn_client_ = nh_.serviceClient<moveit_task_constructor_dexnet::GQCNNGrasp>("gqcnn_grasp");
     ros::service::waitForService("gqcnn_grasp", ros::Duration(3.0));
   }
 
@@ -117,7 +112,7 @@ public:
 
   void sampleGrasps()
   {
-    gqcnn_demo::GQCNNGrasp grasp_srv;
+    moveit_task_constructor_dexnet::GQCNNGrasp grasp_srv;
     grasp_srv.request.name = "gqcnn";
 
     if(gqcnn_client_.call(grasp_srv)){
@@ -202,22 +197,21 @@ private:
   Eigen::Isometry3d trans_base_cam_;    // transformation from base link to camera link
   Eigen::Isometry3d transform_cam_opt_; // transformation from camera link to optical link
 };
-} // namespace gqcnn_demo
+} // namespace moveit_task_constructor_dexnet
 
 
 
 int main(int argc, char** argv)
 {
-  ROS_INFO_NAMED(LOGNAME, "Init gqcnn_action_server");
-  ros::init(argc, argv, "gqcnn_server");
+  ROS_INFO_NAMED(LOGNAME, "Init grasp_image_detection");
+  ros::init(argc, argv, "grasp_image_detection");
   ros::NodeHandle nh;
 
   ros::AsyncSpinner spinner(1);
   spinner.start();
 
-  // gqcnn_demo::ImageServer image_server(nh);
-  gqcnn_demo::GraspAction grasp_action(nh);
-  // ros::spin();
+  // moveit_task_constructor_dexnet::ImageServer image_server(nh);
+  moveit_task_constructor_dexnet::GraspDetection grasp_detection(nh);
 
   ros::waitForShutdown();
   return 0;
