@@ -188,8 +188,8 @@ moveit_msgs::CollisionObject createObjectMesh()
 
 int main(int argc, char** argv)
 {
-  ROS_INFO_NAMED(LOGNAME, "Init moveit_task_constructor_demo");
-  ros::init(argc, argv, "moveit_task_constructor_demo");
+  ROS_INFO_NAMED(LOGNAME, "Init deep_grasp_demo");
+  ros::init(argc, argv, "deep_grasp_demo");
   ros::NodeHandle nh;
 
   ros::AsyncSpinner spinner(1);
@@ -205,13 +205,17 @@ int main(int argc, char** argv)
     spawnObject(psi, createTable());
   }
 
-  // if (pnh.param("spawn_camera", true))
-  // {
-  //   spawnObject(psi, createCamera());
-  // }
-  //
-  // spawnObject(psi, createObject());
-  // // spawnObject(psi, createObjectMesh());
+  // Add camera to planning scene
+  if (pnh.param("spawn_camera", true)){
+    spawnObject(psi, createCamera());
+  }
+
+  // Add object to planning scene either as mesh or geometric primitive
+  if (pnh.param("spawn_mesh", true)){
+    spawnObject(psi, createObjectMesh());
+  } else{
+    spawnObject(psi, createObject());
+  }
 
   // Construct and run task
   deep_grasp_task::DeepPickPlaceTask deep_pick_place_task("deep_pick_place_task", nh);
