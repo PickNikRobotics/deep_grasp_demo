@@ -1,7 +1,7 @@
 /*********************************************************************
  * BSD 3-Clause License
  *
- * Copyright (c) 2020 PickNik LLC.
+ * Copyright (c) 2020 PickNik Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,10 +52,9 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include <gqcnn_demo/Images.h>
+#include <moveit_task_constructor_dexnet/Images.h>
 
-
-namespace gqcnn_demo
+namespace moveit_task_constructor_dexnet
 {
 constexpr char LOGNAME[] = "image_server";
 
@@ -72,10 +71,9 @@ public:
 
   void depthCallback(const sensor_msgs::Image::ConstPtr &msg);
 
-  bool saveCallback(gqcnn_demo::Images::Request& req, gqcnn_demo::Images::Response& res);
+  bool saveCallback(moveit_task_constructor_dexnet::Images::Request& req, moveit_task_constructor_dexnet::Images::Response& res);
 
   void saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::string &image_name);
-
 
 private:
   ros::NodeHandle nh_;
@@ -94,4 +92,4 @@ private:
   bool save_depth_;
 };
 
-} // namespace gqcnn_demo
+} // namespace moveit_task_constructor_dexnet
