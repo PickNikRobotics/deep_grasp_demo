@@ -17,7 +17,7 @@
   <!-- Camera origin relative to panda_link0 -->
   <xacro:property name="M_PI" value="3.1415926535897931" />
 
-  <!-- camera for the cylinder -->
+  <!-- camera side view for the cylinder -->
   <xacro:property name="cam_px" value="0.0" />
   <xacro:property name="cam_py" value="-0.25" />
   <xacro:property name="cam_pz" value="0.04" />
@@ -33,42 +33,40 @@
   <xacro:property name="cam_op" value="${M_PI/2.0}" />
   <xacro:property name="cam_oy" value="0.0" /> -->
 
-
   <link name="camera_link">
-      <visual>
-       <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}"/>
-        <geometry>
-         <mesh filename="package://deep_grasp_task/meshes/camera/kinect.dae"/>
-        </geometry>
-      </visual>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}"/>
-        <geometry>
-          <mesh filename="package://deep_grasp_task/meshes/camera/kinect.dae"/>
-        </geometry>
-      </collision>
-      <inertial>
-        <mass value="0.564" />
-        <origin xyz="0 0 0" />
-        <inertia ixx="0.003881243" ixy="0.0" ixz="0.0"
-                 iyy="0.000498940" iyz="0.0"
-                 izz="0.003879257" />
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}"/>
+      <geometry>
+        <mesh filename="package://deep_grasp_task/meshes/camera/kinect.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}"/>
+      <geometry>
+        <mesh filename="package://deep_grasp_task/meshes/camera/kinect.dae"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.564" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.003881243" ixy="0.0" ixz="0.0"
+      iyy="0.000498940" iyz="0.0"
+      izz="0.003879257" />
       </inertial>
-    </link>
+  </link>
 
-    <joint name="camera_joint" type="fixed">
-      <origin xyz="${cam_px} ${cam_py} ${cam_pz}" rpy="${cam_or} ${cam_op} ${cam_oy}"/>
-      <parent link="panda_link0"/>
-      <child link="camera_link" />
-    </joint>
-
+  <joint name="camera_joint" type="fixed">
+    <origin xyz="${cam_px} ${cam_py} ${cam_pz}" rpy="${cam_or} ${cam_op} ${cam_oy}"/>
+    <parent link="panda_link0"/>
+    <child link="camera_link" />
+  </joint>
 
   <link name="camera_optical_link"/>
 
   <joint name="camera_optical_joint" type="fixed">
-    <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
-    <parent link="camera_link" />
-    <child link="camera_optical_link" />
+    <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}"/>
+    <parent link="camera_link"/>
+    <child link="camera_optical_link"/>
   </joint>
 
   <gazebo reference="camera_link">
