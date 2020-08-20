@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="use_gazebo" default="false"/>
+  <arg name="use_rviz" default="true"/>
+  <arg name="debug" default="false"/>
+  <!-- <arg name="use_jsp_gui" default="false" doc="joint state publisher gui" /> -->
+
+  <arg name="fake_execution" value="false" if="$(arg use_gazebo)"/>
+  <arg name="fake_execution" value="true" unless="$(arg use_gazebo)"/>
+
+  <!-- Using Gazebo -->
+  <group if="$(arg use_gazebo)">
+    <!-- Load urdf to param server -->
+    <param name="robot_description" command="$(find xacro)/xacro '$(find deep_grasp_task)/urdf/panda_camera.urdf.xacro'"/>
+
+    <!-- launch the gazebo simulator and spawn the robot -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+      <arg name="world_name" default="worlds/empty.world"/>
+      <arg name="verbose" value="false"/>
+      <arg name="paused" value="true"/>
+      <arg name="gui" value="true"/>
+    </include>
+
+    <!-- spawn robot in gazebo at the origin, change x,y,z arguments to spawn in a different position -->
+    <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model"
+      args="-urdf -param robot_description -model panda -x 0 -y 0 -z 0 -J panda_joint4 -0.07 -J panda_joint6 0.51 -unpause"
+      respawn="false" output="screen" />
+
+    <!-- load controllers -->
+    <include file="$(find panda_moveit_config)/launch/ros_controllers.launch"/>
+  </group>
+
+  <!-- Use fake controllers -->
+  <group unless="$(arg use_gazebo)">
+    <node pkg="tf2_ros" type="static_transform_publisher" name="$(anon virtual_joint_broadcaster)" args="0 0 0 0 0 0 world panda_link0" />
+
+    <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
+    <include file="$(find panda_moveit_config)/launch/planning_context.launch">
+      <arg name="load_robot_description" value="true"/>
+    </include>
+
+    <!-- We do not have a robot connected, so publish fake joint states -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+      <param name="/use_gui" value="false"/>
+      <param name="rate" value="50"/>
+      <rosparam param="/source_list">[/move_group/fake_controller_joint_states]</rosparam>
+    </node>
+  </group>
+
+
+  <!-- Run the main MoveIt! executable without trajectory execution (we do not have controllers configured by default) -->
+  <include file="$(find panda_moveit_config)/launch/move_group.launch">
+    <arg name="allow_trajectory_execution" value="true"/>
+    <arg name="fake_execution" value="$(arg fake_execution)"/>
+    <arg name="info" value="true"/>
+    <arg name="debug" value="$(arg debug)"/>
+  </include>
+
+  <!-- Load  ExecuteTaskSolutionCapability so we can execute found solutions in simulation -->
+  <param name="move_group/capabilities" value="move_group/ExecuteTaskSolutionCapability" />
+
+  <!-- Given the published joint states, publish tf for the robot links -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+
+  <node name="joint_state_desired_publisher" pkg="topic_tools" type="relay" args="joint_states joint_states_desired" />
+
+  <!-- Run Rviz -->
+  <node if="$(arg use_rviz)" name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false" args="-d $(find moveit_task_constructor_demo)/config/mtc.rviz">
+    <rosparam command="load" file="$(find panda_moveit_config)/config/kinematics.yaml"/>
+  </node>
+</launch>
