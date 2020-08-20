@@ -40,16 +40,14 @@ object_pose: [0.5, -0.25, 0.0, 0, 0, 0]
 # object_dimensions: [0.02]  # [radius]
 # object_pose: [0.5, 0, 0., 0, 0, 0]
 
-
 # Camera collision object
 spawn_camera: false
 camera_name: "camera"
 camera_mesh_file: "package://gqcnn_demo/meshes/camera/kinect.dae"
 camera_pose: [0.5, 0, 0.7, 0, 1.571, 1.571]
 
-
 # Table model
-spawn_table: false
+spawn_table: true
 table_name: "table"
 table_dimensions: [0.4, 0.5, 0.1]  # [length, width, height]
 table_pose: [0.5, 0, 0, 0, 0, 0]
