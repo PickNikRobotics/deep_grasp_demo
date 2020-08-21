@@ -66,7 +66,7 @@ public:
   CloudServer(ros::NodeHandle& nh);
 
   /**
-  * @brief Loads parameters for action server and GPD
+  * @brief Loads parameters
   */
   void loadParameters();
 
