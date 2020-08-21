@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="load_images" default="true" doc="load images from file"/>
+
+  <arg name="action_name" value="generate_grasps" doc="action name space"/>
+  <arg name="frame_id" value="panda_link0" doc="frame of the grasps sent to MTC"/>
+
+  <!-- file paths -->
+  <arg name="dexnet_policy_script" value="$(find moveit_task_constructor_dexnet)/scripts/grasp_detector" doc="execute dexnet policy in python3"/>
+  <arg name="image_dir" value="$(find moveit_task_constructor_dexnet)/data/images/" doc="directory to save images"/>
+
+  <arg if="$(arg load_images)" name="color_image_file" value="rgb_cylinder.png" doc="color image file"/>
+  <arg if="$(arg load_images)" name="depth_image_file" value="depth_cylinder.png" doc="depth image file"/>
+
+  <arg unless="$(arg load_images)" name="color_img_topic" value="/camera/rgb/image_raw" doc="topic name for raw color image"/>
+  <arg unless="$(arg load_images)" name="depth_img_topic" value="/camera/depth/image_raw" doc="topic name for raw depth image"/>
+
+  <!-- Run MTC pick and place -->
+  <!-- <node name="mtc_tutorial" pkg="deep_grasp_task" type="deep_grasp_demo" output="screen">
+      <param name="execute" value="true" />
+      <param name="action_name" value="$(arg action_name)"/>
+      <rosparam command="load" file="$(find deep_grasp_task)/config/panda_object.yaml" />
+  </node> -->
+
+  <!-- Grasp detection using GQCNN and Dex-Net data sets -->
+  <!-- <node name="grasp_image_detection" pkg="moveit_task_constructor_dexnet" type="grasp_image_detection" output="screen">
+    <param name="action_name" value="$(arg action_name)"/>
+    <param name="frame_id" value="$(arg frame_id)"/>
+    <param name="image_dir" value="$(arg image_dir)"/>
+    <param name="load_images" value="$(arg load_images)"/>
+    <param if="$(arg load_images)" name="color_image_file" value="$(arg color_image_file)"/>
+    <param if="$(arg load_images)" name="depth_image_file" value="$(arg depth_image_file)"/>
+    <rosparam command="load" file="$(find deep_grasp_task)/config/calib/camera.yaml" />
+  </node> -->
+
+  <!-- Server handles interaction with the GQCNN and data sets -->
+  <node name="gqcnn_server" pkg="moveit_task_constructor_dexnet" type="gqcnn_server" output="screen">
+    <param name="dexnet_policy_script" value="$(arg dexnet_policy_script)"/>
+  </node>
+
+  <!-- Image data collection -->
+  <node unless="$(arg load_images)" name="process_image_server" pkg="moveit_task_constructor_dexnet" type="process_image_server" output="screen">
+    <param name="color_img_topic" value="$(arg color_img_topic)"/>
+    <param name="depth_img_topic" value="$(arg depth_img_topic)"/>
+    <param name="image_dir" value="$(arg image_dir)"/>
+  </node>
+
+</launch>
