@@ -24,6 +24,17 @@
     <param name="remove_table" value="$(arg remove_table)"/>
   </node>
 
+  <!-- Image data collection -->
+  <arg name="color_img_topic" value="/camera/rgb/image_raw" doc="topic name for raw color image"/>
+  <arg name="depth_img_topic" value="/camera/depth/image_raw" doc="topic name for raw depth image"/>
+  <arg name="image_dir" value="$(find moveit_task_constructor_dexnet)/data/images/" doc="directory to save images"/>
+
+  <node name="process_image_server" pkg="moveit_task_constructor_dexnet" type="process_image_server" output="screen">
+    <param name="color_img_topic" value="$(arg color_img_topic)"/>
+    <param name="depth_img_topic" value="$(arg depth_img_topic)"/>
+    <param name="image_dir" value="$(arg image_dir)"/>
+  </node>
+
   <!-- publish tf for camera links -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
 
