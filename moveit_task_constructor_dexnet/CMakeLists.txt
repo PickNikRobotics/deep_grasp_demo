@@ -103,7 +103,7 @@ target_link_libraries(grasp_image_detection
 # Mark python scripts for install
 catkin_install_python(PROGRAMS
   src/gqcnn_server
-	scripts/grasp_detector.py
+	scripts/grasp_detector
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
