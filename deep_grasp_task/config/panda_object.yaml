@@ -29,34 +29,35 @@ object_pose: [0.5, -0.25, 0.0, 0, 0, 0]
 # # BAR CLAMP
 # spawn_mesh: true
 # object_name: "object"
-# object_mesh_file: "package://gqcnn_demo/meshes/objects/bar_clamp.dae"
+# object_mesh_file: "package://deep_grasp_task/meshes/objects/bar_clamp.dae"
 # object_dimensions: [0.06, 0.12, 0.04]  # [length, width, height]
 # object_pose: [0.5, 0, 0.03, 0, 0, 0]
 
 # STRAWBERRY
 # spawn_mesh: true
 # object_name: "object"
-# object_mesh_file: "package://gqcnn_demo/meshes/objects/strawberry.dae"
+# object_mesh_file: "package://deep_grasp_task/meshes/objects/strawberry.dae"
 # object_dimensions: [0.02]  # [radius]
 # object_pose: [0.5, 0, 0., 0, 0, 0]
 
 # Camera collision object
 spawn_camera: false
 camera_name: "camera"
-camera_mesh_file: "package://gqcnn_demo/meshes/camera/kinect.dae"
+camera_mesh_file: "package://deep_grasp_task/meshes/camera/kinect.dae"
 camera_pose: [0.5, 0, 0.7, 0, 1.571, 1.571]
 
 # Table model
 spawn_table: true
 table_name: "table"
 table_dimensions: [0.4, 0.5, 0.1]  # [length, width, height]
-table_pose: [0.5, 0, 0, 0, 0, 0]
+table_pose: [0.5, -0.25, 0, 0, 0, 0]
 
 # Gripper grasp frame transform [x,y,z,r,p,y]
 grasp_frame_transform: [0, 0, 0.1, 1.571, 0.785, 1.571]
 
 # Place pose [x,y,z,r,p,y]
-place_pose: [0.5, 0.3, 0, 0, 0, 0]
+# place_pose: [0.5, 0.3, 0, 0, 0, 0]
+place_pose: [0.6, -0.15, 0, 0, 0, 0]
 place_surface_offset: 0.0001 # place offset from table
 
 # Valid distance range when approaching an object for picking
