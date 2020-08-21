@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<robot name="camera" xmlns:xacro="http://ros.org/wiki/xacro">
+  <link name="world"/>
+  <xacro:include filename="$(find deep_grasp_task)/urdf/camera/camera_macro.urdf.xacro"/>
+  <!-- camera side view for the cylinder -->
+  <xacro:kinect_camera parent_link="world" cam_py="-0.25" cam_pz="0.04"/>
+  <!-- overhead position -->
+  <!-- <xacro:kinect_camera parent_link="world" cam_px="0.5" cam_pz="0.7" cam_op="1.57079632679"/> -->
+</robot>
