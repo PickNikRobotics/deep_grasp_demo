@@ -56,7 +56,7 @@ void CloudServer::loadParameters()
 {
   ros::NodeHandle pnh("~");
   size_t errors = 0;
-  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "cloud_topic", cloud_topic_);
+  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "point_cloud_topic", point_cloud_topic_);
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "cloud_dir", cloud_dir_);
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "remove_table", remove_table_);
 
@@ -73,7 +73,7 @@ void CloudServer::loadParameters()
 
 void CloudServer::init()
 {
-  cloud_sub_ = nh_.subscribe(cloud_topic_, 1, &CloudServer::cloudCallback, this);
+  cloud_sub_ = nh_.subscribe(point_cloud_topic_, 1, &CloudServer::cloudCallback, this);
   cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("filtered_cloud", 1, true);
   saver_srv_ = nh_.advertiseService("save_point_cloud", &CloudServer::saveCallback, this);
 }
