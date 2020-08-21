@@ -103,6 +103,7 @@ target_link_libraries(${PROJECT_NAME}
 # Declare a C++ executable
 add_executable(grasp_cloud_detection
                src/grasp_cloud_detection.cpp
+							 src/grasp_detection.cpp
 )
 
 add_executable(point_cloud_server
