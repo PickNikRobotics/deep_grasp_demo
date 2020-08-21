@@ -31,7 +31,26 @@
  *********************************************************************/
 
 /* Author: Boston Cleek
-   Desc: Grasp pose detection (GPD) node
+   Desc: Grasp pose detection (GPD) node, option to load a point cloud from a file
+         or subscribe to a point cloud topic. If loading from file the the point cloud
+         subscriber and publisher will not be available.
+
+  PARAMETERS:
+    load_cloud - load point cloud from file
+    path_to_pcd_file (optional) - path to point cloud file
+    point_cloud_topic (optional) - point cloud topic
+    path_to_gpd_config - path to GPD config file
+    action_name - action namespace
+    frame_id - frame of the grasp candidates
+    trans_cam_opt - transform from camera link to optical link
+    trans_base_cam - transform from robot base link to camera link
+    view_point - (x,y,z) view point of camera usually (0,0,0)
+  PUBLISHES:
+    segmented_cloud (optional) (sensor_msgs/PointCloud2) - Point cloud after table is removed
+  SUBSCRIBES:
+    point_cloud_topic (optinal) (sensor_msgs/PointCloud2) - Point cloud from depth camera
+  SERVICES:
+    action_name (moveit_task_constructor_msgs/SampleGraspPosesAction) - Action service for sampling grasp used within MTC
 */
 
 // ROS
