@@ -31,7 +31,23 @@
  *********************************************************************/
 
 /* Author: Boston Cleek
-   Desc:   Point cloud server node for saving point cloud data
+   Desc:  Point cloud server node for saving point cloud data. Optionally, either
+          the ground plane is removed and/or points outside the specified cartesian
+          limits are removed. The resulting cloud is published.
+
+  PARAMETERS:
+    point_cloud_topic - point cloud topic to subscribe to
+    cloud_dir - directory to save point clouds to
+    remove_table - whether or not to segement table points
+    cartesian_limits - whether or not to remove points outside limits
+    xyz_lower_limits - lower (x,y,z) limits on points
+    xyz_upper_limits - upper (x,y,z) limits on points
+  PUBLISHES:
+    filtered_cloud (sensor_msgs/PointCloud2) - Point cloud after table is removed
+  SUBSCRIBES:
+    point_cloud_topic (sensor_msgs/PointCloud2) - Point cloud from depth camera
+  SERVICES:
+    save_point_cloud (moveit_task_constructor_gpd/PointCloud) - specify file name to save point cloud  
 */
 
 // ROS
