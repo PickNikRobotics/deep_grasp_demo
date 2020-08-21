@@ -31,15 +31,27 @@
  *********************************************************************/
 
 /* Author: Boston Cleek
-   Desc:   Image server
+   Desc:   Image server for saving images
 */
+
+// ROS
+#include <ros/ros.h>
+#include <rosparam_shortcuts/rosparam_shortcuts.h>
+#include <image_transport/image_transport.h>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
+
+// OpenCV
+#include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include <moveit_task_constructor_dexnet/image_server.h>
 
 namespace moveit_task_constructor_dexnet
 {
 
-ImageServer::ImageServer(ros::NodeHandle& nh) : nh_(nh), save_rbg_(false), save_depth_(false)
+ImageServer::ImageServer(ros::NodeHandle& nh) : nh_(nh)
 {
   loadParameters();
   init();
@@ -67,38 +79,27 @@ void ImageServer::init()
 
 void ImageServer::colorCallback(const sensor_msgs::Image::ConstPtr &msg)
 {
-  if (save_rbg_){
-    // saveImage(msg, "object_rgb.png");
-    saveImage(msg, color_file_);
-    save_rbg_ = false;
-  }
+  color_img_ = msg;
 }
 
 
 void ImageServer::depthCallback(const sensor_msgs::Image::ConstPtr &msg)
 {
-  if (save_depth_){
-    // saveImage(msg, "object_depth.png");
-    saveImage(msg, depth_file_);
-    save_depth_ = false;
-  }
+  depth_img_ = msg;
 }
 
 
-bool ImageServer::saveCallback(moveit_task_constructor_dexnet::Images::Request& req, moveit_task_constructor_dexnet::Images::Response& res)
+bool ImageServer::saveCallback(moveit_task_constructor_dexnet::Images::Request& req,
+                               moveit_task_constructor_dexnet::Images::Response& res)
 {
   ROS_INFO_NAMED(LOGNAME, "Saving image service active");
-  save_rbg_ = true;
-  save_depth_ = true;
-
-  color_file_ = req.color_file;
-  depth_file_ = req.depth_file;
-
+  res.color_saved = saveImage(color_img_, req.color_file) ? true : false;
+  res.depth_saved = saveImage(depth_img_, req.depth_file) ? true : false;
   return true;
 }
 
 
-void ImageServer::saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::string &image_name)
+bool ImageServer::saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::string &image_name)
 {
   cv_bridge::CvImagePtr cv_ptr;
   cv_ptr = cv_bridge::toCvCopy(msg, msg->encoding);
@@ -108,22 +109,20 @@ void ImageServer::saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::
 
   if (msg->encoding == "rgb8"){
     cv_ptr->image.convertTo(img_converted, CV_8UC3); // convert to BGR
-  }
-
-  else if (msg->encoding == "32FC1"){
+  } else if (msg->encoding == "32FC1"){
     cv_ptr->image.convertTo(img_converted, CV_8UC3, 255.0); // conver to BGR and scale
-  }
-
-  else{
+  } else{
     ROS_ERROR_NAMED(LOGNAME, "Image encoding not recognized (encoding): %s", msg->encoding.c_str());
+    return false;
   }
-
 
   if (cv::imwrite(image_dir_ + image_name, img_converted)){
     ROS_INFO_NAMED(LOGNAME, "Saving image %s (encoding): %s ", image_name.c_str(), msg->encoding.c_str());
-  }
-  else {
+  } else {
     ROS_WARN_NAMED(LOGNAME, "Image %s not saved", image_name.c_str());
+    return false;
   }
+
+  return true;
 }
 } // namespace moveit_task_constructor_dexnet

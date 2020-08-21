@@ -31,26 +31,16 @@
  *********************************************************************/
 
 /* Author: Boston Cleek
-   Desc:   Image server
+   Desc:   Image server for saving images
 */
 
 #pragma once
 
 // ROS
-#include <ros/ros.h>
-#include <rosparam_shortcuts/rosparam_shortcuts.h>
 #include <sensor_msgs/Image.h>
-#include <image_transport/image_transport.h>
-#include <cv_bridge/cv_bridge.h>
-#include <sensor_msgs/image_encodings.h>
 
 // C++
 #include <string>
-
-// OpenCV
-#include <opencv2/opencv.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
 
 #include <moveit_task_constructor_dexnet/Images.h>
 
@@ -58,38 +48,67 @@ namespace moveit_task_constructor_dexnet
 {
 constexpr char LOGNAME[] = "image_server";
 
+/**
+* @brief Provides a service for saving RGB and depth images
+*/
 class ImageServer
 {
 public:
+  /**
+  * @brief Constructor
+  * @param nh - node handle
+  */
   ImageServer(ros::NodeHandle& nh);
 
+  /**
+  * @brief Loads parameters
+  */
   void loadParameters();
 
+  /**
+  * @brief Initialize ROS communication
+  */
   void init();
 
+  /**
+  * @brief RGB image callback
+  * @param msg - GGB image
+  */
   void colorCallback(const sensor_msgs::Image::ConstPtr &msg);
 
+  /**
+  * @brief Depth image callback
+  * @param msg - Depth image
+  */
   void depthCallback(const sensor_msgs::Image::ConstPtr &msg);
 
-  bool saveCallback(moveit_task_constructor_dexnet::Images::Request& req, moveit_task_constructor_dexnet::Images::Response& res);
+  /**
+  * @brief Service callback for saving images
+  * @param req - Service request contains the file name
+  * @param res [out] - Service result true if image type is saved
+  */
+  bool saveCallback(moveit_task_constructor_dexnet::Images::Request& req,
+                    moveit_task_constructor_dexnet::Images::Response& res);
 
-  void saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::string &image_name);
+  /**
+  * @brief Saves image based on encoding and to specified file
+  * @param msg - Image
+  * @param image_name - File name of image
+  * @details Images are saved as CV_8UC3 (BGR8) by OpenCV by default
+  */
+  bool saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::string &image_name);
 
 private:
   ros::NodeHandle nh_;
-  ros::Subscriber color_img_sub_;
-  ros::Subscriber depth_img_sub_;
-  ros::ServiceServer saver_srv_;
+  ros::Subscriber color_img_sub_;  // color image subscriber
+  ros::Subscriber depth_img_sub_;  // depth image subscriber
+  ros::ServiceServer saver_srv_;   // image saver service
 
-  std::string color_img_topic_;
-  std::string depth_img_topic_;
-  std::string image_dir_;
+  sensor_msgs::Image::ConstPtr color_img_; // image to save
+  sensor_msgs::Image::ConstPtr depth_img_; // image to save
 
-  std::string depth_file_;
-  std::string color_file_;
-
-  bool save_rbg_;
-  bool save_depth_;
+  std::string color_img_topic_;  // color image topic name
+  std::string depth_img_topic_; // depth image topic name
+  std::string image_dir_;    // directory to save images
 };
-
 } // namespace moveit_task_constructor_dexnet
