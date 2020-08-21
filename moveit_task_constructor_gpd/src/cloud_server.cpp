@@ -58,6 +58,7 @@ void CloudServer::loadParameters()
   size_t errors = 0;
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "cloud_topic", cloud_topic_);
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "cloud_dir", cloud_dir_);
+  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "remove_table", remove_table_);
 
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "cartesian_limits", cartesian_limits_);
   if(cartesian_limits_){
@@ -86,7 +87,9 @@ void CloudServer::cloudCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
     pcl::fromROSMsg(*msg.get(), *cloud.get());
 
     // segment out table
-    removeTable(cloud);
+    if(remove_table_){
+      removeTable(cloud);
+    }
 
     // remove points out of limits
     if(cartesian_limits_){
