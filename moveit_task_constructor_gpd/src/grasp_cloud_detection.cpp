@@ -33,7 +33,9 @@
 /* Author: Boston Cleek
    Desc: Grasp pose detection (GPD) node, option to load a point cloud from a file
          or subscribe to a point cloud topic. If loading from file the the point cloud
-         subscriber and publisher will not be available.
+         subscriber and publisher will not be available. Communication with MTC
+         is achieved through an action service. This node contains the action client
+         that sends a list grasp candidates and associated costs to MTC as feedback.
 
   PARAMETERS:
     load_cloud - load point cloud from file
@@ -49,8 +51,6 @@
     segmented_cloud (optional) (sensor_msgs/PointCloud2) - Point cloud after table is removed
   SUBSCRIBES:
     point_cloud_topic (optinal) (sensor_msgs/PointCloud2) - Point cloud from depth camera
-  SERVICES:
-    action_name (moveit_task_constructor_msgs/SampleGraspPosesAction) - Action service for sampling grasp used within MTC
 */
 
 // ROS
