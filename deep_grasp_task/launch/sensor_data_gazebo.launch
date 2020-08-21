@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch" >
+    <arg name="verbose" value="false"/>
+    <arg name="paused" value="false"/>
+    <arg name="gui" value="true"/>
+  </include>
+
+  <!-- Point cloud data collection -->
+  <arg name="cloud_topic" value="/camera/depth/color/points" doc="point cloud topic name"/>
+  <arg name="cloud_dir" value="$(find moveit_task_constructor_gpd)/data/pointclouds/" doc="directory to point clouds"/>
+
+  <node name="point_cloud_server" pkg="moveit_task_constructor_gpd" type="point_cloud_server" output="screen">
+    <param name="cloud_topic" value="$(arg cloud_topic)"/>
+    <param name="cloud_dir" value="$(arg cloud_dir)"/>
+  </node>
+
+  <!-- publish tf for camera links -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+
+  <!-- simulate depth camera -->
+  <param name="robot_description" command="$(find xacro)/xacro '$(find deep_grasp_task)/urdf/camera/camera.urdf.xacro'"/>
+  <node name="spawn_gazebo_camera" pkg="gazebo_ros" type="spawn_model"
+     args="-urdf -param robot_description -model camera" respawn="false" output="screen" />
+
+  <!-- spawn object -->
+  <!-- cylinder -->
+  <param name="object_description" command="$(find xacro)/xacro '$(find deep_grasp_task)/urdf/objects/cylinder.urdf.xacro'"/>
+  <node name="spawn_gazebo_object" pkg="gazebo_ros" type="spawn_model"
+     args="-urdf -param object_description -model cylinder -x 0.5 -y -0.25 -z 0.125" respawn="false" output="screen" />
+
+  <!-- bar clamp -->
+ <!-- <param name="object_description" command="$(find xacro)/xacro '$(find deep_grasp_task)/urdf/objects/bar_clamp.urdf.xacro'"/>
+ <node name="spawn_gazebo_object" pkg="gazebo_ros" type="spawn_model"
+    args="-urdf -param object_description -model bar_clamp -x 0.5 -y 0.0 -z 0.03" respawn="false" output="screen" /> -->
+
+  <!-- strawberry -->
+  <!-- <param name="object_description" command="$(find xacro)/xacro '$(find deep_grasp_task)/urdf/objects/strawberry.urdf.xacro'"/>
+  <node name="spawn_gazebo_object" pkg="gazebo_ros" type="spawn_model"
+     args="-urdf -param object_description -model strawberry -x 0.5 -y 0.0 -z 0.0" respawn="false" output="screen" /> -->
+</launch>
