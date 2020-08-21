@@ -51,6 +51,7 @@
 // PCL
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/segmentation/sac_segmentation.h>
@@ -107,8 +108,13 @@ public:
     ros::NodeHandle pnh("~");
 
     size_t errors = 0;
-    // errors += !rosparam_shortcuts::get(LOGNAME, pnh, "path_to_pcd_file", path_to_pcd_file_);
-    errors += !rosparam_shortcuts::get(LOGNAME, pnh, "point_cloud_topic", point_cloud_topic_);
+    errors += !rosparam_shortcuts::get(LOGNAME, pnh, "load_cloud", load_cloud_);
+    if (load_cloud_){
+      errors += !rosparam_shortcuts::get(LOGNAME, pnh, "path_to_pcd_file", path_to_pcd_file_);
+    } else{
+      errors += !rosparam_shortcuts::get(LOGNAME, pnh, "point_cloud_topic", point_cloud_topic_);
+    }
+
     errors += !rosparam_shortcuts::get(LOGNAME, pnh, "path_to_gpd_config", path_to_gpd_config_);
     errors += !rosparam_shortcuts::get(LOGNAME, pnh, "trans_cam_opt", transform_cam_opt_);
     errors += !rosparam_shortcuts::get(LOGNAME, pnh, "trans_base_cam", trans_base_cam_);
@@ -117,8 +123,7 @@ public:
     errors += !rosparam_shortcuts::get(LOGNAME, pnh, "frame_id", frame_id_);
     rosparam_shortcuts::shutdownIfError(LOGNAME, errors);
 
-    // ROS_INFO("Path to PCD file: %s", path_to_pcd_file_.c_str());
-    ROS_INFO("Path to GPD file: %s", path_to_gpd_config_.c_str());
+    ROS_INFO_NAMED(LOGNAME, "Path to pcd: %s", path_to_pcd_file_.c_str());
   }
 
   /**
@@ -135,16 +140,39 @@ public:
     server_->registerPreemptCallback(std::bind(&GraspDetection::preemptCallback, this));
     server_->start();
 
-    // point cloud subscriber
-    cloud_sub_ = nh_.subscribe(point_cloud_topic_, 1, &GraspDetection::cloudCallback, this);
-    // cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("filtered_cloud", 1, true);
-
     // GPD point cloud camera, load cylinder from file
     // set camera view origin
     // assume cloud was taken using one camera
-    // Eigen::Matrix3Xd camera_view_point(3, 1);
-    // camera_view_point << view_point_.at(0), view_point_.at(1), view_point_.at(2);
-    // cloud_camera_.reset(new gpd::util::Cloud(path_to_pcd_file_, camera_view_point));
+    if (load_cloud_){
+      // ROS_INFO_NAMED(LOGNAME, "Loading point cloud from file...");
+      // PointCloudRGB::Ptr cloud(new PointCloudRGB);
+      //
+      // if (pcl::io::loadPCDFile(path_to_pcd_file_, *cloud.get()) == 0){
+      //   ROS_INFO_NAMED(LOGNAME, "Point cloud loaded");
+      // } else{
+      //   ROS_ERROR_NAMED(LOGNAME, "Failed to load point cloud");
+      // }
+      // ROS_INFO_NAMED(LOGNAME, "Number of points: %lu", cloud->points.size());
+
+      // TODO: set alpha channel to 1
+      // GPD required XYZRGBA
+      // PointCloudRGBA::Ptr grasp_cloud(new PointCloudRGBA);
+      // pcl::copyPointCloud(*cloud.get(), *grasp_cloud.get());
+
+      // Construct the cloud camera
+      Eigen::Matrix3Xd camera_view_point(3, 1);
+      camera_view_point << view_point_.at(0), view_point_.at(1), view_point_.at(2);
+      // cloud_camera_.reset(new gpd::util::Cloud(grasp_cloud, 0, camera_view_point));
+      cloud_camera_.reset(new gpd::util::Cloud(path_to_pcd_file_, camera_view_point));
+
+
+    } else{
+      // point cloud subscriber
+      cloud_sub_ = nh_.subscribe(point_cloud_topic_, 1, &GraspDetection::cloudCallback, this);
+    }
+
+    // publish Segemented cloud
+    cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("filtered_cloud", 1, true);
 
     // Grasp detector
     grasp_detector_.reset(new gpd::GraspDetector(path_to_gpd_config_));
@@ -160,7 +188,10 @@ public:
     ROS_INFO_NAMED(LOGNAME, "New goal accepted: %s", goal_name_.c_str());
     goal_active_ = true;
 
-    // sampleGrasps();
+    // sample grasps now else need to wait to callback
+    if (load_cloud_){
+      sampleGrasps();
+    }
   }
 
   /**
@@ -228,6 +259,16 @@ public:
       grasp_pose.pose.orientation.y = rot.y();
       grasp_pose.pose.orientation.z = rot.z();
 
+      // grasp_pose.pose.orientation.w = 1.0;
+      // grasp_pose.pose.orientation.x = 0.0;
+      // grasp_pose.pose.orientation.y = 0.0;
+      // grasp_pose.pose.orientation.z = 0.0;
+
+      if(id == 0)
+      {
+        std::cout << grasp_pose << std::endl;
+      }
+
       feedback_.grasp_candidates.emplace_back(grasp_pose);
 
       // Grasp is selected based on cost not score
@@ -250,25 +291,7 @@ public:
     if (goal_active_){
       PointCloudRGB::Ptr cloud(new PointCloudRGB);
       pcl::fromROSMsg(*msg.get(), *cloud.get());
-
-      // Segementation works best with XYXRGB
-      removeTable(cloud);
-
-      // sensor_msgs::PointCloud2 cloud_msg;
-      // pcl::toROSMsg(*cloud, cloud_msg);
-      // cloud_pub_.publish(cloud_msg);
-
-      // TODO: set alpha channel to 1
-
-      // GPD required XYZRGBA
-      PointCloudRGBA::Ptr grasp_cloud(new PointCloudRGBA);
-      pcl::copyPointCloud(*cloud.get(), *grasp_cloud.get());
-
-      // Construct the cloud camera
-      Eigen::Matrix3Xd camera_view_point(3, 1);
-      camera_view_point << view_point_.at(0), view_point_.at(1), view_point_.at(2);
-      cloud_camera_.reset(new gpd::util::Cloud(grasp_cloud, 0, camera_view_point));
-
+      processCloud(cloud);
       sampleGrasps();
     }
 
@@ -276,8 +299,34 @@ public:
   }
 
   /**
+  * @brief Process point cloud and initialize GPD cloud camera
+  * @param [in] cloud - Point cloud XYZRGB
+  * @details Segments table plane, converts to XYZRGBA type, and creates
+  *           GPD cloud camera.
+  */
+  void processCloud(PointCloudRGB::Ptr cloud)
+  {
+    // Segementation works best with XYXRGB
+    removeTable(cloud);
+
+    // sensor_msgs::PointCloud2 cloud_msg;
+    // pcl::toROSMsg(*cloud, cloud_msg);
+    // cloud_pub_.publish(cloud_msg);
+
+    // TODO: set alpha channel to 1
+    // GPD required XYZRGBA
+    PointCloudRGBA::Ptr grasp_cloud(new PointCloudRGBA);
+    pcl::copyPointCloud(*cloud.get(), *grasp_cloud.get());
+
+    // Construct the cloud camera
+    Eigen::Matrix3Xd camera_view_point(3, 1);
+    camera_view_point << view_point_.at(0), view_point_.at(1), view_point_.at(2);
+    cloud_camera_.reset(new gpd::util::Cloud(grasp_cloud, 0, camera_view_point));
+  }
+
+  /**
   * @brief Segments objects from table plane
-  * @param [out] cloud - Segemented cloud
+  * @param [out] cloud - Segemented point cloud XYZRGB
   */
   void removeTable(PointCloudRGB::Ptr cloud)
   {
@@ -324,14 +373,14 @@ public:
 private:
   ros::NodeHandle nh_;
   ros::Subscriber cloud_sub_;               // subscribes to point cloud topic
-  // ros::Publisher cloud_pub_;
+  ros::Publisher cloud_pub_;
 
   std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>>
       server_;                                                            // action server
   moveit_task_constructor_msgs::SampleGraspPosesFeedback feedback_;  // action feedback message
   moveit_task_constructor_msgs::SampleGraspPosesResult result_;      // action result message
 
-  // std::string path_to_pcd_file_;    // path to cylinder pcd file
+  std::string path_to_pcd_file_;    // path to cylinder pcd file
   std::string path_to_gpd_config_;  // path to GPD config file
   std::string point_cloud_topic_;   // point cloud topic name
   std::string goal_name_;           // action name
@@ -339,6 +388,7 @@ private:
   std::string frame_id_;            // frame of point cloud/grasps
 
   bool goal_active_;                // action goal status
+  bool load_cloud_;                 // load cloud from file
 
   std::vector<double> view_point_;                      // origin of the camera
   std::unique_ptr<gpd::GraspDetector> grasp_detector_;  // used to run the GPD algorithm
