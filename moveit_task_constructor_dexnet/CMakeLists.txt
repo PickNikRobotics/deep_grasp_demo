@@ -77,24 +77,23 @@ include_directories(
 # Declare a C++ executable
 add_executable(grasp_image_detection
                src/grasp_image_detection.cpp
-							 src/image_server.cpp
 )
 
-# add_executable(image_server
-#                src/image_server.cpp
-# )
+add_executable(process_image_server
+							 src/image_server.cpp
+							 src/process_image_server.cpp
+)
 
 # Specify libraries to link a library or executable target against
 target_link_libraries(grasp_image_detection
 										  ${catkin_LIBRARIES}
 										  ${Eigen3_LIBRARIES}
-											${OpenCV_LIBRARIES}
 )
 
-# target_link_libraries(image_server
-#                       ${catkin_LIBRARIES}
-# 											# ${OpenCV_LIBRARIES}
-# )
+target_link_libraries(process_image_server
+                      ${catkin_LIBRARIES}
+											${OpenCV_LIBRARIES}
+)
 
 #############
 ## Install ##
@@ -110,7 +109,7 @@ catkin_install_python(PROGRAMS
 # Mark executables and/or libraries for installation
 install(
   TARGETS
-    grasp_image_detection
+    grasp_image_detection process_image_server
   ARCHIVE DESTINATION
     ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION
