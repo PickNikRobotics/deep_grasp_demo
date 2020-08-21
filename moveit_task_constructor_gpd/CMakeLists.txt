@@ -15,10 +15,12 @@ find_package(catkin REQUIRED COMPONENTS
 	actionlib
 	eigen_conversions
 	geometry_msgs
+	message_generation
 	moveit_task_constructor_msgs
 	roscpp
 	rosparam_shortcuts
 	sensor_msgs
+	std_msgs
 )
 
 # System dependencies are found with CMake's conventions
@@ -39,15 +41,30 @@ else()
   message(FATAL_ERROR "Include directory GPD not found")
 endif()
 
+# Service files
+add_service_files(
+  FILES
+  PointCloud.srv
+)
+
+# Message generation dependencies
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
+
 ###################################
 ## Catkin specific configuration ##
 ###################################
 catkin_package(
+	INCLUDE_DIRS include
 	CATKIN_DEPENDS
 	  eigen_conversions
 		geometry_msgs
+		message_runtime
 		moveit_task_constructor_msgs
 		sensor_msgs
+		std_msgs
  	DEPENDS
  		EIGEN3
 		PCL
@@ -67,13 +84,18 @@ include_directories(
 )
 
 include_directories(
-  # include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 # Declare a C++ executable
 add_executable(grasp_cloud_detection
                src/grasp_cloud_detection.cpp
+)
+
+add_executable(point_cloud_server
+							 src/cloud_server.cpp
+               src/point_cloud_server.cpp
 )
 
 # Specify libraries to link a library or executable target against
@@ -84,6 +106,11 @@ target_link_libraries(grasp_cloud_detection
 											${GPD_LIB}
 )
 
+target_link_libraries(point_cloud_server
+                      ${catkin_LIBRARIES}
+											${PCL_LIBRARIES}
+)
+
 #############
 ## Install ##
 #############
@@ -91,7 +118,7 @@ target_link_libraries(grasp_cloud_detection
 # Mark executables and/or libraries for installation
 install(
   TARGETS
-    grasp_cloud_detection
+    grasp_cloud_detection point_cloud_server
   ARCHIVE DESTINATION
     ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION
@@ -100,13 +127,13 @@ install(
     ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-# # Mark cpp header files for installation
-# install(
-#   DIRECTORY
-#     include/${PROJECT_NAME}/
-#   DESTINATION
-#     ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-# )
+# Mark cpp header files for installation
+install(
+  DIRECTORY
+    include/${PROJECT_NAME}/
+  DESTINATION
+    ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
 
 # Mark roslaunch files for installation
 install(
