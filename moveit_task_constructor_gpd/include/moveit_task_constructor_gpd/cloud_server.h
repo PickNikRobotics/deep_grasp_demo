@@ -41,16 +41,12 @@
 
 // C++
 #include <string>
-
-// PCL
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include <vector>
 
 #include <moveit_task_constructor_gpd/PointCloud.h>
 
 namespace moveit_task_constructor_gpd
 {
-typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloudRGB;
 constexpr char LOGNAME[] = "cloud_server";
 
 class CloudServer
@@ -66,17 +62,20 @@ public:
 
   bool saveCallback(moveit_task_constructor_gpd::PointCloud::Request& req, moveit_task_constructor_gpd::PointCloud::Response&);
 
-  void removeTable(PointCloudRGB::Ptr cloud);
-
 private:
   ros::NodeHandle nh_;
   ros::Subscriber cloud_sub_;
+  ros::Publisher cloud_pub_;
   ros::ServiceServer saver_srv_;
 
   std::string cloud_topic_;
   std::string cloud_dir_;
   std::string file_name_;
 
+  std::vector<double> xyz_lower_limits_;
+  std::vector<double> xyz_upper_limits_;
+
   bool save_;
+  bool cartesian_limits_;
 };
 } // namespace moveit_task_constructor_gpd

@@ -39,12 +39,7 @@
 #include <rosparam_shortcuts/rosparam_shortcuts.h>
 #include <pcl_conversions/pcl_conversions.h>
 
-// PCL
-#include <pcl/io/pcd_io.h>
-#include <pcl/ModelCoefficients.h>
-#include <pcl/segmentation/sac_segmentation.h>
-#include <pcl/filters/extract_indices.h>
-
+#include <moveit_task_constructor_gpd/cloud_utils.h>
 #include <moveit_task_constructor_gpd/cloud_server.h>
 
 
@@ -63,6 +58,14 @@ void CloudServer::loadParameters()
   size_t errors = 0;
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "cloud_topic", cloud_topic_);
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "cloud_dir", cloud_dir_);
+
+  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "cartesian_limits", cartesian_limits_);
+  if(cartesian_limits_){
+    errors += !rosparam_shortcuts::get(LOGNAME, pnh, "xyz_lower_limits", xyz_lower_limits_);
+    errors += !rosparam_shortcuts::get(LOGNAME, pnh, "xyz_upper_limits", xyz_upper_limits_);
+  }
+
+
   rosparam_shortcuts::shutdownIfError(LOGNAME, errors);
 }
 
@@ -70,6 +73,7 @@ void CloudServer::loadParameters()
 void CloudServer::init()
 {
   cloud_sub_ = nh_.subscribe(cloud_topic_, 1, &CloudServer::cloudCallback, this);
+  cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("filtered_cloud", 1, true);
   saver_srv_ = nh_.advertiseService("save_point_cloud", &CloudServer::saveCallback, this);
 }
 
@@ -78,9 +82,21 @@ void CloudServer::cloudCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
 {
   if(save_){
     // convert from ROS msg to a point cloud
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+    PointCloudRGB::Ptr cloud(new PointCloudRGB);
     pcl::fromROSMsg(*msg.get(), *cloud.get());
+
+    // segment out table
     removeTable(cloud);
+
+    // remove points out of limits
+    if(cartesian_limits_){
+      passThroughFilter(xyz_lower_limits_, xyz_upper_limits_, cloud);
+    }
+
+    // publish the cloud for visualization and debugging purposes
+    sensor_msgs::PointCloud2 cloud_msg;
+    pcl::toROSMsg(*cloud.get(), cloud_msg);
+    cloud_pub_.publish(cloud_msg);
 
     if (!cloud->points.empty()){
       ROS_INFO_NAMED(LOGNAME, "Saving point cloud to file...");
@@ -105,48 +121,5 @@ bool CloudServer::saveCallback(moveit_task_constructor_gpd::PointCloud::Request&
   save_ = true;
   file_name_ = req.cloud_file;
   return true;
-}
-
-
-void CloudServer::removeTable(PointCloudRGB::Ptr cloud)
-{
-  // SAC segmentor without normals
-  pcl::SACSegmentation<pcl::PointXYZRGB> segmentor;
-  segmentor.setOptimizeCoefficients(true);
-  segmentor.setModelType(pcl::SACMODEL_PLANE);
-  segmentor.setMethodType(pcl::SAC_RANSAC);
-
-  // Max iterations and model tolerance
-  segmentor.setMaxIterations(1000);
-  segmentor.setDistanceThreshold (0.01);
-
-  // Input cloud
-  segmentor.setInputCloud(cloud);
-
-  // Inliers representing points in the plane
-  pcl::PointIndices::Ptr inliers_plane(new pcl::PointIndices);
-
-  // Use a plane as the model for the segmentor
-  pcl::ModelCoefficients::Ptr coefficients_plane(new pcl::ModelCoefficients);
-  segmentor.segment(*inliers_plane, *coefficients_plane);
-
-  if (inliers_plane->indices.size () == 0)
-  {
-    ROS_ERROR_NAMED(LOGNAME, "Could not estimate a planar model for the given dataset");
-  }
-
-  // Extract the inliers from the cloud
-  pcl::ExtractIndices<pcl::PointXYZRGB> extract_indices;
-  extract_indices.setInputCloud(cloud);
-  extract_indices.setIndices(inliers_plane);
-
-  // Remove plane inliers and extract the rest
-  extract_indices.setNegative(true);
-  extract_indices.filter(*cloud);
-
-  if (cloud->points.empty())
-  {
-    ROS_ERROR_NAMED(LOGNAME, "Can't find objects");
-  }
 }
 } // namespace moveit_task_constructor_gpd
