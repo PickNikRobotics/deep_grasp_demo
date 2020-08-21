@@ -1,51 +1,55 @@
 #!/usr/bin/env python3
 
-# /*********************************************************************
-#  * BSD 3-Clause License
-#  *
-#  * Copyright (c) 2020 PickNik LLC.
-#  * All rights reserved.
-#  *
-#  * Redistribution and use in source and binary forms, with or without
-#  * modification, are permitted provided that the following conditions are met:
-#  *
-#  *  * Redistributions of source code must retain the above copyright notice, this
-#  *    list of conditions and the following disclaimer.
-#  *
-#  *  * Redistributions in binary form must reproduce the above copyright notice,
-#  *    this list of conditions and the following disclaimer in the documentation
-#  *    and/or other materials provided with the distribution.
-#  *
-#  *  * Neither the name of the copyright holder nor the names of its
-#  *    contributors may be used to endorse or promote products derived from
-#  *    this software without specific prior written permission.
-#  *
-#  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-#  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-#  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-#  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-#  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-#  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-#  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-#  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-#  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-#  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#  *********************************************************************/
-#
-# /* Author: Boston Cleek
-#    Desc:   GQCNN- selects the grasp with the highest probability of success
-# */
+"""
+*********************************************************************
+* Software License Agreement (BSD License)
+*
+*  Copyright (c) 2020, PickNik Inc
+*  All rights reserved.
+*
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
+*  are met:
+*
+*   * Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
+*   * Redistributions in binary form must reproduce the above
+*     copyright notice, this list of conditions and the following
+*     disclaimer in the documentation and/or other materials provided
+*     with the distribution.
+*   * Neither the name of PickNik Inc nor the names of its
+*     contributors may be used to endorse or promote products derived
+*     from this software without specific prior written permission.
+*
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+*  POSSIBILITY OF SUCH DAMAGE.
+*********************************************************************
+ Author: Boston Cleek
+ Desc:   GQCNN- selects the grasp with the highest probability of success
+"""
 
+camera_intr_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/deep_grasp_task/config/calib/camera.intr"
+color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_cylinder.png"
+depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_cylinder.png"
 
-camera_intr_filename = "/home/bostoncleek/GPD_ws/src/gqcnn_demo/config/calib/camera.intr"
-color_img_filename = "/home/bostoncleek/GPD_ws/src/gqcnn_demo/data/images/rgb_cylinder.png"
-depth_img_filename = "/home/bostoncleek/GPD_ws/src/gqcnn_demo/data/images/depth_cylinder.png"
+# color_img_filename = ""
+# depth_img_filename = ""
 
-# color_img_filename = "/home/bostoncleek/GPD_ws/src/gqcnn_demo/data/images/rgb_clamp.png"
-# depth_img_filename = "/home/bostoncleek/GPD_ws/src/gqcnn_demo/data/images/depth_clamp.png"
+# color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_clamp.png"
+# depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_clamp.png"
 
-# color_img_filename = "/home/bostoncleek/GPD_ws/src/gqcnn_demo/data/images/rgb_berry.png"
-# depth_img_filename = "/home/bostoncleek/GPD_ws/src/gqcnn_demo/data/images/depth_berry.png"
+# color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_berry.png"
+# depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_berry.png"
 
 model_name = "GQCNN-4.0-PJ"
 model_dir = "/home/bostoncleek/dex-net/deps/gqcnn/models/GQCNN-4.0-PJ"
@@ -72,6 +76,10 @@ from gqcnn.utils import GripperMode
 
 
 if __name__ == "__main__":
+
+    # input_msg = sys.stdin.read().split('\n')
+    # color_img_filename = input_msg[0]
+    # depth_img_filename = input_msg[1]
 
     # model weights
     model_config = json.load(open(os.path.join(model_dir, "config.json"), "r"))
@@ -124,7 +132,7 @@ if __name__ == "__main__":
                " is %d x %d but depth is %d x %d") % (
                    color_im.height, color_im.width, depth_im.height,
                    depth_im.width)
-        print(msg)
+        # print(msg)
 
     # assume not mask is provided
     # segmask = depth_im.invalid_pixel_mask().inverse()
@@ -153,9 +161,8 @@ if __name__ == "__main__":
     # Query policy.
     policy_start = time.time()
     action = policy(state)
-    print("Planning took %.3f sec" % (time.time() - policy_start))
-
-    print("Gripper pose: ", action.grasp.pose())
+    # print("Planning took %.3f sec" % (time.time() - policy_start))
+    # print("Gripper pose: ", action.grasp.pose())
 
     # # Vis final grasp.
     if policy_config["vis"]["final_grasp"]:
@@ -177,24 +184,24 @@ if __name__ == "__main__":
 
 
     # # cylinder
-    # position = np.array([-4.57311577e-04, -1.43138524e-01, 5.06934174e-01])
-    # orientation = np.array([ 0.4442379, 0.55013879, -0.4442379, 0.55013879])
-    #
+    position = np.array([-4.57311577e-04, -1.43138524e-01, 5.06934174e-01])
+    orientation = np.array([ 0.4442379, 0.55013879, -0.4442379, 0.55013879])
+
     # # strawberry
     # # position = np.array([-0.01649518,  0.0018328,   0.67722449])
     # # orientation = np.array([0.63906815,  0.30264155, -0.63906815,  0.30264155])
-    #
-    # frame = "camera_optical_link"
-    # q_value = 0.0
-    #
-    # position = position.tolist()
-    # orientation = orientation.tolist()
-    #
-    # # sys.stdout.flush()
-    # sys.stdout.write(frame + '\n')
-    # sys.stdout.write(str(position) + '\n')
-    # sys.stdout.write(str(orientation) + '\n')
-    # sys.stdout.write(str(q_value) + '\n')
+
+    frame = "camera_optical_link"
+    q_value = 0.0
+
+    position = position.tolist()
+    orientation = orientation.tolist()
+
+    # sys.stdout.flush()
+    sys.stdout.write(frame + '\n')
+    sys.stdout.write(str(position) + '\n')
+    sys.stdout.write(str(orientation) + '\n')
+    sys.stdout.write(str(q_value) + '\n')
 
 
 
