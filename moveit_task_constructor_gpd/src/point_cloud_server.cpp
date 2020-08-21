@@ -39,12 +39,9 @@
 
 #include <moveit_task_constructor_gpd/cloud_server.h>
 
-constexpr char LOGNAME[] = "point_cloud_server";
-
-
 int main(int argc, char** argv)
 {
-  ROS_INFO_NAMED(LOGNAME, "Init point_cloud_server");
+  ROS_INFO_STREAM_NAMED("main", "Starting point_cloud_server");
   ros::init(argc, argv, "point_cloud_server");
   ros::NodeHandle nh;
 
@@ -54,5 +51,6 @@ int main(int argc, char** argv)
   moveit_task_constructor_gpd::CloudServer cloud_server(nh);
   ros::waitForShutdown();
 
+  ROS_INFO_STREAM_NAMED("main", "Shutting down.");
   return 0;
 }
