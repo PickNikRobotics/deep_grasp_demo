@@ -98,7 +98,7 @@ private:
   ros::Publisher cloud_pub_;   // publishes the point cloud saved
   ros::ServiceServer saver_srv_; // service for saving point clouds
 
-  std::string cloud_topic_; // point cloud topic
+  std::string point_cloud_topic_; // point cloud topic
   std::string cloud_dir_;   // directory to save
   std::string file_name_;   // file name to save as
 
