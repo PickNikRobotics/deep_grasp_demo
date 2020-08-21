@@ -8,6 +8,7 @@
 
   <!-- Point cloud data collection -->
   <arg name="cartesian_limits" default="true" doc="specify cartesian limits on cloud in frame of optical link"/>
+  <arg name="remove_table" default="true" doc="segment table plane from object"/>
   <arg name="xyz_lower_limits" default="[-0.2, -0.2, 0.0]" doc="lower x,y,z cartesian limits on cloud"/>
   <arg name="xyz_upper_limits" default="[0.2, 0.2, 0.75]" doc="upper x,y,z cartesian limits on cloud"/>
 
@@ -20,6 +21,7 @@
     <rosparam param="xyz_upper_limits" subst_value="True">$(arg xyz_upper_limits)</rosparam>
     <param name="cloud_topic" value="$(arg cloud_topic)"/>
     <param name="cloud_dir" value="$(arg cloud_dir)"/>
+    <param name="remove_table" value="$(arg remove_table)"/>
   </node>
 
   <!-- publish tf for camera links -->
