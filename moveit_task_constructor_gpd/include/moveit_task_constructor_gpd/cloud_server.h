@@ -49,33 +49,64 @@ namespace moveit_task_constructor_gpd
 {
 constexpr char LOGNAME[] = "cloud_server";
 
+/**
+* @brief Provides a service for saving and process a point cloud
+* @details When the service is called the point cloud received through
+*          the point cloud topic is saved. Optionally, either the ground plane
+*          is removed and/or points outside the specified cartesian limits
+*          are removed. The resulting cloud is published.
+*/
 class CloudServer
 {
 public:
+  /**
+  * @brief Constructor
+  * @param nh - node handle
+  */
   CloudServer(ros::NodeHandle& nh);
 
+  /**
+  * @brief Loads parameters for action server and GPD
+  */
   void loadParameters();
 
+  /**
+  * @brief Initialize ROS communication
+  */
   void init();
 
+  /**
+  * @brief Point cloud call back
+  * @param msg - point cloud message
+  * @details Optionally, either the ground plane
+  *          is removed and/or points outside the specified cartesian limits
+  *          are removed. The resulting cloud is published.
+  */
   void cloudCallback(const sensor_msgs::PointCloud2::ConstPtr &msg);
 
+  /**
+  * @brief Service callback for saving a point cloud
+  * @param req - Service request contains the file name
+  * @return true when called
+  * @details The response is empty
+  */
   bool saveCallback(moveit_task_constructor_gpd::PointCloud::Request& req, moveit_task_constructor_gpd::PointCloud::Response&);
 
 private:
   ros::NodeHandle nh_;
-  ros::Subscriber cloud_sub_;
-  ros::Publisher cloud_pub_;
-  ros::ServiceServer saver_srv_;
+  ros::Subscriber cloud_sub_;  // point cloud subscriber
+  ros::Publisher cloud_pub_;   // publishes the point cloud saved
+  ros::ServiceServer saver_srv_; // service for saving point clouds
 
-  std::string cloud_topic_;
-  std::string cloud_dir_;
-  std::string file_name_;
+  std::string cloud_topic_; // point cloud topic
+  std::string cloud_dir_;   // directory to save
+  std::string file_name_;   // file name to save as
 
-  std::vector<double> xyz_lower_limits_;
-  std::vector<double> xyz_upper_limits_;
+  std::vector<double> xyz_lower_limits_; // lower limits on point cloud
+  std::vector<double> xyz_upper_limits_; // upper limits on point cloud
 
-  bool save_;
-  bool cartesian_limits_;
+  bool save_;                     // save service activated
+  bool remove_table_;            // specify if to remove table points
+  bool cartesian_limits_;         // specify if to remove points outside limits
 };
 } // namespace moveit_task_constructor_gpd
