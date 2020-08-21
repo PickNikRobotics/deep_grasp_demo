@@ -1,5 +1,8 @@
 # Request saving depth and rgb images
 # Input is file names to save them as
+# Output is true if image is saved
 string depth_file
 string color_file
 ---
+bool depth_saved
+bool color_saved
