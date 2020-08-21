@@ -2,18 +2,16 @@
 <launch>
   <arg name="load_cloud" default="true" doc="load point cloud from file"/>
 
-  <!-- Action namespace -->
-  <arg name="action_name" value="generate_grasps"/>
+  <arg name="action_name" value="generate_grasps" doc="action name space"/>
   <arg name="frame_id" value="panda_link0" doc="frame of the grasps sent to MTC"/>
   <arg name="point_cloud_topic" value="/camera/depth/color/points" doc="point cloud topic name"/>
 
   <!-- file paths -->
-  <!-- <arg name="path_to_pcd_file" value="$(find moveit_task_constructor_gpd)/config/cylinder.pcd" doc="path to point cloud file"/> -->
   <arg name="path_to_pcd_file" value="$(find moveit_task_constructor_gpd)/data/pointclouds/cylinder.pcd" doc="path to point cloud file"/>
   <arg name="path_to_gpd_config" value="$(find moveit_task_constructor_gpd)/config/gpd_config.yaml" doc="path to GPD config and gripper params file"/>
 
   <!-- Run MTC pick and place -->
-  <node name="deep_grasp_demo" pkg="deep_grasp_task" type="deep_grasp_demo" output="screen">
+  <node name="mtc_tutorial" pkg="deep_grasp_task" type="deep_grasp_demo" output="screen">
       <param name="execute" value="true" />
       <param name="action_name" value="$(arg action_name)"/>
       <rosparam command="load" file="$(find deep_grasp_task)/config/panda_object.yaml" />
