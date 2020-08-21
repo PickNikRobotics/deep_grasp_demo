@@ -58,6 +58,7 @@ generate_messages(
 ###################################
 catkin_package(
 	INCLUDE_DIRS include
+	LIBRARIES ${PROJECT_NAME}
 	CATKIN_DEPENDS
 	  eigen_conversions
 		geometry_msgs
@@ -88,6 +89,17 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+# Declare a C++ library with project namespace to avoid naming collision
+add_library(${PROJECT_NAME}
+            src/${PROJECT_NAME}/cloud_utils.cpp
+)
+
+# Specify libraries to link a library or executable target against
+target_link_libraries(${PROJECT_NAME}
+										  ${catkin_LIBRARIES}
+											${PCL_LIBRARIES}
+)
+
 # Declare a C++ executable
 add_executable(grasp_cloud_detection
                src/grasp_cloud_detection.cpp
@@ -101,6 +113,7 @@ add_executable(point_cloud_server
 # Specify libraries to link a library or executable target against
 target_link_libraries(grasp_cloud_detection
                       ${catkin_LIBRARIES}
+											${PROJECT_NAME}
 											${Eigen3_LIBRARIES}
 											${PCL_LIBRARIES}
 											${GPD_LIB}
@@ -108,6 +121,7 @@ target_link_libraries(grasp_cloud_detection
 
 target_link_libraries(point_cloud_server
                       ${catkin_LIBRARIES}
+											${PROJECT_NAME}
 											${PCL_LIBRARIES}
 )
 
@@ -118,7 +132,7 @@ target_link_libraries(point_cloud_server
 # Mark executables and/or libraries for installation
 install(
   TARGETS
-    grasp_cloud_detection point_cloud_server
+    grasp_cloud_detection ${PROJECT_NAME} point_cloud_server
   ARCHIVE DESTINATION
     ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION
