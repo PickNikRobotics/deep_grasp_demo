@@ -67,7 +67,6 @@ class GraspDetection
 {
 public:
   /**
-  * @brief <brief>
   * @brief Constructor
   * @param nh - node handle
   * @details loads parameters, registers callbacks for the action server,
