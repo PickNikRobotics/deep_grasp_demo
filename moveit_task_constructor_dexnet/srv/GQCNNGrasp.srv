@@ -1,7 +1,8 @@
 # Ideally this input would be the depth and color image.
-# Untill python3 support the serve input is a string and the
-# output it the grasp selected from the GQCNN and the probability of success.
-string name
+# Input file paths to the images
+# Output it the grasp selected from the GQCNN and the probability of success.
+string color_img_file_path
+string depth_img_file_path
 ---
 geometry_msgs/PoseStamped grasp
 float64 q_val
