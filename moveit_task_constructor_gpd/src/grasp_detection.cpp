@@ -153,7 +153,6 @@ void GraspDetection::sampleGrasps()
     const Eigen::Isometry3d transform_opt_grasp = Eigen::Translation3d(grasps.at(id)->getPosition()) *
                                                   Eigen::Quaterniond(grasps.at(id)->getOrientation());
 
-    // TODO compose this T once in init()
     const Eigen::Isometry3d transform_base_grasp = trans_base_cam_ * transform_cam_opt_ * transform_opt_grasp;
     const Eigen::Vector3d trans = transform_base_grasp.translation();
     const Eigen::Quaterniond rot(transform_base_grasp.rotation());
