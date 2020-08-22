@@ -65,6 +65,7 @@ public:
   */
   CloudServer(ros::NodeHandle& nh);
 
+private:
   /**
   * @brief Loads parameters
   */
@@ -93,7 +94,7 @@ public:
   bool saveCallback(moveit_task_constructor_gpd::PointCloud::Request& req, moveit_task_constructor_gpd::PointCloud::Response&);
 
 private:
-  ros::NodeHandle nh_;
+  ros::NodeHandle nh_; // node handle
   ros::Subscriber cloud_sub_;  // point cloud subscriber
   ros::Publisher cloud_pub_;   // publishes the point cloud saved
   ros::ServiceServer saver_srv_; // service for saving point clouds
