@@ -61,7 +61,7 @@ constexpr char LOGNAME[] = "grasp_pose_detection";
 /**
 * @brief Generates grasp poses for a generator stage with MTC
 * @details Interfaces with the GPD lib using ROS messages and interfaces
-*          with MTC using a Action Server
+*          with MTC using an Action Server
 */
 class GraspDetection
 {
@@ -74,8 +74,9 @@ public:
   */
   GraspDetection(const ros::NodeHandle& nh);
 
+private:
   /**
-  * @brief Loads parameters for action server and GPD
+  * @brief Loads parameters for action server, GPD, and relevant transformations
   */
   void loadParameters();
 
@@ -115,7 +116,7 @@ public:
   void cloudCallback(const sensor_msgs::PointCloud2::ConstPtr &msg);
 
 private:
-  ros::NodeHandle nh_;
+  ros::NodeHandle nh_; // node handle
   ros::Subscriber cloud_sub_;               // subscribes to point cloud
   ros::Publisher cloud_pub_;                // publishes segmented cloud
 
