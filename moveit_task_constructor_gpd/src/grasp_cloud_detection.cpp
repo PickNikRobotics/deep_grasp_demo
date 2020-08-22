@@ -43,7 +43,7 @@
     point_cloud_topic (optional) - point cloud topic
     path_to_gpd_config - path to GPD config file
     action_name - action namespace
-    frame_id - frame of the grasp candidates
+    frame_id - frame of the grasp candidates sent to MTC
     trans_cam_opt - transform from camera link to optical link
     trans_base_cam - transform from robot base link to camera link
     view_point - (x,y,z) view point of camera usually (0,0,0)
