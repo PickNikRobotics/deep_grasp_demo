@@ -76,6 +76,7 @@ include_directories(
 
 # Declare a C++ executable
 add_executable(grasp_image_detection
+							 src/grasp_detection.cpp
                src/grasp_image_detection.cpp
 )
 
