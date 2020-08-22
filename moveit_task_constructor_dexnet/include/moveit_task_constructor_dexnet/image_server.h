@@ -60,6 +60,7 @@ public:
   */
   ImageServer(ros::NodeHandle& nh);
 
+private:
   /**
   * @brief Loads parameters
   */
@@ -99,7 +100,7 @@ public:
   bool saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::string &image_name);
 
 private:
-  ros::NodeHandle nh_;
+  ros::NodeHandle nh_;             // node handle
   ros::Subscriber color_img_sub_;  // color image subscriber
   ros::Subscriber depth_img_sub_;  // depth image subscriber
   ros::ServiceServer saver_srv_;   // image saver service
