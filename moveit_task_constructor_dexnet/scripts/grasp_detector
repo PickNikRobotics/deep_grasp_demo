@@ -38,15 +38,10 @@
  Desc:   GQCNN- selects the grasp with the highest probability of success
 """
 
-camera_intr_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/deep_grasp_task/config/calib/camera.intr"
-color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_cylinder.png"
-depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_cylinder.png"
-
-grasp_file = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/grasps/grasp_candidates.bin"
-
-
-# color_img_filename = ""
-# depth_img_filename = ""
+# camera_intr_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/deep_grasp_task/config/calib/camera.intr"
+# color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_cylinder.png"
+# depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_cylinder.png"
+# sampled_grasps_file = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/grasps/grasp_candidates.bin"
 
 # color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_clamp.png"
 # depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_clamp.png"
@@ -54,9 +49,9 @@ grasp_file = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_construct
 # color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_berry.png"
 # depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_berry.png"
 
-model_name = "GQCNN-4.0-PJ"
-model_dir = "/home/bostoncleek/dex-net/deps/gqcnn/models/GQCNN-4.0-PJ"
-config_filename = "/home/bostoncleek/dex-net/deps/gqcnn/cfg/examples/replication/dex-net_4.0_pj.yaml"
+# model_name = "GQCNN-4.0-PJ"
+# model_dir = "/home/bostoncleek/dex-net/deps/gqcnn/models/GQCNN-4.0-PJ"
+# model_params = "/home/bostoncleek/dex-net/deps/gqcnn/cfg/examples/replication/dex-net_4.0_pj.yaml"
 
 import json
 import os
@@ -81,9 +76,14 @@ from gqcnn.utils import GripperMode
 
 if __name__ == "__main__":
 
-    # input_msg = sys.stdin.read().split('\n')
-    # color_img_filename = input_msg[0]
-    # depth_img_filename = input_msg[1]
+    input_msg = sys.stdin.read().split('\n')
+    color_img_filename = input_msg[0]
+    depth_img_filename = input_msg[1]
+    sampled_grasps_filename = input_msg[2]
+    camera_intr_filename = input_msg[3]
+    model_name = input_msg[4]
+    model_dir = input_msg[5]
+    model_params = input_msg[6]
 
     # model weights
     model_config = json.load(open(os.path.join(model_dir, "config.json"), "r"))
@@ -109,7 +109,7 @@ if __name__ == "__main__":
                 "Input data mode {} not supported!".format(input_data_mode))
 
     # policy params
-    config = YamlConfig(config_filename)
+    config = YamlConfig(model_params)
     policy_config = config["policy"]
     policy_config["metric"]["gqcnn_model"] = model_dir
 
@@ -155,11 +155,6 @@ if __name__ == "__main__":
     rgbd_im = RgbdImage.from_color_and_depth(color_im, depth_im)
 
     state = RgbdImageState(rgbd_im, camera_intr, segmask=segmask)
-
-    # vis.imshow(segmask)
-    # vis.imshow(rgbd_im)
-    # vis.show()
-
     policy = CrossEntropyRobustGraspingPolicy(policy_config)
 
     # Query policy.
@@ -176,7 +171,7 @@ if __name__ == "__main__":
                                 action.grasp.pose().to_frame])
 
     # serialize candidates
-    pickle_sols = open(grasp_file, "wb")
+    pickle_sols = open(sampled_grasps_filename, "wb")
     pickle.dump(grasp_candidate, pickle_sols, protocol=2)
     pickle_sols.close()
 

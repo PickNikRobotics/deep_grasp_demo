@@ -44,7 +44,6 @@
                                the learned policy and the probability of success
 """
 
-
 # Python
 import subprocess
 import numpy as np
@@ -55,20 +54,28 @@ import pickle
 from geometry_msgs.msg import PoseStamped
 from moveit_task_constructor_dexnet.srv import GQCNNGrasp, GQCNNGraspResponse
 
-# TODO: load from param server
-grasp_file = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/grasps/grasp_candidates.bin"
-
-
-
 class GraspServer():
     """ Advertise a grasp candidate service """
 
     def __init__(self):
         """ Constructor """
 
-        self.policy_script = rospy.get_param('~dexnet_policy_script')
-        self.grasp_serv = rospy.Service('gqcnn_grasp', GQCNNGrasp, self.handle_grasp)
+        # neural network parameters
+        self.model_name = rospy.get_param('~model_name')
+        self.model_dir = rospy.get_param('~model_dir')
+        self.model_params = rospy.get_param('~model_params')
 
+        # camera intrinsics
+        self.camera_calib_intr = rospy.get_param('~camera_calib_intr')
+
+        # dexnet policy executable script
+        self.policy_script = rospy.get_param('~dexnet_policy_script')
+
+        # sampled grasp candidates storage
+        self.sampled_grasps_file = rospy.get_param('~sampled_grasps')
+
+        # sample grasps service
+        self.grasp_serv = rospy.Service('gqcnn_grasp', GQCNNGrasp, self.handle_grasp)
 
     def handle_grasp(self, req):
         """  Callback for GQCNNGrasp sevice
@@ -94,12 +101,17 @@ class GraspServer():
         # sends data to stdin, read data from stdout, waits until process reaches end of file
         # TODO: pass additional args to python3 script
         proc_out = proc.communicate(req.color_img_file_path + '\n' +
-                                    req.depth_img_file_path + '\n')[0]
+                                    req.depth_img_file_path + '\n' +
+                                    self.sampled_grasps_file + '\n' +
+                                    self.camera_calib_intr + '\n' +
+                                    self.model_name + '\n' +
+                                    self.model_dir + '\n' +
+                                    self.model_params + '\n')[0]
         # end subproces
         ######################################################################
 
         # sampled grasps
-        sols_file = open(grasp_file, 'rb')
+        sols_file = open(self.sampled_grasps_file, 'rb')
         data = pickle.load(sols_file)
         sols_file.close()
 
