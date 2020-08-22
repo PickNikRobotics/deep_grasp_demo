@@ -42,6 +42,9 @@ camera_intr_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/deep_grasp_
 color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_cylinder.png"
 depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_cylinder.png"
 
+grasp_file = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/grasps/grasp_candidates.bin"
+
+
 # color_img_filename = ""
 # depth_img_filename = ""
 
@@ -60,6 +63,7 @@ import os
 import sys
 import time
 import cv2
+import pickle
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -132,7 +136,7 @@ if __name__ == "__main__":
                " is %d x %d but depth is %d x %d") % (
                    color_im.height, color_im.width, depth_im.height,
                    depth_im.width)
-        # print(msg)
+        print(msg)
 
     # assume not mask is provided
     # segmask = depth_im.invalid_pixel_mask().inverse()
@@ -161,68 +165,28 @@ if __name__ == "__main__":
     # Query policy.
     policy_start = time.time()
     action = policy(state)
-    # print("Planning took %.3f sec" % (time.time() - policy_start))
-    # print("Gripper pose: ", action.grasp.pose())
+    print("Planning took %.3f sec" % (time.time() - policy_start))
+    print("Gripper pose: ", action.grasp.pose())
 
-    # # Vis final grasp.
-    if policy_config["vis"]["final_grasp"]:
-        vis.figure(size=(10, 10))
-        vis.imshow(rgbd_im.depth,
-                   vmin=policy_config["vis"]["vmin"],
-                   vmax=policy_config["vis"]["vmax"])
-        vis.grasp(action.grasp, scale=2.5, show_center=False, show_axis=True)
-        vis.title("Planned grasp at depth {0:.3f}m with Q={1:.3f}".format(
-            action.grasp.depth, action.q_value))
-        vis.show()
+    # Position: [x y z]
+    # Orientation: [qw qx qy qz]
+    grasp_candidate = np.array([action.grasp.pose().position,
+                                action.grasp.pose().quaternion,
+                                action.q_value,
+                                action.grasp.pose().to_frame])
 
-    # [x y z]
-    # print("Position: ", action.grasp.pose().position)
-    # [qw qx qy qz]
-    # print("Orientation: ", action.grasp.pose().quaternion)
-    # print("Frame: ", action.grasp.pose().to_frame)
-    # print("Q value: ", action.q_value)
+    # serialize candidates
+    pickle_sols = open(grasp_file, "wb")
+    pickle.dump(grasp_candidate, pickle_sols, protocol=2)
+    pickle_sols.close()
 
-
-    # # cylinder
-    position = np.array([-4.57311577e-04, -1.43138524e-01, 5.06934174e-01])
-    orientation = np.array([ 0.4442379, 0.55013879, -0.4442379, 0.55013879])
-
-    # # strawberry
-    # # position = np.array([-0.01649518,  0.0018328,   0.67722449])
-    # # orientation = np.array([0.63906815,  0.30264155, -0.63906815,  0.30264155])
-
-    frame = "camera_optical_link"
-    q_value = 0.0
-
-    position = position.tolist()
-    orientation = orientation.tolist()
-
-    # sys.stdout.flush()
-    sys.stdout.write(frame + '\n')
-    sys.stdout.write(str(position) + '\n')
-    sys.stdout.write(str(orientation) + '\n')
-    sys.stdout.write(str(q_value) + '\n')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#
+    # Vis final grasp.
+    # if policy_config["vis"]["final_grasp"]:
+    #     vis.figure(size=(10, 10))
+    #     vis.imshow(rgbd_im.depth,
+    #                vmin=policy_config["vis"]["vmin"],
+    #                vmax=policy_config["vis"]["vmax"])
+    #     vis.grasp(action.grasp, scale=2.5, show_center=False, show_axis=True)
+    #     vis.title("Planned grasp at depth {0:.3f}m with Q={1:.3f}".format(
+    #         action.grasp.depth, action.q_value))
+    #     vis.show()
