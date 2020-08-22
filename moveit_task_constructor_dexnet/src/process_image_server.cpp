@@ -41,7 +41,7 @@
     color_img_topic (sensor_msgs/Image) - color image
     depth_img_topic (sensor_msgs/Image) - depth image
    SERVICES:
-    save_images (moveit_task_constructor_dexnet/Images) - specifies file name for each image
+    save_images (moveit_task_constructor_dexnet/Images) - save images service
 */
 
 // ROS
@@ -63,6 +63,6 @@ int main(int argc, char** argv)
 
   ros::waitForShutdown();
   ROS_INFO_STREAM_NAMED("main", "Shutting down.");
-  
+
   return 0;
 }
