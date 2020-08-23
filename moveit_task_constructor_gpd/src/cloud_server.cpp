@@ -101,10 +101,10 @@ void CloudServer::cloudCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
     pcl::toROSMsg(*cloud.get(), cloud_msg);
     cloud_pub_.publish(cloud_msg);
 
-    if (!cloud->points.empty()){
+    if(!cloud->points.empty()){
       ROS_INFO_NAMED(LOGNAME, "Saving point cloud to file...");
 
-      if (!pcl::io::savePCDFile(cloud_dir_ + file_name_, *cloud.get())){
+      if(!pcl::io::savePCDFile(cloud_dir_ + file_name_, *cloud.get())){
         ROS_INFO_NAMED(LOGNAME, "Point cloud saved");
       } else{
         ROS_ERROR_NAMED(LOGNAME, "Failed to save cloud");

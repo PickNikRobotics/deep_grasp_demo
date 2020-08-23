@@ -91,7 +91,7 @@ void GraspDetection::init()
   // GPD point cloud camera, load cylinder from file
   // set camera view origin
   // assume cloud was taken using one camera
-  if (load_cloud_){
+  if(load_cloud_){
     Eigen::Matrix3Xd camera_view_point(3, 1);
     camera_view_point << view_point_.at(0), view_point_.at(1), view_point_.at(2);
     cloud_camera_.reset(new gpd::util::Cloud(path_to_pcd_file_, camera_view_point));
@@ -113,7 +113,7 @@ void GraspDetection::goalCallback()
 
   // sample grasps now else need to wait to callback
   // use GPD to find the grasp candidates
-  if (load_cloud_){
+  if(load_cloud_){
     sampleGrasps();
   }
 }
@@ -134,20 +134,21 @@ void GraspDetection::sampleGrasps()
 
   // Use grasps with score > 0
   std::vector<unsigned int> grasp_id;
-  for (unsigned int i = 0; i < grasps.size(); i++)
+  for(unsigned int i = 0; i < grasps.size(); i++)
   {
-    if (grasps.at(i)->getScore() > 0.0){
+    if(grasps.at(i)->getScore() > 0.0){
       grasp_id.push_back(i);
     }
   }
 
-  if (grasp_id.empty()){
+  if(grasp_id.empty()){
+    ROS_ERROR_NAMED(LOGNAME, "No grasp candidates found with a positive cost");
     result_.grasp_state = "failed";
     server_->setAborted(result_);
     return;
   }
 
-  for (auto id : grasp_id)
+  for(auto id : grasp_id)
   {
     // transform grasp from camera optical link into frame_id (panda_link0)
     const Eigen::Isometry3d transform_opt_grasp = Eigen::Translation3d(grasps.at(id)->getPosition()) *
@@ -184,7 +185,7 @@ void GraspDetection::sampleGrasps()
 
 void GraspDetection::cloudCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
 {
-  if (goal_active_){
+  if(goal_active_){
     PointCloudRGB::Ptr cloud(new PointCloudRGB);
     pcl::fromROSMsg(*msg.get(), *cloud.get());
 
