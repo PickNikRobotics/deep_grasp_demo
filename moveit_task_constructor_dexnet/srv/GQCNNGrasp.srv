@@ -1,8 +1,8 @@
 # Ideally this input would be the depth and color image.
 # Input file paths to the images
-# Output it the grasp selected from the GQCNN and the probability of success.
+# Outputs are the grasps selected from the GQCNN and the corresponding probabilities of success.
 string color_img_file_path
 string depth_img_file_path
 ---
-geometry_msgs/PoseStamped grasp
-float64 q_val
+geometry_msgs/PoseStamped[] grasps
+float64[] q_values
