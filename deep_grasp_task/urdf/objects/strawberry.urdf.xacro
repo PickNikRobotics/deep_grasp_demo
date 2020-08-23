@@ -3,12 +3,12 @@
   <link name="strawberry">
   <visual>
      <geometry>
-	       <mesh filename="package://gqcnn_demo/meshes/objects/strawberry.dae"/>
+	       <mesh filename="package://deep_grasp_task/meshes/objects/strawberry.dae"/>
 	     </geometry>
   </visual>
   <collision>
     <geometry>
-       <mesh filename="package://gqcnn_demo/meshes/objects/strawberry.dae"/>
+       <mesh filename="package://deep_grasp_task/meshes/objects/strawberry.dae"/>
 	   </geometry>
   </collision>
 	<inertial>

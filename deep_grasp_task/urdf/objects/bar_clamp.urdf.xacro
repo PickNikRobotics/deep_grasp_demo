@@ -3,12 +3,12 @@
   <link name="bar_clamp">
     <visual>
       <geometry>
-	      <mesh filename="package://gqcnn_demo/meshes/objects/bar_clamp.dae"/>
+	      <mesh filename="package://deep_grasp_task/meshes/objects/bar_clamp.dae"/>
 	    </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://gqcnn_demo/meshes/objects/bar_clamp.dae"/>
+        <mesh filename="package://deep_grasp_task/meshes/objects/bar_clamp.dae"/>
 	    </geometry>
     </collision>
 	<inertial>
