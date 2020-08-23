@@ -27,7 +27,7 @@
   </link>
 
   <gazebo reference="cylinder_link">
-    <material>Gazebo/Green</material>
+    <!-- <material>Gazebo/Grey</material> -->
     <dampingFactor>0.005</dampingFactor>
     <kp>1000000</kp>
     <kd>1.0</kd>
