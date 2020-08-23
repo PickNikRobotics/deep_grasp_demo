@@ -107,7 +107,7 @@ bool ImageServer::saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::
   // imwrite() saves image as BGR
   cv::Mat img_converted;
 
-  if (msg->encoding == "rgb8"){
+  if(msg->encoding == "rgb8"){
     cv_ptr->image.convertTo(img_converted, CV_8UC3); // convert to BGR
   } else if (msg->encoding == "32FC1"){
     cv_ptr->image.convertTo(img_converted, CV_8UC3, 255.0); // conver to BGR and scale
@@ -116,7 +116,7 @@ bool ImageServer::saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::
     return false;
   }
 
-  if (cv::imwrite(image_dir_ + image_name, img_converted)){
+  if(cv::imwrite(image_dir_ + image_name, img_converted)){
     ROS_INFO_NAMED(LOGNAME, "Saving image %s (encoding): %s ", image_name.c_str(), msg->encoding.c_str());
   } else {
     ROS_WARN_NAMED(LOGNAME, "Image %s not saved", image_name.c_str());
