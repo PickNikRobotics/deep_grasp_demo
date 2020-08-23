@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Franka Panda in gazebo + ros control -->
+  <include file="$(find deep_grasp_task)/launch/panda_world.launch"/>
+
+  <!-- spawn object -->
+  <!-- cylinder -->
+  <param name="object_description" command="$(find xacro)/xacro '$(find deep_grasp_task)/urdf/objects/cylinder.urdf.xacro'"/>
+  <node name="spawn_gazebo_object" pkg="gazebo_ros" type="spawn_model"
+     args="-urdf -param object_description -model cylinder -x 0.5 -y -0.25 -z 0.125" respawn="false" output="screen" />
+
+  <!-- bar clamp -->
+ <!-- <param name="object_description" command="$(find xacro)/xacro '$(find deep_grasp_task)/urdf/objects/bar_clamp.urdf.xacro'"/>
+ <node name="spawn_gazebo_object" pkg="gazebo_ros" type="spawn_model"
+    args="-urdf -param object_description -model bar_clamp -x 0.5 -y 0.0 -z 0.03" respawn="false" output="screen" /> -->
+
+  <!-- strawberry -->
+  <!-- <param name="object_description" command="$(find xacro)/xacro '$(find deep_grasp_task)/urdf/objects/strawberry.urdf.xacro'"/>
+  <node name="spawn_gazebo_object" pkg="gazebo_ros" type="spawn_model"
+     args="-urdf -param object_description -model strawberry -x 0.5 -y 0.0 -z 0.0" respawn="false" output="screen" /> -->
+</launch>
