@@ -20,15 +20,4 @@
     <mu1>100.0</mu1>
     <mu2>100.0</mu2>
   </gazebo>
-
-
-
-
-  <!-- overhead position -->
-  <!-- <xacro:property name="cam_px" value="0.5" />
-  <xacro:property name="cam_py" value="0.0" />
-  <xacro:property name="cam_pz" value="0.7" />
-  <xacro:property name="cam_or" value="0.0" />
-  <xacro:property name="cam_op" value="${M_PI/2.0}" />
-  <xacro:property name="cam_oy" value="0.0" /> -->
 </robot>
