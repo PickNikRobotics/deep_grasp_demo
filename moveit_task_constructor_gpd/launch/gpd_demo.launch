@@ -4,10 +4,10 @@
 
   <arg name="action_name" value="generate_grasps" doc="action name space"/>
   <arg name="frame_id" value="panda_link0" doc="frame of the grasps sent to MTC"/>
-  <arg name="point_cloud_topic" value="/camera/depth/color/points" doc="point cloud topic name"/>
+  <arg unless="$(arg load_cloud)" name="point_cloud_topic" value="/camera/depth/color/points" doc="point cloud topic name"/>
 
   <!-- file paths -->
-  <arg name="path_to_pcd_file" value="$(find moveit_task_constructor_gpd)/data/pointclouds/cylinder.pcd" doc="path to point cloud file"/>
+  <arg if="$(arg load_cloud)" name="path_to_pcd_file" value="$(find moveit_task_constructor_gpd)/data/pointclouds/cylinder.pcd" doc="path to point cloud file"/>
   <arg name="path_to_gpd_config" value="$(find moveit_task_constructor_gpd)/config/gpd_config.yaml" doc="path to GPD config and gripper params file"/>
 
   <!-- Run MTC pick and place -->
@@ -19,13 +19,13 @@
 
   <!-- Grasp detection using GPD -->
   <node name="grasp_cloud_detection" pkg="moveit_task_constructor_gpd" type="grasp_cloud_detection" output="screen">
+    <param if="$(arg load_cloud)" name="path_to_pcd_file" value="$(arg path_to_pcd_file)"/>
+    <param unless="$(arg load_cloud)" name="point_cloud_topic" value="$(arg point_cloud_topic)"/>
+    <rosparam command="load" file="$(find deep_grasp_task)/config/calib/camera.yaml" />
     <rosparam param="view_point">[0.0, 0.0, 0.0]</rosparam>
+    <param name="load_cloud" value="$(arg load_cloud)"/>
     <param name="action_name" value="$(arg action_name)"/>
     <param name="frame_id" value="$(arg frame_id)"/>
-    <param name="point_cloud_topic" value="$(arg point_cloud_topic)"/>
     <param name="path_to_gpd_config" value="$(arg path_to_gpd_config)"/>
-    <param name="load_cloud" value="$(arg load_cloud)"/>
-    <param name="path_to_pcd_file" value="$(arg path_to_pcd_file)"/>
-    <rosparam command="load" file="$(find deep_grasp_task)/config/calib/camera.yaml" />
   </node>
 </launch>
