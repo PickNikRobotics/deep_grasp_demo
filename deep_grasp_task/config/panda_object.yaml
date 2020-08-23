@@ -44,7 +44,8 @@ object_pose: [0.5, -0.25, 0.0, 0, 0, 0]
 spawn_camera: false
 camera_name: "camera"
 camera_mesh_file: "package://deep_grasp_task/meshes/camera/kinect.dae"
-camera_pose: [0.5, 0, 0.7, 0, 1.571, 1.571]
+camera_pose: [0.5, 0, 0.7, 0, 0, 0] # side
+# camera_pose: [0.5, 0, 0.7, 0, 1.571, 1.571] # over head
 
 # Table model
 spawn_table: true
