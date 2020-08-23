@@ -14,6 +14,8 @@
 
   <arg if="$(arg load_images)" name="color_image_file" value="rgb_cylinder.png" doc="color image file"/>
   <arg if="$(arg load_images)" name="depth_image_file" value="depth_cylinder.png" doc="depth image file"/>
+  <!-- <arg if="$(arg load_images)" name="color_image_file" value="rgb_clamp.png" doc="color image file"/>
+  <arg if="$(arg load_images)" name="depth_image_file" value="depth_clamp.png" doc="depth image file"/> -->
 
   <arg unless="$(arg load_images)" name="color_img_topic" value="/camera/rgb/image_raw" doc="topic name for raw color image"/>
   <arg unless="$(arg load_images)" name="depth_img_topic" value="/camera/depth/image_raw" doc="topic name for raw depth image"/>
@@ -27,21 +29,21 @@
 
   <!-- Grasp detection using GQCNN and Dex-Net data sets -->
   <node name="grasp_image_detection" pkg="moveit_task_constructor_dexnet" type="grasp_image_detection" output="screen">
+    <param if="$(arg load_images)" name="color_image_file" value="$(arg color_image_file)"/>
+    <param if="$(arg load_images)" name="depth_image_file" value="$(arg depth_image_file)"/>
+    <rosparam command="load" file="$(find deep_grasp_task)/config/calib/camera.yaml" />
     <param name="action_name" value="$(arg action_name)"/>
     <param name="frame_id" value="$(arg frame_id)"/>
     <param name="image_dir" value="$(arg image_dir)"/>
     <param name="load_images" value="$(arg load_images)"/>
-    <param if="$(arg load_images)" name="color_image_file" value="$(arg color_image_file)"/>
-    <param if="$(arg load_images)" name="depth_image_file" value="$(arg depth_image_file)"/>
-    <rosparam command="load" file="$(find deep_grasp_task)/config/calib/camera.yaml" />
   </node>
 
   <!-- Server handles interaction with the GQCNN and data sets -->
   <node name="gqcnn_server" pkg="moveit_task_constructor_dexnet" type="gqcnn_server" output="screen">
+    <rosparam command="load" file="$(arg dexnet_model_config)"/>
     <param name="dexnet_policy_script" value="$(arg dexnet_policy_script)"/>
     <param name="camera_calib_intr" value="$(arg camera_calib_intr)"/>
     <param name="sampled_grasps" value="$(arg sampled_grasps)"/>
-    <rosparam command="load" file="$(arg dexnet_model_config)"/>
   </node>
 
   <!-- Image data collection -->
