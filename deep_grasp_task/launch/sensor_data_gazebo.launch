@@ -15,6 +15,7 @@
   <arg name="point_cloud_topic" value="/camera/depth/color/points" doc="point cloud topic name"/>
   <arg name="cloud_dir" value="$(find moveit_task_constructor_gpd)/data/pointclouds/" doc="directory to point clouds"/>
 
+  <!-- Point cloud data collection -->
   <node name="point_cloud_server" pkg="moveit_task_constructor_gpd" type="point_cloud_server" output="screen">
     <param name="cartesian_limits" value="$(arg cartesian_limits)"/>
     <rosparam param="xyz_lower_limits" subst_value="True">$(arg xyz_lower_limits)</rosparam>
@@ -48,6 +49,10 @@
   <param name="object_description" command="$(find xacro)/xacro '$(find deep_grasp_task)/urdf/objects/cylinder.urdf.xacro'"/>
   <node name="spawn_gazebo_object" pkg="gazebo_ros" type="spawn_model"
      args="-urdf -param object_description -model cylinder -x 0.5 -y -0.25 -z 0.125" respawn="false" output="screen" />
+
+ <!-- <param name="object_description" command="$(find xacro)/xacro '$(find deep_grasp_task)/urdf/objects/cylinder.urdf.xacro'"/>
+ <node name="spawn_gazebo_object" pkg="gazebo_ros" type="spawn_model"
+    args="-urdf -param object_description -model cylinder -x 0 -y 0.01 -z 0 -P 1.57079632679" respawn="false" output="screen" /> -->
 
   <!-- bar clamp -->
  <!-- <param name="object_description" command="$(find xacro)/xacro '$(find deep_grasp_task)/urdf/objects/bar_clamp.urdf.xacro'"/>
