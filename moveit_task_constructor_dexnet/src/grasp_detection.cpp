@@ -39,6 +39,9 @@
 #include <rosparam_shortcuts/rosparam_shortcuts.h>
 #include <geometry_msgs/PoseStamped.h>
 
+// C++
+#include <vector>
+
 #include <moveit_task_constructor_dexnet/grasp_detection.h>
 #include <moveit_task_constructor_dexnet/GQCNNGrasp.h>
 #include <moveit_task_constructor_dexnet/Images.h>
@@ -145,44 +148,56 @@ void GraspDetection::sampleGrasps()
 
   if(gqcnn_client_.call(grasp_srv)){
     ROS_INFO_NAMED(LOGNAME, "Called gqcnn_grasp service, waiting for response...");
-    const geometry_msgs::PoseStamped grasp_pose_camera = grasp_srv.response.grasp;
-    const double q_val = grasp_srv.response.q_val;
+    const std::vector<geometry_msgs::PoseStamped> grasp_candidates = grasp_srv.response.grasps;
+    const std::vector<double> q_values = grasp_srv.response.q_values;
     ROS_INFO_NAMED(LOGNAME, "Results recieved");
 
-    // transform grasp from camera optical link into frame_id (panda_link0)
-    // the demo is using fake_controllers there is no tf data for the camera
-    // convert PoseStamped to transform (optical link to grasp)
-    const Eigen::Isometry3d transform_opt_grasp = Eigen::Translation3d(grasp_pose_camera.pose.position.x,
-                                                                 grasp_pose_camera.pose.position.y,
-                                                                 grasp_pose_camera.pose.position.z) *
-                                              Eigen::Quaterniond(grasp_pose_camera.pose.orientation.w,
-                                                                 grasp_pose_camera.pose.orientation.x,
-                                                                 grasp_pose_camera.pose.orientation.y,
-                                                                 grasp_pose_camera.pose.orientation.z);
+    if(grasp_candidates.empty()){
+      ROS_ERROR_NAMED(LOGNAME, "No grasp candidates found");
+      result_.grasp_state = "failed";
+      server_->setAborted(result_);
+      return;
+    }
 
-    // the 6dof grasp pose in frame_id (panda_link0)
-    const Eigen::Isometry3d transform_base_grasp = trans_base_cam_ * transform_cam_opt_ * transform_opt_grasp;
-    const Eigen::Vector3d trans = transform_base_grasp.translation();
-    const Eigen::Quaterniond rot(transform_base_grasp.rotation());
+    for(unsigned int i = 0; i < grasp_candidates.size(); i++)
+    {
+      // transform grasp from camera optical link into frame_id (panda_link0)
+      // the demo is using fake_controllers there is no tf data for the camera
+      // convert PoseStamped to transform (optical link to grasp)
+      const Eigen::Isometry3d transform_opt_grasp = Eigen::Translation3d(grasp_candidates.at(i).pose.position.x,
+                                                                   grasp_candidates.at(i).pose.position.y,
+                                                                   grasp_candidates.at(i).pose.position.z) *
+                                                Eigen::Quaterniond(grasp_candidates.at(i).pose.orientation.w,
+                                                                   grasp_candidates.at(i).pose.orientation.x,
+                                                                   grasp_candidates.at(i).pose.orientation.y,
+                                                                   grasp_candidates.at(i).pose.orientation.z);
 
-    // convert back to PoseStamped
-    geometry_msgs::PoseStamped grasp_pose;
-    grasp_pose.header.frame_id = frame_id_;
-    grasp_pose.pose.position.x = trans.x();
-    grasp_pose.pose.position.y = trans.y();
-    grasp_pose.pose.position.z = trans.z();
+      // the 6dof grasp pose in frame_id (panda_link0)
+      const Eigen::Isometry3d transform_base_grasp = trans_base_cam_ * transform_cam_opt_ * transform_opt_grasp;
+      const Eigen::Vector3d trans = transform_base_grasp.translation();
+      const Eigen::Quaterniond rot(transform_base_grasp.rotation());
 
-    grasp_pose.pose.orientation.w = rot.w();
-    grasp_pose.pose.orientation.x = rot.x();
-    grasp_pose.pose.orientation.y = rot.y();
-    grasp_pose.pose.orientation.z = rot.z();
+      // convert back to PoseStamped
+      geometry_msgs::PoseStamped grasp_pose;
+      grasp_pose.header.frame_id = frame_id_;
+      grasp_pose.pose.position.x = trans.x();
+      grasp_pose.pose.position.y = trans.y();
+      grasp_pose.pose.position.z = trans.z();
 
-    // send feedback to action client
-    feedback_.grasp_candidates.emplace_back(grasp_pose);
+      grasp_pose.pose.orientation.w = rot.w();
+      grasp_pose.pose.orientation.x = rot.x();
+      grasp_pose.pose.orientation.y = rot.y();
+      grasp_pose.pose.orientation.z = rot.z();
 
-    // q_val_ (probability of success), if there is more than one grasp
-    // the cost = 1.0 - q_val_ to represent cost
-    feedback_.costs.emplace_back(q_val);
+      // send feedback to action client
+      feedback_.grasp_candidates.emplace_back(grasp_pose);
+
+      // Q_value (probability of success)
+      // cost = 1.0 - Q_value, to represent cost
+      const double cost = 1.0 - q_values.at(i);
+      // ROS_INFO_NAMED(LOGNAME, "ID: %u Cost: %f", i, cost);
+      feedback_.costs.emplace_back(cost);
+    }
 
     server_->publishFeedback(feedback_);
     result_.grasp_state = "success";
