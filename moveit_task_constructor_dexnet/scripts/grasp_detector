@@ -39,13 +39,18 @@
 """
 
 # camera_intr_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/deep_grasp_task/config/calib/camera.intr"
+#
+# sampled_grasps_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/grasps/grasp_candidates.bin"
+#
+# color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_object.png"
+# depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_object.png"
+
 # color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_cylinder.png"
 # depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_cylinder.png"
-# sampled_grasps_file = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/grasps/grasp_candidates.bin"
 
 # color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_clamp.png"
 # depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_clamp.png"
-
+#
 # color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_berry.png"
 # depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_berry.png"
 
@@ -157,25 +162,42 @@ if __name__ == "__main__":
     state = RgbdImageState(rgbd_im, camera_intr, segmask=segmask)
     policy = CrossEntropyRobustGraspingPolicy(policy_config)
 
-    # Query policy.
-    policy_start = time.time()
-    action = policy(state)
-    print("Planning took %.3f sec" % (time.time() - policy_start))
-    print("Gripper pose: ", action.grasp.pose())
+    # Query policy for all sampled grasps
+    grasp_candidates, q_values = policy.action_set(state)
 
-    # Position: [x y z]
-    # Orientation: [qw qx qy qz]
-    grasp_candidate = np.array([action.grasp.pose().position,
-                                action.grasp.pose().quaternion,
-                                action.q_value,
-                                action.grasp.pose().to_frame])
+    candidate_array = []
+    for i in range(len(grasp_candidates)):
+        # Position: [x y z]
+        # Orientation: [qw qx qy qz]
+        candidate_array.append(np.array([grasp_candidates[i].pose().to_frame,
+                                         grasp_candidates[i].pose().position,
+                                         grasp_candidates[i].pose().quaternion,
+                                         q_values[i]]))
 
-    # serialize candidates
     pickle_sols = open(sampled_grasps_filename, "wb")
-    pickle.dump(grasp_candidate, pickle_sols, protocol=2)
+    pickle.dump(candidate_array, pickle_sols, protocol=2)
     pickle_sols.close()
 
-    # Vis final grasp.
+
+    # # Query policy for best grasp
+    # policy_start = time.time()
+    # action = policy(state)
+    # print("Planning took %.3f sec" % (time.time() - policy_start))
+    # print("Gripper pose: ", action.grasp.pose())
+    #
+    # # Position: [x y z]
+    # # Orientation: [qw qx qy qz]
+    # grasp_candidate = np.array([action.grasp.pose().to_frame,
+    #                             action.grasp.pose().position,
+    #                             action.grasp.pose().quaternion,
+    #                             action.q_value])
+    #
+    # # serialize candidates
+    # pickle_sols = open(sampled_grasps_filename, "wb")
+    # pickle.dump([grasp_candidate], pickle_sols, protocol=2)
+    # pickle_sols.close()
+    #
+    # # Vis final grasp.
     # if policy_config["vis"]["final_grasp"]:
     #     vis.figure(size=(10, 10))
     #     vis.imshow(rgbd_im.depth,
