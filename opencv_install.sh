@@ -31,8 +31,8 @@ cd  opencv-3.4.0
 mkdir build
 cd build
 
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-3.4.0/modules -DOPENCV_ENABLE_NONFREE=True ..
-make -j4
+cmake -DCMAKE_BUILD_TYPE=Release -D WITH_CUDA=OFF -DCMAKE_INSTALL_PREFIX=/usr/local -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-3.4.0/modules -DOPENCV_ENABLE_NONFREE=True ..
+make -j
 sudo make install
 
 sudo ldconfig
