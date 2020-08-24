@@ -1,5 +1,6 @@
 #!/bin/bash
-# install PCL 1.11 
+# install PCL 1.11
+ 
 git clone https://github.com/PointCloudLibrary/pcl.git
 cd pcl
 mkdir build && cd build
