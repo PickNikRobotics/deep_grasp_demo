@@ -18,10 +18,10 @@ gpu)
 esac
 
 # install apt deps
-# sudo apt-get install cmake libvtk5-dev python-vtk python-sip python-qt4 libosmesa6-dev meshlab libhdf5-dev
+sudo apt-get install cmake libvtk5-dev python-vtk python-sip python-qt4 libosmesa6-dev meshlab libhdf5-dev
 
 # install pip deps
-# pip install numpy scipy scikit-learn scikit-image opencv-python pyassimp h5py mayavi matplotlib catkin_pkg multiprocess dill cvxopt ipython pillow pyhull setproctitle trimesh
+pip install numpy scipy scikit-learn scikit-image opencv-python pyassimp h5py mayavi matplotlib catkin_pkg multiprocess dill cvxopt ipython pillow pyhull setproctitle trimesh
 
 # install deps from source
 mkdir dexnet_deps
@@ -62,7 +62,6 @@ cd ..
 # gqcnn
 cd gqcnn
 python setup.py develop
-./scripts/downloads/models/download_models.sh
 cd ..
 
 # visualization
