@@ -100,18 +100,19 @@ chmod +x dexnet_install.sh
 #### Deep Grasping Packages
 For now it is recommended to create a new workspace to prevent conflicts between packages. This will especially be helpful if you want to use Gazebo with the demos.
 ```
-mkdir -p /grasp_ws/src
-cd ~/grasp_ws/src
+mkdir -p ~/ws_grasp/src
+cd ~/ws_grasp/src
 wstool init
-wstool merge https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/master/.rosinstall
+wstool merge https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/mtc_demos/.rosinstall
 wstool update
 
 rosdep install --from-paths . --ignore-src --rosdistro $ROS_DISTRO
 ```
 
-Note: Here you will need to extend the `grasp_ws` to the `moveit_ws` that was created from the [Getting Started Tutorial](https://ros-planning.github.io/moveit_tutorials/doc/getting_started/getting_started.html).
+Note: Here you will need to extend the `ws_grasp` to the `ws_moveit` that was created from the [Getting Started Tutorial](https://ros-planning.github.io/moveit_tutorials/doc/getting_started/getting_started.html).
 ```
-catkin config --extend <path_to_moveit_ws>/devel -DCMAKE_BUILD_TYPE=Release
+cd ~/ws_grasp
+catkin config --extend <path_to_ws_moveit>/devel -DCMAKE_BUILD_TYPE=Release
 catkin build
 ```
 
