@@ -1,0 +1,15 @@
+numpy==1.18.1
+scipy==1.4.1
+scikit-learn==0.22.2.post1
+scikit-image==0.17.2
+opencv-python==4.2.0.34
+Shapely==1.5.3
+h5py==2.10.0
+matplotlib==2.2.0
+multiprocess==0.70.10
+dill==0.3.2
+cvxopt==1.2.5
+ipython==5.5.0
+pillow==5.1.0
+setproctitle==1.1.10
+trimesh==3.7.14
