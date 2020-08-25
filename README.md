@@ -112,7 +112,7 @@ rosdep install --from-paths . --ignore-src --rosdistro $ROS_DISTRO
 Note: Here you will need to extend the `ws_grasp` to the `ws_moveit` that was created from the [Getting Started Tutorial](https://ros-planning.github.io/moveit_tutorials/doc/getting_started/getting_started.html).
 ```
 cd ~/ws_grasp
-catkin config --extend <path_to_ws_moveit>/devel -DCMAKE_BUILD_TYPE=Release
+catkin config --extend <path_to_ws_moveit>/devel --cmake-args -DCMAKE_BUILD_TYPE=Release
 catkin build
 ```
 
