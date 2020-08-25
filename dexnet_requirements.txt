@@ -11,5 +11,6 @@ dill==0.3.2
 cvxopt==1.2.5
 ipython==5.5.0
 pillow==5.1.0
+pyglet==1.5.7
 setproctitle==1.1.10
 trimesh==3.7.14
