@@ -85,6 +85,13 @@ add_executable(process_image_server
 							 src/process_image_server.cpp
 )
 
+
+## Add cmake target dependencies of the executable
+## same as for the library above
+add_dependencies(grasp_image_detection ${catkin_EXPORTED_TARGETS})
+add_dependencies(process_image_server ${catkin_EXPORTED_TARGETS})
+
+
 # Specify libraries to link a library or executable target against
 target_link_libraries(grasp_image_detection
 										  ${catkin_LIBRARIES}

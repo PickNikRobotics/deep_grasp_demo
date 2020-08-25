@@ -94,6 +94,12 @@ add_library(${PROJECT_NAME}
             src/${PROJECT_NAME}/cloud_utils.cpp
 )
 
+## Add cmake target dependencies of the library
+## as an example, code may need to be generated before libraries
+## either from message generation or dynamic reconfigure
+add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+
+
 # Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
 										  ${catkin_LIBRARIES}
@@ -110,6 +116,13 @@ add_executable(point_cloud_server
 							 src/cloud_server.cpp
                src/point_cloud_server.cpp
 )
+
+
+## Add cmake target dependencies of the executable
+## same as for the library above
+add_dependencies(grasp_cloud_detection ${catkin_EXPORTED_TARGETS})
+add_dependencies(point_cloud_server ${catkin_EXPORTED_TARGETS})
+
 
 # Specify libraries to link a library or executable target against
 target_link_libraries(grasp_cloud_detection
