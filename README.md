@@ -5,7 +5,7 @@
 This repository contains several demos for constructing a pick and place pipeline
 using deep learning methods for the grasp generation stage within the MoveIt Task Constructor.
 
-The packages where developed and tested on Ubuntu 18.04 running ROS Melodic.
+The packages were developed and tested on Ubuntu 18.04 running ROS Melodic.
 
 
 ## Packages
@@ -140,12 +140,12 @@ To see how to launch the demos using GPD and Dex-Net see the `moveit_task_constr
 Perhaps you want to collect depth sensor data on another object and use fake controllers to execute the motion plan. The launch file `sensor_data_gazebo.launch` will launch a `process_image_server` and a `point_cloud_server` node. These will provide services to save either images or point clouds.
 Images will be saved to `moveit_task_constructor_dexnet/data/images` and point clouds saved to `moveit_task_constructor_gpd/data/pointclouds`.
 
-To collect either depth image or point cloud data run:
+To collect either images or point clouds run:
 ```
 roslaunch deep_grasp_task sensor_data_gazebo.launch
 ```
 
-To save depth and color images:
+To save the depth and color images:
 ```
 rosservice call /save_images "depth_file: 'my_depth_image.png'
 color_file: 'my_color_image.png'"
@@ -159,7 +159,7 @@ rosservice call /save_point_cloud "cloud_file: 'my_cloud_file.pcd'"
 
 
 ### Camera View Point
-Initially, the camera is setup to view the cylinder from the side of the robot. It is useful especially for Dex-Net to place the camera in an overhead position above the object. To change the camera view point there are a few file to modify. You can move the camera to a pre-set overhead position or follow the general format to create a new position.
+Initially, the camera is setup to view the cylinder from the side of the robot. It is useful especially for Dex-Net to place the camera in an overhead position above the object. To change the camera view point there are a few files to modify. You can move the camera to a pre-set overhead position or follow the general format to create a new position.
 
 First, modify the camera or the panda + camera urdf.
 
@@ -185,3 +185,15 @@ Finally, this is optional depending on whether the camera is added to the planni
 spawn_camera: true
 camera_pose: [0.5, 0, 0.7, 0, 1.571, 1.571]
 ```
+
+## Known Issues
+1) When running with Gazebo
+```
+ros.moveit_simple_controller_manager.SimpleControllerManager: Controller panda_hand_controller failed with error GOAL_TOLERANCE_VIOLATED:
+ros.moveit_ros_planning.trajectory_execution_manager: Controller handle panda_hand_controller reports status ABORTED
+```
+
+2) Planning may fail
+If using GPD increase the number of points sampled be setting `num_samples` in `config/gpd_config.yaml`.
+
+Another option is to run either algorithm again. Maybe low quality grasps were sampled or they were not kinematically feasible.
