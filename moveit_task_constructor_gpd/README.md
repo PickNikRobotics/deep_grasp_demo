@@ -76,7 +76,7 @@ In the example bellow 30 points from the point cloud were sampled by GPD.
   <img src="media/gpd_barclamp_gazebo2.gif" width="300" height="300"/>
 </p>
 
-Finally, 500 points were sampled from the bar clamp. This grasp candidate appears close to the one Dex-Net selects.
+Finally, 500 points were sampled from the bar clamp's point cloud. This grasp candidate appears close to the one Dex-Net selects.
 
 <p align="center">
   <img src="media/gpd_barclamp_gazebo3.gif" width="300" height="300"/>
