@@ -2,14 +2,14 @@
 <img src="https://picknik.ai/assets/images/logo.jpg" width="120">
 
 ## Overview
-Demo showing how to use the Grasp Pose Detection (GPD) library within the MoveIt Task Constructor.
+Demo showing how to use the Grasp Pose Detection (GPD) library within the MoveIt Task Constructor. GPD samples grasp candidates within a point cloud and returns a list of the candidates and their costs.
 
 ## Getting Started
-Under `config/gpd_congfig.yaml` navigate to line 33 and update `weights_file` to contain absolute file path to the location of the [lenet params](https://github.com/atenpas/gpd/tree/master/models/lenet/15channels/params) directory. This directory contains the learned model weights and is located where the GPD repository was cloned.
+In `config/gpd_congfig.yaml` navigate to line 33 and update `weights_file` to contain absolute file path to the location of the [lenet params](https://github.com/atenpas/gpd/tree/master/models/lenet/15channels/params) directory. This directory contains the learned model weights and is located where the GPD repository was cloned.
 
 
 ## Running
-### Using Fake Contollers
+### Using Fake Controllers
 You don't need Gazebo for this one. The point cloud data for the cylinder was collected ahead of time and located in `data/pointclouds/cylinder.pcd`
 
 To run the pick and place demo:
@@ -19,7 +19,7 @@ roslaunch moveit_task_constructor_gpd gpd_demo.launch
 ```
 
 ### Using Gazebo
-This demo allows you execute the motion plan in Gazebo. You have the option to load the point cloud data from a file or do use the simulated depth camera. The `path_to_pcd_file` argument in `gpd_demo.launch` specifies the point cloud that will be used.
+This demo allows you execute the motion plan in Gazebo. You have the option to load the point cloud data from a file or use the simulated depth camera. The `path_to_pcd_file` argument in `gpd_demo.launch` specifies the point cloud that will be used.
 
 
 launch the robot in Gazebo:
@@ -27,8 +27,7 @@ launch the robot in Gazebo:
 roslaunch deep_grasp_task gazebo_pick_place.launch
 ```
 
-The `load_cloud` argument in `gpd_demo.launch` specifies whether or not the demo will use
-point cloud data from the simulated depth camera. Set `load_cloud:=false` to use the simulated depth camera.
+The `load_cloud` argument in `gpd_demo.launch` specifies whether or not to load the point cloud from a file. Set `load_cloud:=false` to use the simulated depth camera.
 
 To run the pick and place demo:
 ```
