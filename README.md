@@ -7,6 +7,7 @@ using deep learning methods for the grasp generation stage within the MoveIt Tas
 
 The packages where developed and tested on Ubuntu 18.04 running ROS Melodic.
 
+
 ## Packages
 * `deep_grasp_task`: constructs a pick and place task using deep learning methods
 for the grasp generation stage within the MoveIt Task Constructor
@@ -116,6 +117,7 @@ catkin config --extend <path_to_ws_moveit>/devel --cmake-args -DCMAKE_BUILD_TYPE
 catkin build
 ```
 
+
 #### Panda Gazebo Support (Optional)
 You will need the C++ Franka Emika library. This can be installed from [source](https://github.com/frankaemika/libfranka) or by executing:
 ```
@@ -129,5 +131,57 @@ git clone https://github.com/tahsinkose/franka_ros.git -b simulation
 ```
 
 
-### Launching Demos and Further Details
+## Launching Demos and Further Details
 To see how to launch the demos using GPD and Dex-Net see the `moveit_task_constructor_gpd` and `moveit_task_constructor_dexnet` packages.
+
+
+## Depth Sensor Data / Camera View
+### Collecting Data using Gazebo
+Perhaps you want to collect depth sensor data on another object and use fake controllers to execute the motion plan. The launch file `sensor_data_gazebo.launch` will launch a `process_image_server` and a `point_cloud_server` node. These will provide services to save either images or point clouds.
+Images will be saved to `moveit_task_constructor_dexnet/data/images` and point clouds saved to `moveit_task_constructor_gpd/data/pointclouds`.
+
+To collect either depth image or point cloud data run:
+```
+roslaunch deep_grasp_task sensor_data_gazebo.launch
+```
+
+To save depth and color images:
+```
+rosservice call /save_images "depth_file: 'my_depth_image.png'
+color_file: 'my_color_image.png'"
+
+```
+
+To save a point cloud:
+```
+rosservice call /save_point_cloud "cloud_file: 'my_cloud_file.pcd'"
+```
+
+
+### Camera View Point
+Initially, the camera is setup to view the cylinder from the side of the robot. It is useful especially for Dex-Net to place the camera in an overhead position above the object. To change the camera view point there are a few file to modify. You can move the camera to a pre-set overhead position or follow the general format to create a new position.
+
+First, modify the camera or the panda + camera urdf.
+
+If you want to move the camera position just for collecting sensor data, in `deep_grasp_task/urdf/camera/camera.urdf.xacro` change the camera xacro macro line to read:
+```XML
+<xacro:kinect_camera parent_link="world" cam_px="0.5" cam_pz="0.7" cam_op="1.57079632679"/>
+```
+
+If you want to move the camera position and use the robot to execute trajectories. Go to `deep_grasp_task/urdf/robots/panda_camera.urdf.xacro` and change the camera xacro macro line to read:
+```XML
+<xacro:kinect_camera parent_link="panda_link0" cam_px="0.5" cam_pz="0.7" cam_op="1.57079632679"/>
+```
+
+Next, specify the transformation from the robot base link to the camera link.
+
+Change `deep_grasp_task/config/calib/camera.yaml` to read:
+```YAML
+trans_base_cam: [0.500, 0.000, 0.700, 0.707, 0.000, 0.707, 0.000]
+```
+
+Finally, this is optional depending on whether the camera is added to the planning scene. If the camera is in the planning scene you need to modify `deep_grasp_task/config/panda_object.yaml` to read:
+```YAML
+spawn_camera: true
+camera_pose: [0.5, 0, 0.7, 0, 1.571, 1.571]
+```
