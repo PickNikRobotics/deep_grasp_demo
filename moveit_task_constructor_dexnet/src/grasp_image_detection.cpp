@@ -31,7 +31,7 @@
  *********************************************************************/
 
 /* Author: Boston Cleek
-  Desc: Grasp pose detection (GPD) node, option to load images from a directory
+  Desc: Grasp pose generation using Dex-Net, option to load images from a directory
         or subscribe to call the save_images service. To sample grasps the
         gqcnn_grasp service is called. This service returns the grasp candidates
         and the associated probabilities of success. Communication with MTC
