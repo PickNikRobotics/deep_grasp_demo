@@ -13,4 +13,4 @@ This node is renamed at launch to mtc_tutorial. It constructs the pick and place
 
 * camera.yaml: depth camera extrinsic parameters used to transform the grasp candidates from the depth camera optical link to the frame of the base link of the robot
 
-* panda_object.yaml: Panda configurations and object pick and place configurations.
+* panda_object.yaml: Panda configurations and object pick and place configurations

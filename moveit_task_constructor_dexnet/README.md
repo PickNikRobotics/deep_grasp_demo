@@ -29,7 +29,7 @@ roslaunch moveit_task_constructor_dexnet dexnet_demo.launch
 ```
 
 ### Using Gazebo
-This demo allows you execute the motion plan in Gazebo. You have the option to load the images from a file or use the simulated depth camera. The `load_images` argument in `dexnet_demo.launch` specifies whether or not to load the images from a file. Set `load_images:=false` to use the simulated depth camera. Both the `color_image_file` and `depth_image_file` arguments in `dexnet_demo.launch` specify the name of the color and depth images to load.
+This demo allows you to execute the motion plan in Gazebo. You have the option to load the images from a file or use the simulated depth camera. The `load_images` argument in `dexnet_demo.launch` specifies whether or not to load the images from a file. Set `load_images:=false` to use the simulated depth camera. Both the `color_image_file` and `depth_image_file` arguments in `dexnet_demo.launch` specify the name of the color and depth images to load.
 
 launch the robot in Gazebo:
 ```
@@ -46,10 +46,10 @@ roslaunch moveit_task_constructor_gpd gpd_demo.launch
 
 ## Nodes
 ### grasp_image_detection
-This node bridges the gap between Dex-Net and the MoveIt Task Constructor. Communication with the MoveIt Task Constructor is achieved using ROS action messages. The action client sends the grasp candidates along with the costs back to the the `DeepGraspPose` stage. When an action goal is received the `gqcnn_grasp` service is called and the grasp candidates from Dex-Net are received. The images can either be loaded from a file or the node will call the `save_images` service to collect the data.
+This node bridges the gap between Dex-Net and the MoveIt Task Constructor. Communication with the MoveIt Task Constructor is achieved using ROS action messages. The action client sends the grasp candidates along with the costs back to the `DeepGraspPose` stage. When an action goal is received the `gqcnn_grasp` service is called and the grasp candidates from Dex-Net are received. The images can either be loaded from a file or the node will call the `save_images` service to collect the data.
 
 ### gqcnn_server
-This node interacts with a python 3 `grasp_detector` script running the Dex-Net 4.0 policy. The `grasp_detector` script is executed as a sub process to the node and communication with the node is achieved through a Unix Pipe. This node offers a `gqcnn_grasp` service that returns the sampled grasps and their probabilities of success.
+This node interacts with a python 3 `grasp_detector` script running the Dex-Net 4.0 policy. The `grasp_detector` script is executed as a subprocess to the node and communication with the node is achieved through a Unix Pipe. This node offers a `gqcnn_grasp` service that returns the sampled grasps and their probabilities of success.
 
 ### process_image_server
 This node is used primarily to save images. It subscribes to color and depth image topic names of type `sensor_msgs/Image`. It offers a `save_images` service that will save the color and depth images to the user specified file names.
@@ -66,7 +66,7 @@ The output to the cylinder demo using fake controller should look like this.
   <img src="media/mtc_gqcnn_panda.gif" width="450" height="450"/>
 </p>
 
-Here is the highest ranked grasp candidate with a probability of success of 64%. When the images are taken overhead this probability is better.
+Here is the highest ranked grasp candidate with a 64% probability of success. When the images are taken overhead this probability is better.
 
 <p align="center">
   <img src="media/cylinder_grasp.png" width="250" height="250"/>

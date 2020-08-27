@@ -100,14 +100,14 @@ Download the required packages and pre-trained models
   ./dexnet_install.sh {cpu|gpu}
   ```
 
-2) Download the pre-trained models
+2) Download the pretrained models
   ```
   ./dexnet_deps/gqcnn/scripts/downloads/models/download_models.sh
   ```
 
 ### ROS Packages
 #### Deep Grasping Packages
-For now it is recommended to create a new workspace to prevent conflicts between packages. This will especially be helpful if you want to use Gazebo with the demos.
+For now it is recommended to create a new workspace to prevent conflicts between packages. This will be especially helpful if you want to use Gazebo with the demos.
 ```
 mkdir -p ~/ws_grasp/src
 cd ~/ws_grasp/src
@@ -167,7 +167,7 @@ rosservice call /save_point_cloud "cloud_file: 'my_cloud_file.pcd'"
 
 
 ## Camera View Point
-Initially, the camera is setup to view the cylinder from the side of the robot. It is useful especially for Dex-Net to place the camera in an overhead position above the object. To change the camera view point there are a few files to modify. You can move the camera to a pre-set overhead position or follow the general format to create a new position.
+Initially, the camera is setup to view the cylinder from the side of the robot. It is useful particularly for Dex-Net to place the camera in an overhead position above the object. To change the camera view point there are a few files to modify. You can move the camera to a preset overhead position or follow the general format to create a new position.
 
 First, modify the camera or the panda + camera urdf.
 
@@ -203,6 +203,5 @@ ros.moveit_ros_planning.trajectory_execution_manager: Controller handle panda_ha
 
 2) Planning may fail
 
-If using GPD increase the number of points sampled be setting `num_samples` in `config/gpd_config.yaml`.
-
+If using GPD, increase the number of points sampled by setting `num_samples` in `config/gpd_config.yaml`.
 Another option is to run either algorithm again. Maybe low quality grasps were sampled or they were not kinematically feasible.
