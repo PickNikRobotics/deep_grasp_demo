@@ -1,8 +1,6 @@
 # Deep Grasp Demo
 <img src="https://picknik.ai/assets/images/logo.jpg" width="120">
 
-</br>
-
 1) [Overview](#Overview) </br>
 2) [Packages](#Packages) </br>
 3) [Install](#Install) </br>
@@ -12,8 +10,8 @@
 7) [Known Issues](#Known-Issues) </br>
 
 ## Overview
-This repository contains several demos for constructing a pick and place pipeline
-using deep learning methods for the grasp generation stage within the MoveIt Task Constructor.
+This repository contains several demos
+using deep learning methods for grasp pose generation within the MoveIt Task Constructor.
 
 The packages were developed and tested on Ubuntu 18.04 running ROS Melodic.
 
@@ -43,42 +41,42 @@ sudo apt upgrade
 #### Grasp Pose Detection
 1) Requirements
   * PCL >= 1.9: The `pcl_install.sh` script will install PCL 1.11
-```
+  ```
   wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/mtc_demos/pcl_install.sh
   chmod +x pcl_install.sh
   sudo ./pcl_install.sh
-```
+  ```
 
   * OpenCV >= 3.4: The `opencv_install.sh` script will install OpenCV 3.4
-```
-    wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/mtc_demos/opencv_install.sh
-    chmod +x opencv_install.sh
-    sudo ./opencv_install.sh
-```
+  ```
+  wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/mtc_demos/opencv_install.sh
+  chmod +x opencv_install.sh
+  sudo ./opencv_install.sh
+  ```
 
   * Eigen >= 3.0: If ROS is installed then this requirement is satisfied
 
 2) Clone th GPD library
-```
-git clone https://github.com/atenpas/gpd
-```
+  ```
+  git clone https://github.com/atenpas/gpd
+  ```
 
 3) Modify CMakeLists.txt
 
-First, remove the `-03` compiler optimization. This optimization can cause
-a segmentation fault on 18.04.
+  First, remove the `-03` compiler optimization. This optimization can cause
+  a segmentation fault on 18.04.
 
-```
-set(CMAKE_CXX_FLAGS "-fopenmp -fPIC -Wno-deprecated -Wenum-compare -Wno-ignored-attributes -std=c++14")
-```
+  ```
+  set(CMAKE_CXX_FLAGS "-fopenmp -fPIC -Wno-deprecated -Wenum-compare -Wno-ignored-attributes -std=c++14")
+  ```
 
-Next, update the `find_package()` functions for the `PCL` and `OpenCV`
-versions installed. If you ran the above install scripts `CMakeLists.txt` should read:
+  Next, update the `find_package()` functions for the `PCL` and `OpenCV`
+  versions installed. If you ran the above install scripts `CMakeLists.txt` should read:
 
-```
-find_package(PCL 1.11 REQUIRED)
-find_package(OpenCV 3.4 REQUIRED)
-```
+  ```
+  find_package(PCL 1.11 REQUIRED)
+  find_package(OpenCV 3.4 REQUIRED)
+  ```
 
 
 4) Build
@@ -94,18 +92,18 @@ sudo make install
 Download the required packages and pre-trained models
 
 1) Run the install script </br>
-If you have a GPU this option will install tensorflow with GPU support.
-```
-wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/mtc_demos/dexnet_install.sh
-wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/mtc_demos/dexnet_requirements.txt
-chmod +x dexnet_install.sh
-./dexnet_install.sh {cpu|gpu}
-```
+  If you have a GPU this option will install tensorflow with GPU support.
+  ```
+  wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/mtc_demos/dexnet_install.sh
+  wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/mtc_demos/dexnet_requirements.txt
+  chmod +x dexnet_install.sh
+  ./dexnet_install.sh {cpu|gpu}
+  ```
 
 2) Download the pre-trained models
-```
-./dexnet_deps/gqcnn/scripts/downloads/models/download_models.sh
-```
+  ```
+  ./dexnet_deps/gqcnn/scripts/downloads/models/download_models.sh
+  ```
 
 ### ROS Packages
 #### Deep Grasping Packages
@@ -147,7 +145,7 @@ To see how to launch the demos using GPD and Dex-Net see the `moveit_task_constr
 
 ## Depth Sensor Data
 ### Collecting Data using Gazebo
-Perhaps you want to collect depth sensor data on another object and use fake controllers to execute the motion plan. The launch file `sensor_data_gazebo.launch` will launch a `process_image_server` and a `point_cloud_server` node. These will provide services to save either images or point clouds.
+Perhaps you want to collect depth sensor data on an object and use fake controllers to execute the motion plan. The launch file `sensor_data_gazebo.launch` will launch a `process_image_server` and a `point_cloud_server` node. These will provide services to save either images or point clouds.
 Images will be saved to `moveit_task_constructor_dexnet/data/images` and point clouds saved to `moveit_task_constructor_gpd/data/pointclouds`.
 
 To collect either images or point clouds run:
@@ -204,6 +202,7 @@ ros.moveit_ros_planning.trajectory_execution_manager: Controller handle panda_ha
 ```
 
 2) Planning may fail
+
 If using GPD increase the number of points sampled be setting `num_samples` in `config/gpd_config.yaml`.
 
 Another option is to run either algorithm again. Maybe low quality grasps were sampled or they were not kinematically feasible.
