@@ -1,10 +1,15 @@
 # Deep Grasp Demo
 <img src="https://picknik.ai/assets/images/logo.jpg" width="120">
 
+</br>
 
-1)[Overview](#Overview)
-2)[Packages](#Packages)
-3)[Launching Demos and Further Details](#Launching-Demos-and-Further-Details)
+1) [Overview](#Overview) </br>
+2) [Packages](#Packages) </br>
+3) [Install](#Install) </br>
+4) [Launching Demos and Further Details](#Launching-Demos-and-Further-Details) </br>
+5) [Depth Sensor Data](#Depth-Sensor-Data) </br>
+6) [Camera View Point](#Camera-View-Point) </br>
+7) [Known Issues](#Known-Issues) </br>
 
 ## Overview
 This repository contains several demos for constructing a pick and place pipeline
@@ -140,7 +145,7 @@ git clone https://github.com/tahsinkose/franka_ros.git -b simulation
 To see how to launch the demos using GPD and Dex-Net see the `moveit_task_constructor_gpd` and `moveit_task_constructor_dexnet` packages.
 
 
-## Depth Sensor Data / Camera View
+## Depth Sensor Data
 ### Collecting Data using Gazebo
 Perhaps you want to collect depth sensor data on another object and use fake controllers to execute the motion plan. The launch file `sensor_data_gazebo.launch` will launch a `process_image_server` and a `point_cloud_server` node. These will provide services to save either images or point clouds.
 Images will be saved to `moveit_task_constructor_dexnet/data/images` and point clouds saved to `moveit_task_constructor_gpd/data/pointclouds`.
@@ -163,7 +168,7 @@ rosservice call /save_point_cloud "cloud_file: 'my_cloud_file.pcd'"
 ```
 
 
-### Camera View Point
+## Camera View Point
 Initially, the camera is setup to view the cylinder from the side of the robot. It is useful especially for Dex-Net to place the camera in an overhead position above the object. To change the camera view point there are a few files to modify. You can move the camera to a pre-set overhead position or follow the general format to create a new position.
 
 First, modify the camera or the panda + camera urdf.
