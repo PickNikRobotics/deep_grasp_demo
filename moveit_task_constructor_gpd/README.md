@@ -1,11 +1,18 @@
 # MoveIt Task Constructor Grasp Pose Detection
 <img src="https://picknik.ai/assets/images/logo.jpg" width="120">
 
+1) [Overview](#Overview) </br>
+2) [Getting Started](#Getting-Started) </br>
+3) [Running](#Running) </br>
+4) [Nodes](#Nodes) </br>
+5) [Tips](#Tips) </br>
+6) [Results](#Results) </br>
+
 ## Overview
 Demo showing how to use the Grasp Pose Detection (GPD) library within the MoveIt Task Constructor. GPD samples grasp candidates within a point cloud and returns a list of the candidates and their costs.
 
 ## Getting Started
-In `config/gpd_congfig.yaml` navigate to line 33 and update `weights_file` to contain absolute file path to the location of the [lenet params](https://github.com/atenpas/gpd/tree/master/models/lenet/15channels/params) directory. This directory contains the learned model weights and is located where the GPD repository was cloned.
+In `config/gpd_congfig.yaml` navigate to line 33 and update `weights_file` to contain the absolute file path to the location of the [lenet params](https://github.com/atenpas/gpd/tree/master/models/lenet/15channels/params) directory. This directory contains the learned model weights and is located where the GPD repository was cloned.
 
 
 ## Running
@@ -37,13 +44,13 @@ roslaunch moveit_task_constructor_gpd gpd_demo.launch
 
 ## Nodes
 ### grasp_cloud_detection
-This node uses GPD to sample grasp candidates from a point cloud. Communication with the MoveIt Task Constructor is achieved using ROS action messages. The action client sends the grasp candidates along with the costs back to the the `DeepGraspPose` stage. The point cloud can either be loaded from a file or the node can subscribe to the point cloud topic name `(sensor_msgs/PointCloud2)` specified as an input parameter. If subscribing to a point cloud topic, the table plane is removed and the resulting point cloud is published on `segmented_cloud`.
+This node uses GPD to sample grasp candidates from a point cloud. Communication with the MoveIt Task Constructor is achieved using ROS action messages. The action client sends the grasp candidates along with the costs back to the the `DeepGraspPose` stage. The point cloud can either be loaded from a file or the node can subscribe to the point cloud topic name of type `(sensor_msgs/PointCloud2)` specified as an input parameter. If subscribing to a point cloud topic, the table plane is removed and the resulting point cloud is published on `segmented_cloud`.
 
 ### point_cloud_server
-This node is primarily used for collecting point cloud data. The `save_point_cloud` service is offered to save point clouds to the user specified file. The node subscribes to the point cloud topic name `(sensor_msgs/PointCloud2)` specified as an input parameter. This node also offers the functionality to keep points within specified x,y,z lower and upper bounds. Additionally, the table plane can be removed from the point cloud specified by the `remove_table` parameter. The resulting point cloud is published on `filtered_cloud`
+This node is primarily used for collecting point cloud data. The `save_point_cloud` service is offered to save point clouds to the user specified file. The node subscribes to the point cloud topic name of tpye `(sensor_msgs/PointCloud2)` specified as an input parameter. This node also offers the functionality to keep points within specified cartesian lower and upper bounds. Additionally, the table plane can be removed from the point cloud specified by the `remove_table` parameter. The resulting point cloud is published on `filtered_cloud`.
 
 ## Tips
-If you are processing the point clouds on your own it is recommended to remove the table plane. GPD will find grasp candidates that try to pick up the object by table plane. Sometimes segmentation is not enough and GPD tries to grasp other pieces of a point cloud that are not the object. Other portions of the point cloud can be removed using PCL's `filter()` function. This allows you to specify x,y,z limits on which points to keep. See the `removeTable()` and `passThroughFilter()` functions in `cloud_utils.cpp.`
+If you are processing the point clouds on your own it is recommended to remove the table plane. GPD will find grasp candidates that try to pick up the object by the table plane. Sometimes segmentation is not enough and GPD tries to grasp other pieces of a point cloud that are not the object. Other portions of the point cloud can be removed using PCL's `filter()` function. This allows you to specify cartesian limits on which points to keep. See the `removeTable()` and `passThroughFilter()` functions in `cloud_utils.cpp.`
 
 ## Results
 The output to the cylinder demo using fake controller should look like this.
@@ -61,7 +68,7 @@ In the example bellow 30 points from the point cloud were sampled by GPD.
 </p>
 
 
-Other objects such as the strawberry and the bar clamp where tested and GPD was unsuccessful. With the strawberry 30 points were sampled here as well. I noticed that the grasp candidates were usually unable to create a force closure
+Other objects such as the strawberry and the bar clamp where tested and GPD was unsuccessful. With the strawberry 30 points were sampled here as well. I noticed the grasp candidates were usually unable to create a force closure.
 
 <p align="center">
   <img src="media/gpd_berry_gazebo.gif" width="300" height="300"/>
