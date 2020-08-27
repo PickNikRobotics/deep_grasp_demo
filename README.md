@@ -42,14 +42,14 @@ sudo apt upgrade
 1) Requirements
   * PCL >= 1.9: The `pcl_install.sh` script will install PCL 1.11
   ```
-  wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/mtc_demos/pcl_install.sh
+  wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/master/pcl_install.sh
   chmod +x pcl_install.sh
   sudo ./pcl_install.sh
   ```
 
   * OpenCV >= 3.4: The `opencv_install.sh` script will install OpenCV 3.4
   ```
-  wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/mtc_demos/opencv_install.sh
+  wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/master/opencv_install.sh
   chmod +x opencv_install.sh
   sudo ./opencv_install.sh
   ```
@@ -94,8 +94,8 @@ Download the required packages and pre-trained models
 1) Run the install script </br>
   If you have a GPU this option will install tensorflow with GPU support.
   ```
-  wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/mtc_demos/dexnet_install.sh
-  wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/mtc_demos/dexnet_requirements.txt
+  wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/master/dexnet_install.sh
+  wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/master/dexnet_requirements.txt
   chmod +x dexnet_install.sh
   ./dexnet_install.sh {cpu|gpu}
   ```
@@ -112,7 +112,7 @@ For now it is recommended to create a new workspace to prevent conflicts between
 mkdir -p ~/ws_grasp/src
 cd ~/ws_grasp/src
 wstool init
-wstool merge https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/mtc_demos/.rosinstall
+wstool merge https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/master/.rosinstall
 wstool update
 
 rosdep install --from-paths . --ignore-src --rosdistro $ROS_DISTRO
@@ -140,7 +140,7 @@ git clone https://github.com/tahsinkose/franka_ros.git -b simulation
 
 
 ## Launching Demos and Further Details
-To see how to launch the demos using GPD and Dex-Net see the `moveit_task_constructor_gpd` and `moveit_task_constructor_dexnet` packages.
+To see how to launch the demos using GPD and Dex-Net see the [moveit_task_constructor_gpd](https://github.com/PickNikRobotics/deep_grasp_demo/tree/master/moveit_task_constructor_gpd) and [moveit_task_constructor_dexnet](https://github.com/PickNikRobotics/deep_grasp_demo/tree/master/moveit_task_constructor_dexnet) packages.
 
 
 ## Depth Sensor Data
