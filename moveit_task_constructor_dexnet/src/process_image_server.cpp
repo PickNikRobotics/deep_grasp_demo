@@ -49,7 +49,6 @@
 
 #include <moveit_task_constructor_dexnet/image_server.h>
 
-
 int main(int argc, char** argv)
 {
   ROS_INFO_STREAM_NAMED("main", "Starting process_image_server");

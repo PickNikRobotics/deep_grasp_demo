@@ -83,7 +83,7 @@ private:
   *          is removed and/or points outside the specified cartesian limits
   *          are removed. The resulting cloud is published.
   */
-  void cloudCallback(const sensor_msgs::PointCloud2::ConstPtr &msg);
+  void cloudCallback(const sensor_msgs::PointCloud2::ConstPtr& msg);
 
   /**
   * @brief Service callback for saving a point cloud
@@ -91,23 +91,24 @@ private:
   * @return true when called
   * @details The response is empty
   */
-  bool saveCallback(moveit_task_constructor_gpd::PointCloud::Request& req, moveit_task_constructor_gpd::PointCloud::Response&);
+  bool saveCallback(moveit_task_constructor_gpd::PointCloud::Request& req,
+                    moveit_task_constructor_gpd::PointCloud::Response&);
 
 private:
-  ros::NodeHandle nh_; // node handle
-  ros::Subscriber cloud_sub_;  // point cloud subscriber
-  ros::Publisher cloud_pub_;   // publishes the point cloud saved
-  ros::ServiceServer saver_srv_; // service for saving point clouds
+  ros::NodeHandle nh_;            // node handle
+  ros::Subscriber cloud_sub_;     // point cloud subscriber
+  ros::Publisher cloud_pub_;      // publishes the point cloud saved
+  ros::ServiceServer saver_srv_;  // service for saving point clouds
 
-  std::string point_cloud_topic_; // point cloud topic
-  std::string cloud_dir_;   // directory to save
-  std::string file_name_;   // file name to save as
+  std::string point_cloud_topic_;  // point cloud topic
+  std::string cloud_dir_;          // directory to save
+  std::string file_name_;          // file name to save as
 
-  std::vector<double> xyz_lower_limits_; // lower limits on point cloud
-  std::vector<double> xyz_upper_limits_; // upper limits on point cloud
+  std::vector<double> xyz_lower_limits_;  // lower limits on point cloud
+  std::vector<double> xyz_upper_limits_;  // upper limits on point cloud
 
-  bool save_;                     // save service activated
-  bool remove_table_;            // specify if to remove table points
-  bool cartesian_limits_;         // specify if to remove points outside limits
+  bool save_;              // save service activated
+  bool remove_table_;      // specify if to remove table points
+  bool cartesian_limits_;  // specify if to remove points outside limits
 };
-} // namespace moveit_task_constructor_gpd
+}  // namespace moveit_task_constructor_gpd

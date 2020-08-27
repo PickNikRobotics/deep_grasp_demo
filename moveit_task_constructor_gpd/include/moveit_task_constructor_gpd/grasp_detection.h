@@ -113,15 +113,15 @@ private:
   * @param msg - point cloud message
   * @details Segments objects from table plane
   */
-  void cloudCallback(const sensor_msgs::PointCloud2::ConstPtr &msg);
+  void cloudCallback(const sensor_msgs::PointCloud2::ConstPtr& msg);
 
 private:
-  ros::NodeHandle nh_; // node handle
-  ros::Subscriber cloud_sub_;               // subscribes to point cloud
-  ros::Publisher cloud_pub_;                // publishes segmented cloud
+  ros::NodeHandle nh_;         // node handle
+  ros::Subscriber cloud_sub_;  // subscribes to point cloud
+  ros::Publisher cloud_pub_;   // publishes segmented cloud
 
   std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>>
-      server_;                                                            // action server
+      server_;                                                       // action server
   moveit_task_constructor_msgs::SampleGraspPosesFeedback feedback_;  // action feedback message
   moveit_task_constructor_msgs::SampleGraspPosesResult result_;      // action result message
 
@@ -132,14 +132,14 @@ private:
   std::string action_name_;         // action namespace
   std::string frame_id_;            // frame of point cloud/grasps
 
-  bool goal_active_;                // action goal status
-  bool load_cloud_;                 // load cloud from file
+  bool goal_active_;  // action goal status
+  bool load_cloud_;   // load cloud from file
 
   std::vector<double> view_point_;                      // origin of the camera
   std::unique_ptr<gpd::GraspDetector> grasp_detector_;  // used to run the GPD algorithm
   std::unique_ptr<gpd::util::Cloud> cloud_camera_;      // stores point cloud with (optional) camera information
 
-  Eigen::Isometry3d trans_base_cam_;    // transformation from base link to camera link
-  Eigen::Isometry3d transform_cam_opt_; // transformation from camera link to optical link
+  Eigen::Isometry3d trans_base_cam_;     // transformation from base link to camera link
+  Eigen::Isometry3d transform_cam_opt_;  // transformation from camera link to optical link
 };
 }  // namespace moveit_task_constructor_gpd

@@ -50,13 +50,11 @@
 
 namespace moveit_task_constructor_dexnet
 {
-
 ImageServer::ImageServer(ros::NodeHandle& nh) : nh_(nh)
 {
   loadParameters();
   init();
 }
-
 
 void ImageServer::loadParameters()
 {
@@ -68,7 +66,6 @@ void ImageServer::loadParameters()
   rosparam_shortcuts::shutdownIfError(LOGNAME, errors);
 }
 
-
 void ImageServer::init()
 {
   color_img_sub_ = nh_.subscribe(color_img_topic_, 1, &ImageServer::colorCallback, this);
@@ -76,18 +73,15 @@ void ImageServer::init()
   saver_srv_ = nh_.advertiseService("save_images", &ImageServer::saveCallback, this);
 }
 
-
-void ImageServer::colorCallback(const sensor_msgs::Image::ConstPtr &msg)
+void ImageServer::colorCallback(const sensor_msgs::Image::ConstPtr& msg)
 {
   color_img_ = msg;
 }
 
-
-void ImageServer::depthCallback(const sensor_msgs::Image::ConstPtr &msg)
+void ImageServer::depthCallback(const sensor_msgs::Image::ConstPtr& msg)
 {
   depth_img_ = msg;
 }
-
 
 bool ImageServer::saveCallback(moveit_task_constructor_dexnet::Images::Request& req,
                                moveit_task_constructor_dexnet::Images::Response& res)
@@ -98,8 +92,7 @@ bool ImageServer::saveCallback(moveit_task_constructor_dexnet::Images::Request& 
   return true;
 }
 
-
-bool ImageServer::saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::string &image_name)
+bool ImageServer::saveImage(const sensor_msgs::Image::ConstPtr& msg, const std::string& image_name)
 {
   cv_bridge::CvImagePtr cv_ptr;
   cv_ptr = cv_bridge::toCvCopy(msg, msg->encoding);
@@ -107,22 +100,30 @@ bool ImageServer::saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::
   // imwrite() saves image as BGR
   cv::Mat img_converted;
 
-  if(msg->encoding == "rgb8"){
-    cv_ptr->image.convertTo(img_converted, CV_8UC3); // convert to BGR
-  } else if (msg->encoding == "32FC1"){
-    cv_ptr->image.convertTo(img_converted, CV_8UC3, 255.0); // conver to BGR and scale
-  } else{
+  if (msg->encoding == "rgb8")
+  {
+    cv_ptr->image.convertTo(img_converted, CV_8UC3);  // convert to BGR
+  }
+  else if (msg->encoding == "32FC1")
+  {
+    cv_ptr->image.convertTo(img_converted, CV_8UC3, 255.0);  // conver to BGR and scale
+  }
+  else
+  {
     ROS_ERROR_NAMED(LOGNAME, "Image encoding not recognized (encoding): %s", msg->encoding.c_str());
     return false;
   }
 
-  if(cv::imwrite(image_dir_ + image_name, img_converted)){
+  if (cv::imwrite(image_dir_ + image_name, img_converted))
+  {
     ROS_INFO_NAMED(LOGNAME, "Saving image %s (encoding): %s ", image_name.c_str(), msg->encoding.c_str());
-  } else {
+  }
+  else
+  {
     ROS_WARN_NAMED(LOGNAME, "Image %s not saved", image_name.c_str());
     return false;
   }
 
   return true;
 }
-} // namespace moveit_task_constructor_dexnet
+}  // namespace moveit_task_constructor_dexnet

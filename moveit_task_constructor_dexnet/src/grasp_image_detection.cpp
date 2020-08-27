@@ -54,7 +54,6 @@
 
 #include <moveit_task_constructor_dexnet/grasp_detection.h>
 
-
 int main(int argc, char** argv)
 {
   ROS_INFO_STREAM_NAMED("main", "Starting grasp_image_detection");

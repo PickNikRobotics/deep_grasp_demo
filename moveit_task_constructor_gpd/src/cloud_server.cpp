@@ -42,7 +42,6 @@
 #include <moveit_task_constructor_gpd/cloud_utils.h>
 #include <moveit_task_constructor_gpd/cloud_server.h>
 
-
 namespace moveit_task_constructor_gpd
 {
 CloudServer::CloudServer(ros::NodeHandle& nh) : nh_(nh), save_(false)
@@ -50,7 +49,6 @@ CloudServer::CloudServer(ros::NodeHandle& nh) : nh_(nh), save_(false)
   loadParameters();
   init();
 }
-
 
 void CloudServer::loadParameters()
 {
@@ -61,15 +59,14 @@ void CloudServer::loadParameters()
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "remove_table", remove_table_);
 
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "cartesian_limits", cartesian_limits_);
-  if(cartesian_limits_){
+  if (cartesian_limits_)
+  {
     errors += !rosparam_shortcuts::get(LOGNAME, pnh, "xyz_lower_limits", xyz_lower_limits_);
     errors += !rosparam_shortcuts::get(LOGNAME, pnh, "xyz_upper_limits", xyz_upper_limits_);
   }
 
-
   rosparam_shortcuts::shutdownIfError(LOGNAME, errors);
 }
-
 
 void CloudServer::init()
 {
@@ -78,21 +75,23 @@ void CloudServer::init()
   saver_srv_ = nh_.advertiseService("save_point_cloud", &CloudServer::saveCallback, this);
 }
 
-
-void CloudServer::cloudCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
+void CloudServer::cloudCallback(const sensor_msgs::PointCloud2::ConstPtr& msg)
 {
-  if(save_){
+  if (save_)
+  {
     // convert from ROS msg to a point cloud
     PointCloudRGB::Ptr cloud(new PointCloudRGB);
     pcl::fromROSMsg(*msg.get(), *cloud.get());
 
     // segment out table
-    if(remove_table_){
+    if (remove_table_)
+    {
       removeTable(cloud);
     }
 
     // remove points out of limits
-    if(cartesian_limits_){
+    if (cartesian_limits_)
+    {
       passThroughFilter(xyz_lower_limits_, xyz_upper_limits_, cloud);
     }
 
@@ -101,15 +100,21 @@ void CloudServer::cloudCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
     pcl::toROSMsg(*cloud.get(), cloud_msg);
     cloud_pub_.publish(cloud_msg);
 
-    if(!cloud->points.empty()){
+    if (!cloud->points.empty())
+    {
       ROS_INFO_NAMED(LOGNAME, "Saving point cloud to file...");
 
-      if(!pcl::io::savePCDFile(cloud_dir_ + file_name_, *cloud.get())){
+      if (!pcl::io::savePCDFile(cloud_dir_ + file_name_, *cloud.get()))
+      {
         ROS_INFO_NAMED(LOGNAME, "Point cloud saved");
-      } else{
+      }
+      else
+      {
         ROS_ERROR_NAMED(LOGNAME, "Failed to save cloud");
       }
-    } else{
+    }
+    else
+    {
       ROS_ERROR_NAMED(LOGNAME, "Point cloud is empty");
     }
 
@@ -117,12 +122,12 @@ void CloudServer::cloudCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
   }
 }
 
-
-bool CloudServer::saveCallback(moveit_task_constructor_gpd::PointCloud::Request& req, moveit_task_constructor_gpd::PointCloud::Response&)
+bool CloudServer::saveCallback(moveit_task_constructor_gpd::PointCloud::Request& req,
+                               moveit_task_constructor_gpd::PointCloud::Response&)
 {
   ROS_INFO_NAMED(LOGNAME, "Saving point cloud service active");
   save_ = true;
   file_name_ = req.cloud_file;
   return true;
 }
-} // namespace moveit_task_constructor_gpd
+}  // namespace moveit_task_constructor_gpd

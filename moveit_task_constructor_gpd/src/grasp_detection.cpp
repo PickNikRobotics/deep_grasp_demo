@@ -55,7 +55,6 @@ GraspDetection::GraspDetection(const ros::NodeHandle& nh) : nh_(nh), goal_active
   init();
 }
 
-
 void GraspDetection::loadParameters()
 {
   ROS_INFO_NAMED(LOGNAME, "Loading grasp action server parameters");
@@ -63,9 +62,12 @@ void GraspDetection::loadParameters()
 
   size_t errors = 0;
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "load_cloud", load_cloud_);
-  if (load_cloud_){
+  if (load_cloud_)
+  {
     errors += !rosparam_shortcuts::get(LOGNAME, pnh, "path_to_pcd_file", path_to_pcd_file_);
-  } else{
+  }
+  else
+  {
     errors += !rosparam_shortcuts::get(LOGNAME, pnh, "point_cloud_topic", point_cloud_topic_);
   }
 
@@ -77,7 +79,6 @@ void GraspDetection::loadParameters()
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "frame_id", frame_id_);
   rosparam_shortcuts::shutdownIfError(LOGNAME, errors);
 }
-
 
 void GraspDetection::init()
 {
@@ -91,11 +92,14 @@ void GraspDetection::init()
   // GPD point cloud camera, load cylinder from file
   // set camera view origin
   // assume cloud was taken using one camera
-  if(load_cloud_){
+  if (load_cloud_)
+  {
     Eigen::Matrix3Xd camera_view_point(3, 1);
     camera_view_point << view_point_.at(0), view_point_.at(1), view_point_.at(2);
     cloud_camera_.reset(new gpd::util::Cloud(path_to_pcd_file_, camera_view_point));
-  } else{
+  }
+  else
+  {
     cloud_sub_ = nh_.subscribe(point_cloud_topic_, 1, &GraspDetection::cloudCallback, this);
     cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("segmented_cloud", 1, true);
   }
@@ -103,7 +107,6 @@ void GraspDetection::init()
   // Grasp detector
   grasp_detector_.reset(new gpd::GraspDetector(path_to_gpd_config_));
 }
-
 
 void GraspDetection::goalCallback()
 {
@@ -113,11 +116,11 @@ void GraspDetection::goalCallback()
 
   // sample grasps now else need to wait to callback
   // use GPD to find the grasp candidates
-  if(load_cloud_){
+  if (load_cloud_)
+  {
     sampleGrasps();
   }
 }
-
 
 void GraspDetection::preemptCallback()
 {
@@ -125,34 +128,35 @@ void GraspDetection::preemptCallback()
   server_->setPreempted();
 }
 
-
 void GraspDetection::sampleGrasps()
 {
-  std::vector<std::unique_ptr<gpd::candidate::Hand>> grasps;     // detect grasp poses
-  grasp_detector_->preprocessPointCloud(*cloud_camera_);   // preprocess the point cloud
-  grasps = grasp_detector_->detectGrasps(*cloud_camera_);  // detect grasps in the point cloud
+  std::vector<std::unique_ptr<gpd::candidate::Hand>> grasps;  // detect grasp poses
+  grasp_detector_->preprocessPointCloud(*cloud_camera_);      // preprocess the point cloud
+  grasps = grasp_detector_->detectGrasps(*cloud_camera_);     // detect grasps in the point cloud
 
   // Use grasps with score > 0
   std::vector<unsigned int> grasp_id;
-  for(unsigned int i = 0; i < grasps.size(); i++)
+  for (unsigned int i = 0; i < grasps.size(); i++)
   {
-    if(grasps.at(i)->getScore() > 0.0){
+    if (grasps.at(i)->getScore() > 0.0)
+    {
       grasp_id.push_back(i);
     }
   }
 
-  if(grasp_id.empty()){
+  if (grasp_id.empty())
+  {
     ROS_ERROR_NAMED(LOGNAME, "No grasp candidates found with a positive cost");
     result_.grasp_state = "failed";
     server_->setAborted(result_);
     return;
   }
 
-  for(auto id : grasp_id)
+  for (auto id : grasp_id)
   {
     // transform grasp from camera optical link into frame_id (panda_link0)
-    const Eigen::Isometry3d transform_opt_grasp = Eigen::Translation3d(grasps.at(id)->getPosition()) *
-                                                  Eigen::Quaterniond(grasps.at(id)->getOrientation());
+    const Eigen::Isometry3d transform_opt_grasp =
+        Eigen::Translation3d(grasps.at(id)->getPosition()) * Eigen::Quaterniond(grasps.at(id)->getOrientation());
 
     const Eigen::Isometry3d transform_base_grasp = trans_base_cam_ * transform_cam_opt_ * transform_opt_grasp;
     const Eigen::Vector3d trans = transform_base_grasp.translation();
@@ -182,10 +186,10 @@ void GraspDetection::sampleGrasps()
   server_->setSucceeded(result_);
 }
 
-
-void GraspDetection::cloudCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
+void GraspDetection::cloudCallback(const sensor_msgs::PointCloud2::ConstPtr& msg)
 {
-  if(goal_active_){
+  if (goal_active_)
+  {
     PointCloudRGB::Ptr cloud(new PointCloudRGB);
     pcl::fromROSMsg(*msg.get(), *cloud.get());
 

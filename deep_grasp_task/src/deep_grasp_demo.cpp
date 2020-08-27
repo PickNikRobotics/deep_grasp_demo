@@ -30,10 +30,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
- /* Author: Henning Kayser, Simon Goldstein, Boston Cleek
-    Desc:   A demo to show MoveIt Task Constructor using a deep learning based
-            grasp generator
- */
+/* Author: Henning Kayser, Simon Goldstein, Boston Cleek
+   Desc:   A demo to show MoveIt Task Constructor using a deep learning based
+           grasp generator
+*/
 
 // ROS
 #include <ros/ros.h>
@@ -59,7 +59,6 @@ void spawnObject(moveit::planning_interface::PlanningSceneInterface& psi, const 
   if (!psi.applyCollisionObject(object))
     throw std::runtime_error("Failed to spawn object: " + object.id);
 }
-
 
 moveit_msgs::CollisionObject createTable()
 {
@@ -87,7 +86,6 @@ moveit_msgs::CollisionObject createTable()
   return object;
 }
 
-
 moveit_msgs::CollisionObject createObject()
 {
   ros::NodeHandle pnh("~");
@@ -113,7 +111,6 @@ moveit_msgs::CollisionObject createObject()
 
   return object;
 }
-
 
 moveit_msgs::CollisionObject createCamera()
 {
@@ -142,7 +139,6 @@ moveit_msgs::CollisionObject createCamera()
 
   return object;
 }
-
 
 moveit_msgs::CollisionObject createObjectMesh()
 {
@@ -184,8 +180,6 @@ moveit_msgs::CollisionObject createObjectMesh()
   return object;
 }
 
-
-
 int main(int argc, char** argv)
 {
   ROS_INFO_NAMED(LOGNAME, "Init deep_grasp_demo");
@@ -201,19 +195,24 @@ int main(int argc, char** argv)
   // Add table and object to planning scene
   moveit::planning_interface::PlanningSceneInterface psi;
   ros::NodeHandle pnh("~");
-  if (pnh.param("spawn_table", true)){
+  if (pnh.param("spawn_table", true))
+  {
     spawnObject(psi, createTable());
   }
 
   // Add camera to planning scene
-  if (pnh.param("spawn_camera", true)){
+  if (pnh.param("spawn_camera", true))
+  {
     spawnObject(psi, createCamera());
   }
 
   // Add object to planning scene either as mesh or geometric primitive
-  if (pnh.param("spawn_mesh", true)){
+  if (pnh.param("spawn_mesh", true))
+  {
     spawnObject(psi, createObjectMesh());
-  } else{
+  }
+  else
+  {
     spawnObject(psi, createObject());
   }
 
@@ -229,11 +228,13 @@ int main(int argc, char** argv)
     {
       deep_pick_place_task.execute();
       ROS_INFO_NAMED(LOGNAME, "Execution complete");
-    } else
+    }
+    else
     {
       ROS_INFO_NAMED(LOGNAME, "Execution disabled");
     }
-  } else
+  }
+  else
   {
     ROS_INFO_NAMED(LOGNAME, "Planning failed");
   }

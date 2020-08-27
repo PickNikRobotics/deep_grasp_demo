@@ -6,7 +6,7 @@ This package constructs a pick and place task using the MoveIt Task Constructor.
 
 ## Nodes
 ### deep_grasp_demo
-This node is renamed at launch to mtc_tutorial. It constructs the pick and place task and adds objects to the planning scene, published on the `planning_scene` topic. 
+This node is renamed at launch to mtc_tutorial. It constructs the pick and place task and adds objects to the planning scene, published on the `planning_scene` topic.
 
 ## Config
 * camera.intr: depth camera intrinsic parameters used by Dex-Net

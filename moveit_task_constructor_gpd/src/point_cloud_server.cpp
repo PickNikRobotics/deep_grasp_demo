@@ -47,7 +47,7 @@
   SUBSCRIBES:
     point_cloud_topic (sensor_msgs/PointCloud2) - Point cloud from depth camera
   SERVICES:
-    save_point_cloud (moveit_task_constructor_gpd/PointCloud) - specify file name to save point cloud  
+    save_point_cloud (moveit_task_constructor_gpd/PointCloud) - specify file name to save point cloud
 */
 
 // ROS

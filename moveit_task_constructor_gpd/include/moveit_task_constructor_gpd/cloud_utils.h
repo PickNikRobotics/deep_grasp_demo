@@ -43,7 +43,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-
 namespace moveit_task_constructor_gpd
 {
 typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudRGBA;
@@ -61,7 +60,6 @@ void removeTable(PointCloudRGB::Ptr cloud);
 * @param xyz_upper - 3dim vector x,y,z upper limits on cloud
 * @param [out] cloud - cloud XYZRGB
 */
-void passThroughFilter(const std::vector<double> &xyz_lower,
-                       const std::vector<double> &xyz_upper,
+void passThroughFilter(const std::vector<double>& xyz_lower, const std::vector<double>& xyz_upper,
                        PointCloudRGB::Ptr cloud);
-} // namespace moveit_task_constructor_gpd
+}  // namespace moveit_task_constructor_gpd

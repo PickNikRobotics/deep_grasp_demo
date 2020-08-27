@@ -75,13 +75,13 @@ private:
   * @brief RGB image callback
   * @param msg - GGB image
   */
-  void colorCallback(const sensor_msgs::Image::ConstPtr &msg);
+  void colorCallback(const sensor_msgs::Image::ConstPtr& msg);
 
   /**
   * @brief Depth image callback
   * @param msg - Depth image
   */
-  void depthCallback(const sensor_msgs::Image::ConstPtr &msg);
+  void depthCallback(const sensor_msgs::Image::ConstPtr& msg);
 
   /**
   * @brief Service callback for saving images
@@ -97,7 +97,7 @@ private:
   * @param image_name - File name of image
   * @details Images are saved as CV_8UC3 (BGR8) by OpenCV by default
   */
-  bool saveImage(const sensor_msgs::Image::ConstPtr &msg, const std::string &image_name);
+  bool saveImage(const sensor_msgs::Image::ConstPtr& msg, const std::string& image_name);
 
 private:
   ros::NodeHandle nh_;             // node handle
@@ -105,11 +105,11 @@ private:
   ros::Subscriber depth_img_sub_;  // depth image subscriber
   ros::ServiceServer saver_srv_;   // image saver service
 
-  sensor_msgs::Image::ConstPtr color_img_; // image to save
-  sensor_msgs::Image::ConstPtr depth_img_; // image to save
+  sensor_msgs::Image::ConstPtr color_img_;  // image to save
+  sensor_msgs::Image::ConstPtr depth_img_;  // image to save
 
   std::string color_img_topic_;  // color image topic name
-  std::string depth_img_topic_; // depth image topic name
-  std::string image_dir_;    // directory to save images
+  std::string depth_img_topic_;  // depth image topic name
+  std::string image_dir_;        // directory to save images
 };
-} // namespace moveit_task_constructor_dexnet
+}  // namespace moveit_task_constructor_dexnet

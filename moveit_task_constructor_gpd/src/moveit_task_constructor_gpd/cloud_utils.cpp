@@ -48,7 +48,6 @@
 
 namespace moveit_task_constructor_gpd
 {
-
 void removeTable(PointCloudRGB::Ptr cloud)
 {
   // SAC segmentor without normals
@@ -59,7 +58,7 @@ void removeTable(PointCloudRGB::Ptr cloud)
 
   // Max iterations and model tolerance
   segmentor.setMaxIterations(1000);
-  segmentor.setDistanceThreshold (0.01);
+  segmentor.setDistanceThreshold(0.01);
 
   // Input cloud
   segmentor.setInputCloud(cloud);
@@ -71,7 +70,7 @@ void removeTable(PointCloudRGB::Ptr cloud)
   pcl::ModelCoefficients::Ptr coefficients_plane(new pcl::ModelCoefficients);
   segmentor.segment(*inliers_plane.get(), *coefficients_plane.get());
 
-  if (inliers_plane->indices.size () == 0)
+  if (inliers_plane->indices.size() == 0)
   {
     ROS_ERROR("Could not estimate a planar model for the given dataset");
   }
@@ -91,9 +90,7 @@ void removeTable(PointCloudRGB::Ptr cloud)
   }
 }
 
-
-void passThroughFilter(const std::vector<double> &xyz_lower,
-                       const std::vector<double> &xyz_upper,
+void passThroughFilter(const std::vector<double>& xyz_lower, const std::vector<double>& xyz_upper,
                        PointCloudRGB::Ptr cloud)
 {
   pcl::PassThrough<pcl::PointXYZRGB> pass;
@@ -111,4 +108,4 @@ void passThroughFilter(const std::vector<double> &xyz_lower,
   pass.setFilterLimits(xyz_lower.at(2), xyz_upper.at(2));
   pass.filter(*cloud.get());
 }
-} // namespace moveit_task_constructor_gpd
+}  // namespace moveit_task_constructor_gpd

@@ -30,10 +30,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
- /* Author: Henning Kayser, Simon Goldstein, Boston Cleek
-    Desc:   A demo to show MoveIt Task Constructor using a deep learning based
-            grasp generator
- */
+/* Author: Henning Kayser, Simon Goldstein, Boston Cleek
+   Desc:   A demo to show MoveIt Task Constructor using a deep learning based
+           grasp generator
+*/
 
 #include <deep_grasp_task/deep_pick_place_task.h>
 #include <rosparam_shortcuts/rosparam_shortcuts.h>

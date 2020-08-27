@@ -87,7 +87,6 @@ private:
   */
   void preemptCallback();
 
-
   /**
   * @brief Requests images by calling the save_images service
   * @details If Images are not loaded from the data directory they need to be
@@ -109,21 +108,21 @@ private:
   ros::ServiceClient image_client_;  // image saving service client
 
   std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>>
-      server_;                                                            // action server
+      server_;                                                       // action server
   moveit_task_constructor_msgs::SampleGraspPosesFeedback feedback_;  // action feedback message
   moveit_task_constructor_msgs::SampleGraspPosesResult result_;      // action result message
 
-  std::string goal_name_;           // action name
-  std::string action_name_;         // action namespace
-  std::string frame_id_;            // frame of point cloud/grasps
+  std::string goal_name_;    // action name
+  std::string action_name_;  // action namespace
+  std::string frame_id_;     // frame of point cloud/grasps
 
-  std::string image_dir_;          // directory images saved
-  std::string color_image_file_; // file path to color image
-  std::string depth_image_file_; // file path to depth image
+  std::string image_dir_;         // directory images saved
+  std::string color_image_file_;  // file path to color image
+  std::string depth_image_file_;  // file path to depth image
 
-  bool load_images_;                // load images from file
+  bool load_images_;  // load images from file
 
-  Eigen::Isometry3d trans_base_cam_;    // transformation from base link to camera link
-  Eigen::Isometry3d transform_cam_opt_; // transformation from camera link to optical link
+  Eigen::Isometry3d trans_base_cam_;     // transformation from base link to camera link
+  Eigen::Isometry3d transform_cam_opt_;  // transformation from camera link to optical link
 };
-} // namespace moveit_task_constructor_dexnet
+}  // namespace moveit_task_constructor_dexnet

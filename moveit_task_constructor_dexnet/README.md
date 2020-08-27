@@ -90,7 +90,7 @@ The most difficult to grasp is the bar clamp.
   <img src="media/gqcnn_barclamp_gazebo2.gif" width="300" height="300"/>
 </p>
 
-Here are the highest ranked grasp candidates for the strawberry and bar clamp viewed from above. 
+Here are the highest ranked grasp candidates for the strawberry and bar clamp viewed from above.
 
 <p align="center">
   <img src="media/gqcnn_berry.png" width="300" height="300"/>
