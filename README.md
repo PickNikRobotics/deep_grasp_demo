@@ -1,6 +1,11 @@
 # Deep Grasp Demo
 <img src="https://picknik.ai/assets/images/logo.jpg" width="120">
 
+
+1)[Overview](#Overview)
+2)[Packages](#Packages)
+3)[Launching Demos and Further Details](#Launching-Demos-and-Further-Details)
+
 ## Overview
 This repository contains several demos for constructing a pick and place pipeline
 using deep learning methods for the grasp generation stage within the MoveIt Task Constructor.
