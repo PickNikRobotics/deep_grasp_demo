@@ -9,4 +9,3 @@ srv_gen/
 *.a
 !*.c
 !Makefile
-moveit_task_constructor_dexnet/grasps/grasp_candidates.bin
