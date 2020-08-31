@@ -27,14 +27,12 @@ roslaunch moveit_task_constructor_gpd gpd_demo.launch
 
 ### Using Gazebo
 This demo allows you to execute the motion plan in Gazebo. You have the option to load the point cloud data from a file or use the simulated depth camera. The `path_to_pcd_file` argument in `gpd_demo.launch` specifies the point cloud that will be used.
-
+The `load_cloud` argument in `gpd_demo.launch` specifies whether or not to load the point cloud from a file. Set `load_cloud:=false` to use the simulated depth camera.
 
 Launch the robot in Gazebo:
 ```
 roslaunch deep_grasp_task gazebo_pick_place.launch
 ```
-
-The `load_cloud` argument in `gpd_demo.launch` specifies whether or not to load the point cloud from a file. Set `load_cloud:=false` to use the simulated depth camera.
 
 To run the pick and place demo:
 ```
