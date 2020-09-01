@@ -91,8 +91,15 @@ sudo make install
 #### Dex-Net
 Download the required packages and pre-trained models
 
-1) Run the install script </br>
-  If you have a GPU this option will install tensorflow with GPU support.
+1) It is recommended to upgrade pip and to create a virtual environment
+   prior to running the install script in the next step.
+   ```
+   python3 -m pip install --upgrade pip
+   ```
+
+2) Run the install script </br>
+  If you have a GPU this option will install tensorflow with GPU support. This script
+  will install packages for Python 3.
   ```
   wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/master/dexnet_install.sh
   wget https://raw.githubusercontent.com/PickNikRobotics/deep_grasp_demo/master/dexnet_requirements.txt
@@ -100,7 +107,7 @@ Download the required packages and pre-trained models
   ./dexnet_install.sh {cpu|gpu}
   ```
 
-2) Download the pretrained models
+3) Download the pretrained models
   ```
   ./dexnet_deps/gqcnn/scripts/downloads/models/download_models.sh
   ```
