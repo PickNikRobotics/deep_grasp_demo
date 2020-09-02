@@ -2,20 +2,15 @@
 <img src="https://picknik.ai/assets/images/logo.jpg" width="120">
 
 1) [Overview](#Overview) </br>
-2) [Getting Started](#Getting-Started) </br>
-3) [Running](#Running) </br>
-4) [Nodes](#Nodes) </br>
-5) [Tips](#Tips) </br>
-6) [Results](#Results) </br>
+2) [Running](#Running) </br>
+3) [Nodes](#Nodes) </br>
+4) [Tips](#Tips) </br>
+5) [Results](#Results) </br>
 
 ## Overview
 Demo showing how to use Dex-Net for grasp pose generation within the MoveIt Task Constructor. Dex-Net uses a grasp quality CNN (GQ-CNN) to compose the probability a grasp candidate will be successful. The inputs are a color and a depth image and outputs a list of the grasp candidates and their probabilities of success.
 
 The process of sampling grasps using Dex-Net is messy because the library is written in python 2 which is not officially supported in ROS Melodic. The `grasp_image_detection` node calls the `gqcnn_grasp` service offered by the `gqcnn_server` node which returns the grasp candidates. The `gqcnn_server` node interacts with a python 3 `grasp_detector` script running the Dex-Net 4.0 policy. The images are saved by the `process_image_server` node and the files are then loaded by `grasp_detector` script.
-
-
-## Getting Started
-The `model_name` is already set to use the Dex-Net 4.0 parallel jaw configuration. In `config/dexnet_config.yaml` specify the absolute file paths to the `model_dir` and `model_params` parameters for the Dex-Net 4.0 parallel jaw configuration. The `model_dir` parameter specifies the path to the learned model weights located in `gqcnn/cfg/examples/replication/dex-net_4.0_pj.yaml` and the `model_params` parameter specifies the model configuration located in `gqcnn/models`. If you use the `dexnet_install.sh` script the `gqcnn` directory will be located inside the `dexnet_deps` directory.
 
 
 ## Running

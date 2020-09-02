@@ -2,18 +2,13 @@
 <img src="https://picknik.ai/assets/images/logo.jpg" width="120">
 
 1) [Overview](#Overview) </br>
-2) [Getting Started](#Getting-Started) </br>
-3) [Running](#Running) </br>
-4) [Nodes](#Nodes) </br>
-5) [Tips](#Tips) </br>
-6) [Results](#Results) </br>
+2) [Running](#Running) </br>
+3) [Nodes](#Nodes) </br>
+4) [Tips](#Tips) </br>
+5) [Results](#Results) </br>
 
 ## Overview
 Demo shows how to use the Grasp Pose Detection (GPD) library within the MoveIt Task Constructor. GPD samples grasp candidates within a point cloud and returns a list of the candidates and their costs.
-
-## Getting Started
-In `config/gpd_congfig.yaml` navigate to line 33 and update `weights_file` to contain the absolute file path to the location of the [lenet params](https://github.com/atenpas/gpd/tree/master/models/lenet/15channels/params) directory. This directory contains the learned model weights and is located where the GPD repository was cloned.
-
 
 ## Running
 ### Using Fake Controllers
@@ -38,7 +33,6 @@ To run the pick and place demo:
 ```
 roslaunch moveit_task_constructor_gpd gpd_demo.launch
 ```
-
 
 ## Nodes
 ### grasp_cloud_detection

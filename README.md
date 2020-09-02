@@ -3,11 +3,14 @@
 
 1) [Overview](#Overview) </br>
 2) [Packages](#Packages) </br>
-3) [Install](#Install) </br>
-4) [Launching Demos and Further Details](#Launching-Demos-and-Further-Details) </br>
-5) [Depth Sensor Data](#Depth-Sensor-Data) </br>
-6) [Camera View Point](#Camera-View-Point) </br>
-7) [Known Issues](#Known-Issues) </br>
+3) [Getting Started](#Getting-Started) </br>
+4) [Install Grasp Pose Detection](#Install-Grasp-Pose-Detection) </br>
+5) [Install Dex-Net](#Install-Dex-Net) </br>
+6) [Download ROS Packages](#Download-ROS-Packages) </br>
+7) [Launching Demos and Further Details](#Launching-Demos-and-Further-Details) </br>
+8) [Depth Sensor Data](#Depth-Sensor-Data) </br>
+9) [Camera View Point](#Camera-View-Point) </br>
+10) [Known Issues](#Known-Issues) </br>
 
 ## Overview
 This repository contains several demos
@@ -17,20 +20,16 @@ The packages were developed and tested on Ubuntu 18.04 running ROS Melodic.
 
 
 ## Packages
-* `deep_grasp_task`: constructs a pick and place task using deep learning methods
+* [deep_grasp_task](https://github.com/PickNikRobotics/deep_grasp_demo/tree/master/deep_grasp_task): constructs a pick and place task using deep learning methods
 for the grasp generation stage within the MoveIt Task Constructor
 
-* `moveit_task_constructor_dexnet`: uses [Dex-Net](https://berkeleyautomation.github.io/dex-net/) to sample grasps from a depth image
+* [moveit_task_constructor_dexnet](https://github.com/PickNikRobotics/deep_grasp_demo/tree/master/moveit_task_constructor_dexnet): uses [Dex-Net](https://berkeleyautomation.github.io/dex-net/) to sample grasps from a depth image
 
-* `moveit_task_constructor_gpd`: uses [GPD](https://github.com/atenpas/gpd) to sample grasps from 3D point clouds
+* [moveit_task_constructor_gpd](https://github.com/PickNikRobotics/deep_grasp_demo/tree/master/moveit_task_constructor_gpd): uses [GPD](https://github.com/atenpas/gpd) to sample grasps from 3D point clouds
 
 
-## Install
+## Getting Started
 First, Complete the [Getting Started Tutorial](https://ros-planning.github.io/moveit_tutorials/doc/getting_started/getting_started.html).
-
-### Dependencies
-It is recommended to install the dependencies that are not ROS packages outside of the
-catkin workspace.
 
 Before installing the dependencies it is recommended to run:
 ```
@@ -38,7 +37,11 @@ sudo apt update
 sudo apt upgrade
 ```
 
-#### Grasp Pose Detection
+**Important Note**: It is recommended to install dependencies that are not ROS packages outside of the
+catkin workspace. For GPD this includes PCL, OpenCV, and the GPD library. For Dex-Net this includes [gqcnn](https://github.com/BerkeleyAutomation/gqcnn), [autolab_core](https://github.com/BerkeleyAutomation/autolab_core), [perception](https://github.com/BerkeleyAutomation/perception), and [visualization](https://github.com/BerkeleyAutomation/visualization). The steps bellow will walk you through the installation.
+
+
+## Install Grasp Pose Detection
 1) Requirements
   * PCL >= 1.9: The `pcl_install.sh` script will install PCL 1.11
   ```
@@ -78,7 +81,6 @@ sudo apt upgrade
   find_package(OpenCV 3.4 REQUIRED)
   ```
 
-
 4) Build
 ```
 cd gpd
@@ -88,16 +90,19 @@ make -j
 sudo make install
 ```
 
-#### Dex-Net
-Download the required packages and pre-trained models
+5) Configuration File Path
 
+In `moveit_task_constructor_gpd/config/gpd_congfig.yaml` navigate to line 33 and update `weights_file` to contain the absolute file path to the location of the [lenet params](https://github.com/atenpas/gpd/tree/master/models/lenet/15channels/params) directory. This directory contains the learned model weights and is located where the GPD repository was cloned.
+
+
+## Install Dex-Net
 1) It is recommended to upgrade pip and to create a virtual environment
    prior to running the install script in the next step.
    ```
    python3 -m pip install --upgrade pip
    ```
 
-2) Run the install script </br>
+2) Run the install script to download the requirements </br>
   If you have a GPU this option will install tensorflow with GPU support. This script
   will install packages for Python 3.
   ```
@@ -112,8 +117,13 @@ Download the required packages and pre-trained models
   ./dexnet_deps/gqcnn/scripts/downloads/models/download_models.sh
   ```
 
-### ROS Packages
-#### Deep Grasping Packages
+4) Configuration File Paths
+
+In `moveit_task_constructor_gpd/config/dexnet_config.yaml` specify the absolute file paths to the `model_dir` and `model_params` parameters for the Dex-Net 4.0 parallel jaw configuration. The `model_name` is already set to use the Dex-Net 4.0 parallel jaw configuration. The `model_dir` parameter specifies the path to the learned model weights located in `gqcnn/cfg/examples/replication/dex-net_4.0_pj.yaml` and the `model_params` parameter specifies the model configuration located in `gqcnn/models`. If you use the `dexnet_install.sh` script the `gqcnn` directory will be located inside the `dexnet_deps` directory.
+
+
+## Download ROS Packages
+### Setup New Workspace
 For now it is recommended to create a new workspace to prevent conflicts between packages. This will be especially helpful if you want to use Gazebo with the demos.
 ```
 mkdir -p ~/ws_grasp/src
@@ -133,7 +143,7 @@ catkin build
 ```
 
 
-#### Panda Gazebo Support (Optional)
+### Panda Gazebo Support (Optional)
 You will need the C++ Franka Emika library. This can be installed from [source](https://github.com/frankaemika/libfranka) or by executing:
 ```
 sudo apt install ros-melodic-libfranka
