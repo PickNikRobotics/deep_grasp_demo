@@ -35,7 +35,7 @@ roslaunch deep_grasp_task gazebo_pick_place.launch
 
 To run the pick and place demo:
 ```
-roslaunch moveit_task_constructor_gpd gpd_demo.launch
+roslaunch moveit_task_constructor_dexnet dexnet_demo.launch
 ```
 
 
