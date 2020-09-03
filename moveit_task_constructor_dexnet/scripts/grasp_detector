@@ -38,26 +38,6 @@
  Desc:   GQCNN- selects the grasp with the highest probability of success
 """
 
-# camera_intr_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/deep_grasp_task/config/calib/camera.intr"
-#
-# sampled_grasps_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/grasps/grasp_candidates.bin"
-#
-# color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_object.png"
-# depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_object.png"
-
-# color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_cylinder.png"
-# depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_cylinder.png"
-
-# color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_clamp.png"
-# depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_clamp.png"
-#
-# color_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/rgb_berry.png"
-# depth_img_filename = "/home/bostoncleek/GPD_ws/src/deep_grasp_demo/moveit_task_constructor_dexnet/data/images/depth_berry.png"
-
-# model_name = "GQCNN-4.0-PJ"
-# model_dir = "/home/bostoncleek/dex-net/deps/gqcnn/models/GQCNN-4.0-PJ"
-# model_params = "/home/bostoncleek/dex-net/deps/gqcnn/cfg/examples/replication/dex-net_4.0_pj.yaml"
-
 import json
 import os
 import sys
