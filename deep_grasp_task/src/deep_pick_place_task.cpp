@@ -81,6 +81,9 @@ void DeepPickPlaceTask::loadParameters()
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "action_name", action_name_);
 
   // Pick/Place metrics
+  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "approach_vector_x", approach_vector_.x);
+  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "approach_vector_y", approach_vector_.y);
+  errors += !rosparam_shortcuts::get(LOGNAME, pnh, "approach_vector_z", approach_vector_.z);
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "approach_object_min_dist", approach_object_min_dist_);
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "approach_object_max_dist", approach_object_max_dist_);
   errors += !rosparam_shortcuts::get(LOGNAME, pnh, "lift_object_min_dist", lift_object_min_dist_);
@@ -195,7 +198,7 @@ void DeepPickPlaceTask::init()
       // Set hand forward direction
       geometry_msgs::Vector3Stamped vec;
       vec.header.frame_id = hand_frame_;
-      vec.vector.z = 1.0;
+      vec.vector = approach_vector_;
       stage->setDirection(vec);
       grasp->insert(std::move(stage));
     }
@@ -402,7 +405,10 @@ void DeepPickPlaceTask::init()
       stage->properties().set("marker_ns", "retreat");
       geometry_msgs::Vector3Stamped vec;
       vec.header.frame_id = hand_frame_;
-      vec.vector.z = -1.0;
+      retreat_vector_.x = -approach_vector_.x;
+      retreat_vector_.y = -approach_vector_.y;
+      retreat_vector_.z = -approach_vector_.z;
+      vec.vector = retreat_vector_;
       stage->setDirection(vec);
       place->insert(std::move(stage));
     }
