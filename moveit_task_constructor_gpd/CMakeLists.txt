@@ -12,20 +12,21 @@ add_definitions(-W -Wall -Wextra
 
 # Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
-	actionlib
-	eigen_conversions
-	geometry_msgs
-	message_generation
-	moveit_task_constructor_msgs
-	roscpp
-	rosparam_shortcuts
-	sensor_msgs
-	std_msgs
+  actionlib
+  eigen_conversions
+  geometry_msgs
+  message_generation
+  moveit_task_constructor_msgs
+  roscpp
+  rosparam_shortcuts
+  sensor_msgs
+  std_msgs
 )
 
 # System dependencies are found with CMake's conventions
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.8 REQUIRED)
+find_package(OpenCV REQUIRED)
 
 find_library(GPD_LIB NAMES gpd PATHS /usr/local/lib PATH_SUFFIXES lib NO_DEFAULT_PATH)
 if (GPD_LIB)
@@ -36,7 +37,7 @@ endif()
 
 find_path(GPD_INCLUDE_DIRS NAMES gpd PATHS /usr/local/include NO_DEFAULT_PATH)
 if (GPD_INCLUDE_DIRS)
-	message(STATUS "Include directory GPD found in ${GPD_INCLUDE_DIRS}")
+  message(STATUS "Include directory GPD found in ${GPD_INCLUDE_DIRS}")
 else()
   message(FATAL_ERROR "Include directory GPD not found")
 endif()
@@ -57,18 +58,18 @@ generate_messages(
 ## Catkin specific configuration ##
 ###################################
 catkin_package(
-	INCLUDE_DIRS include
-	LIBRARIES ${PROJECT_NAME}
-	CATKIN_DEPENDS
-	  eigen_conversions
-		geometry_msgs
-		message_runtime
-		moveit_task_constructor_msgs
-		sensor_msgs
-		std_msgs
- 	DEPENDS
- 		EIGEN3
-		PCL
+  INCLUDE_DIRS include
+  LIBRARIES ${PROJECT_NAME}
+  CATKIN_DEPENDS
+    eigen_conversions
+    geometry_msgs
+    message_runtime
+    moveit_task_constructor_msgs
+    sensor_msgs
+    std_msgs
+  DEPENDS
+    EIGEN3
+    PCL
 )
 
 ###########
@@ -80,8 +81,9 @@ catkin_package(
 include_directories(
   SYSTEM
   ${EIGEN3_INCLUDE_DIRS}
-	${PCL_INCLUDE_DIRS}
-	${GPD_INCLUDE_DIRS}
+  ${PCL_INCLUDE_DIRS}
+  ${GPD_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 include_directories(
@@ -98,55 +100,58 @@ add_library(${PROJECT_NAME}
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 add_dependencies(${PROJECT_NAME}
-								 ${${PROJECT_NAME}_EXPORTED_TARGETS}
-								 ${catkin_EXPORTED_TARGETS}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  ${catkin_EXPORTED_TARGETS}
 )
 
 
 # Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
-										  ${catkin_LIBRARIES}
-											${PCL_LIBRARIES}
+  ${catkin_LIBRARIES}
+  ${PCL_LIBRARIES}
+  ${OpenCV_LIBRARIES}
 )
 
 # Declare a C++ executable
 add_executable(grasp_cloud_detection
-               src/grasp_cloud_detection.cpp
-							 src/grasp_detection.cpp
+  src/grasp_cloud_detection.cpp
+  src/grasp_detection.cpp
 )
 
 add_executable(point_cloud_server
-							 src/cloud_server.cpp
-               src/point_cloud_server.cpp
+  src/cloud_server.cpp
+  src/point_cloud_server.cpp
 )
 
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 add_dependencies(grasp_cloud_detection
-								 ${${PROJECT_NAME}_EXPORTED_TARGETS}
-								 ${catkin_EXPORTED_TARGETS}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  ${catkin_EXPORTED_TARGETS}
 )
 
 add_dependencies(point_cloud_server
-								 ${${PROJECT_NAME}_EXPORTED_TARGETS}
-								 ${catkin_EXPORTED_TARGETS}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  ${catkin_EXPORTED_TARGETS}
 )
 
 
 # Specify libraries to link a library or executable target against
 target_link_libraries(grasp_cloud_detection
-                      ${catkin_LIBRARIES}
-											${PROJECT_NAME}
-											${Eigen3_LIBRARIES}
-											${PCL_LIBRARIES}
-											${GPD_LIB}
+  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}
+  ${Eigen3_LIBRARIES}
+  ${PCL_LIBRARIES}
+  ${GPD_LIB}
+  ${OpenCV_LIBRARIES}
 )
 
 target_link_libraries(point_cloud_server
-                      ${catkin_LIBRARIES}
-											${PROJECT_NAME}
-											${PCL_LIBRARIES}
+  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}
+  ${PCL_LIBRARIES}
+  ${OpenCV_LIBRARIES}
 )
 
 #############
