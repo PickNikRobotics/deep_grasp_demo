@@ -26,7 +26,7 @@
     respawn="false" output="screen" />
 
   <!-- load controllers -->
-  <include file="$(find panda_moveit_config)/launch/ros_controllers.launch"/>
+  <!--include file="$(find panda_moveit_config)/launch/ros_controllers.launch"/-->
 
   <node name="joint_state_desired_publisher" pkg="topic_tools" type="relay" args="joint_states joint_states_desired" />
 

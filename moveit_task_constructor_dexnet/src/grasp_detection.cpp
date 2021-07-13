@@ -78,7 +78,9 @@ void GraspDetection::loadParameters()
 void GraspDetection::init()
 {
   // action server
-  server_.reset(new actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>(
+  //server_.reset(new actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>(
+  //    nh_, action_name_, false));
+  server_.reset(new actionlib::SimpleActionServer<grasping_msgs::GraspPlanningAction>(
       nh_, action_name_, false));
   server_->registerGoalCallback(std::bind(&GraspDetection::goalCallback, this));
   server_->registerPreemptCallback(std::bind(&GraspDetection::preemptCallback, this));
@@ -101,7 +103,7 @@ void GraspDetection::init()
 
 void GraspDetection::goalCallback()
 {
-  goal_name_ = server_->acceptNewGoal()->action_name;
+  goal_name_ = server_->acceptNewGoal()->object.name;
   ROS_INFO_NAMED(LOGNAME, "New goal accepted: %s", goal_name_.c_str());
 
   // save images
@@ -156,10 +158,12 @@ void GraspDetection::sampleGrasps()
     const std::vector<double> q_values = grasp_srv.response.q_values;
     ROS_INFO_NAMED(LOGNAME, "Results recieved");
 
+    moveit_msgs::Grasp current_grasp;
+
     if (grasp_candidates.empty())
     {
       ROS_ERROR_NAMED(LOGNAME, "No grasp candidates found");
-      result_.grasp_state = "failed";
+      //result_.grasp_state = "failed";
       server_->setAborted(result_);
       return;
     }
@@ -192,6 +196,7 @@ void GraspDetection::sampleGrasps()
       grasp_pose.pose.orientation.y = rot.y();
       grasp_pose.pose.orientation.z = rot.z();
 
+      /*
       // send feedback to action client
       feedback_.grasp_candidates.emplace_back(grasp_pose);
 
@@ -200,17 +205,23 @@ void GraspDetection::sampleGrasps()
       const double cost = 1.0 - q_values.at(i);
       // ROS_INFO_NAMED(LOGNAME, "ID: %u Cost: %f", i, cost);
       feedback_.costs.emplace_back(cost);
+      */
+
+      current_grasp.grasp_pose = grasp_pose;
+      const double cost = 1.0 - q_values.at(i);
+      current_grasp.grasp_quality = cost;
+      feedback_.grasps.emplace_back(current_grasp);
     }
 
     server_->publishFeedback(feedback_);
-    result_.grasp_state = "success";
+    //result_.grasp_state = "success";
     server_->setSucceeded(result_);
   }
 
   else
   {
     ROS_ERROR_NAMED(LOGNAME, "Failed to call gqcnn_grasp service");
-    result_.grasp_state = "failed";
+    //result_.grasp_state = "failed";
     server_->setAborted(result_);
   }
 }
