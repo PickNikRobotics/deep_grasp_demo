@@ -51,7 +51,9 @@
 #include <gpd/grasp_detector.h>
 
 // Action Server
-#include <moveit_task_constructor_msgs/SampleGraspPosesAction.h>
+
+//#include <moveit_task_constructor_msgs/SampleGraspPosesAction.h>
+#include <grasping_msgs/GraspPlanningAction.h>
 #include <actionlib/server/simple_action_server.h>
 
 namespace moveit_task_constructor_gpd
@@ -120,10 +122,15 @@ private:
   ros::Subscriber cloud_sub_;  // subscribes to point cloud
   ros::Publisher cloud_pub_;   // publishes segmented cloud
 
-  std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>>
-      server_;                                                       // action server
-  moveit_task_constructor_msgs::SampleGraspPosesFeedback feedback_;  // action feedback message
-  moveit_task_constructor_msgs::SampleGraspPosesResult result_;      // action result message
+  //std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>>
+  //    server_;                                                       // action server
+  //moveit_task_constructor_msgs::SampleGraspPosesFeedback feedback_;  // action feedback message
+  //moveit_task_constructor_msgs::SampleGraspPosesResult result_;      // action result message
+
+  std::unique_ptr<actionlib::SimpleActionServer<grasping_msgs::GraspPlanningAction>> server_; // action_server
+  grasping_msgs::GraspPlanningFeedback feedback_;
+  grasping_msgs::GraspPlanningResult result_;
+
 
   std::string path_to_pcd_file_;    // path to cylinder pcd file
   std::string path_to_gpd_config_;  // path to GPD config file

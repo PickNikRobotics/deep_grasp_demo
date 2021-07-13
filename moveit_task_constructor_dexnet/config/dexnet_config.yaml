@@ -1,4 +1,4 @@
 # file path to neural network weights and model config
 model_name: "GQCNN-4.0-PJ"
-model_dir: "/home/bostoncleek/dex-net/deps/gqcnn/models/GQCNN-4.0-PJ"
-model_params: "/home/bostoncleek/dex-net/deps/gqcnn/cfg/examples/replication/dex-net_4.0_pj.yaml"
+model_dir: "/home/pcl/grasp_ws/src/deep_grasp_demo/dexnet_deps/gqcnn/models/GQCNN-4.0-PJ"
+model_params: "/home/pcl/grasp_ws/src/deep_grasp_demo/dexnet_deps/gqcnn/cfg/examples/replication/dex-net_4.0_pj.yaml"
