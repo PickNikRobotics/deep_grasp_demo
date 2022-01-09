@@ -51,7 +51,7 @@
 #include <gpd/grasp_detector.h>
 
 // Action Server
-#include <moveit_task_constructor_msgs/SampleGraspPosesAction.h>
+#include <grasping_msgs/GraspPlanningAction.h>
 #include <actionlib/server/simple_action_server.h>
 
 namespace moveit_task_constructor_gpd
@@ -59,10 +59,10 @@ namespace moveit_task_constructor_gpd
 constexpr char LOGNAME[] = "grasp_pose_detection";
 
 /**
-* @brief Generates grasp poses for a generator stage with MTC
-* @details Interfaces with the GPD lib using ROS messages and interfaces
-*          with MTC using an Action Server
-*/
+ * @brief Generates grasp poses for a generator stage with MTC
+ * @details Interfaces with the GPD lib using ROS messages and interfaces
+ *          with MTC using an Action Server
+ */
 class GraspDetection
 {
 public:
@@ -76,43 +76,43 @@ public:
 
 private:
   /**
-  * @brief Loads parameters for action server, GPD, and relevant transformations
-  */
+   * @brief Loads parameters for action server, GPD, and relevant transformations
+   */
   void loadParameters();
 
   /**
-  * @brief Initialize action server callbacks and GPD
-  * @details The point cloud (frame: panda_link0) is loaded from a file and
-  *          the camera's origin relative to the point cloud is assumed to be at (0,0,0).
-  */
+   * @brief Initialize action server callbacks and GPD
+   * @details The point cloud (frame: panda_link0) is loaded from a file and
+   *          the camera's origin relative to the point cloud is assumed to be at (0,0,0).
+   */
   void init();
 
   /**
-  * @brief Action server goal callback
-  * @details Accepts goal from client and samples grasp candidates
-  */
+   * @brief Action server goal callback
+   * @details Accepts goal from client and samples grasp candidates
+   */
   void goalCallback();
 
   /**
-  * @brief Preempt callback
-  * @details Preempts goal
-  */
+   * @brief Preempt callback
+   * @details Preempts goal
+   */
   void preemptCallback();
 
   /**
-  * @brief Samples grasp candidates using GPD
-  * @details Compose grasp candidates, the candidates are sent back to the client
-  *          using the feedback message. Only candidates with a positive grasp
-  *          score are used. If there is at least one candidate with a positive
-  *          score the result is set to success else it is a failure.
-  */
+   * @brief Samples grasp candidates using GPD
+   * @details Compose grasp candidates, the candidates are sent back to the client
+   *          using the feedback message. Only candidates with a positive grasp
+   *          score are used. If there is at least one candidate with a positive
+   *          score the result is set to success else it is a failure.
+   */
   void sampleGrasps();
 
   /**
-  * @brief Point cloud call back
-  * @param msg - point cloud message
-  * @details Segments objects from table plane
-  */
+   * @brief Point cloud call back
+   * @param msg - point cloud message
+   * @details Segments objects from table plane
+   */
   void cloudCallback(const sensor_msgs::PointCloud2::ConstPtr& msg);
 
 private:
@@ -120,10 +120,9 @@ private:
   ros::Subscriber cloud_sub_;  // subscribes to point cloud
   ros::Publisher cloud_pub_;   // publishes segmented cloud
 
-  std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>>
-      server_;                                                       // action server
-  moveit_task_constructor_msgs::SampleGraspPosesFeedback feedback_;  // action feedback message
-  moveit_task_constructor_msgs::SampleGraspPosesResult result_;      // action result message
+  std::unique_ptr<actionlib::SimpleActionServer<grasping_msgs::GraspPlanningAction>> server_;  // action server
+  grasping_msgs::GraspPlanningFeedback feedback_;  // action feedback message
+  grasping_msgs::GraspPlanningResult result_;      // action result message
 
   std::string path_to_pcd_file_;    // path to cylinder pcd file
   std::string path_to_gpd_config_;  // path to GPD config file

@@ -50,56 +50,56 @@ namespace moveit_task_constructor_dexnet
 constexpr char LOGNAME[] = "grasp_image_detection";
 
 /**
-* @brief Generates grasp poses for a generator stage with MTC
-* @details Interfaces with the GQ-CNN and Dex-Net data sets using ROS messages
-*          and interfaces with MTC using an Action Server.
-*/
+ * @brief Generates grasp poses for a generator stage with MTC
+ * @details Interfaces with the GQ-CNN and Dex-Net data sets using ROS messages
+ *          and interfaces with MTC using an Action Server.
+ */
 class GraspDetection
 {
 public:
   /**
-  * @brief Constructor
-  * @param nh - node handle
-  * @details loads parameter and registers callbacks for the action server
-  */
+   * @brief Constructor
+   * @param nh - node handle
+   * @details loads parameter and registers callbacks for the action server
+   */
   GraspDetection(const ros::NodeHandle& nh);
 
 private:
   /**
-  * @brief Loads parameters for action server, image data, and relevant transformations
-  */
+   * @brief Loads parameters for action server, image data, and relevant transformations
+   */
   void loadParameters();
 
   /**
-  * @brief Initialize action server callbacks and Image service client (optional)
-  */
+   * @brief Initialize action server callbacks and Image service client (optional)
+   */
   void init();
 
   /**
-  * @brief Action server goal callback
-  * @details Accepts goal from client and samples grasp candidates
-  */
+   * @brief Action server goal callback
+   * @details Accepts goal from client and samples grasp candidates
+   */
   void goalCallback();
 
   /**
-  * @brief Preempt callback
-  * @details Preempts goal
-  */
+   * @brief Preempt callback
+   * @details Preempts goal
+   */
   void preemptCallback();
 
   /**
-  * @brief Requests images by calling the save_images service
-  * @details If Images are not loaded from the data directory they need to be
-  *          requested. This assumes a camera is publishing the images.
-  */
+   * @brief Requests images by calling the save_images service
+   * @details If Images are not loaded from the data directory they need to be
+   *          requested. This assumes a camera is publishing the images.
+   */
   void requestImages();
 
   /**
-  * @brief Samples grasp candidates using a GQ-CNN and Dex-Net model weights/data sets
-  * @details Compose grasp candidates, the candidates are sent back to the client
-  *          using the feedback message. The calls the gqcnn_grasp service to
-  *          execute the learned policy.
-  */
+   * @brief Samples grasp candidates using a GQ-CNN and Dex-Net model weights/data sets
+   * @details Compose grasp candidates, the candidates are sent back to the client
+   *          using the feedback message. The calls the gqcnn_grasp service to
+   *          execute the learned policy.
+   */
   void sampleGrasps();
 
 private:

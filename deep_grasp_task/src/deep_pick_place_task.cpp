@@ -204,8 +204,7 @@ void DeepPickPlaceTask::init()
   ---- *               Generate Grasp Pose                *
      ***************************************************/
     {
-      auto stage = std::make_unique<stages::DeepGraspPose<moveit_task_constructor_msgs::SampleGraspPosesAction>>(
-          action_name_, "generate grasp pose");
+      auto stage = std::make_unique<stages::GraspProvider>(action_name_, "generate grasp pose");
       stage->properties().configureInitFrom(Stage::PARENT);
       stage->properties().set("marker_ns", "grasp_pose");
       stage->setPreGraspPose(hand_open_pose_);

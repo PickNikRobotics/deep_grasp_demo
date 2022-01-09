@@ -49,7 +49,7 @@
 #include <iostream>
 
 #include <geometric_shapes/shape_operations.h>
-#include <moveit_task_constructor_msgs/SampleGraspPosesAction.h>
+#include <grasping_msgs/GraspPlanningAction.h>
 #include <actionlib/client/simple_action_client.h>
 
 constexpr char LOGNAME[] = "deep_grasp_demo";
