@@ -42,7 +42,7 @@
 #include <Eigen/Geometry>
 
 // Action Server
-#include <moveit_task_constructor_msgs/SampleGraspPosesAction.h>
+#include <grasping_msgs/GraspPlanningAction.h>
 #include <actionlib/server/simple_action_server.h>
 
 namespace moveit_task_constructor_dexnet
@@ -107,10 +107,9 @@ private:
   ros::ServiceClient gqcnn_client_;  // gqcnn service client
   ros::ServiceClient image_client_;  // image saving service client
 
-  std::unique_ptr<actionlib::SimpleActionServer<moveit_task_constructor_msgs::SampleGraspPosesAction>>
-      server_;                                                       // action server
-  moveit_task_constructor_msgs::SampleGraspPosesFeedback feedback_;  // action feedback message
-  moveit_task_constructor_msgs::SampleGraspPosesResult result_;      // action result message
+  std::unique_ptr<actionlib::SimpleActionServer<grasping_msgs::GraspPlanningAction>> server_;  // action server
+  grasping_msgs::GraspPlanningFeedback feedback_;  // action feedback message
+  grasping_msgs::GraspPlanningResult result_;      // action result message
 
   std::string goal_name_;    // action name
   std::string action_name_;  // action namespace
