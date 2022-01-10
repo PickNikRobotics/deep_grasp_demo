@@ -40,6 +40,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <rosparam_shortcuts/rosparam_shortcuts.h>
 #include <pcl_conversions/pcl_conversions.h>
+#include <moveit_msgs/Grasp.h>
 
 // Eigen
 #include <Eigen/Dense>

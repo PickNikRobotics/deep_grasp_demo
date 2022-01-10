@@ -15,9 +15,10 @@ find_package(catkin REQUIRED COMPONENTS
 	actionlib
 	cv_bridge
 	geometry_msgs
+  grasping_msgs
 	image_transport
 	message_generation
-	moveit_task_constructor_msgs
+  moveit_msgs
 	roscpp
 	rosparam_shortcuts
 	rospy
@@ -49,9 +50,11 @@ generate_messages(
 catkin_package(
  INCLUDE_DIRS include
  CATKIN_DEPENDS
+  actionlib
  	geometry_msgs
+  grasping_msgs
 	message_runtime
-	moveit_task_constructor_msgs
+  moveit_msgs
  	roscpp
 	rospy
 	sensor_msgs

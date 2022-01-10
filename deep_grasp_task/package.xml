@@ -17,4 +17,18 @@
   <depend>moveit_core</depend>
   <depend>roscpp</depend>
   <depend>rosparam_shortcuts</depend>
+  <depend>rviz_marker_tools</depend>
+
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>moveit_task_constructor_demo</exec_depend>
+  <exec_depend>moveit_task_constructor_gpd</exec_depend>
+  <exec_depend>moveit_task_constructor_dexnet</exec_depend>
+  <exec_depend>panda_moveit_config</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>topic_tools</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
 </package>

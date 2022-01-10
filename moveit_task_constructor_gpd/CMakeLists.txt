@@ -15,8 +15,9 @@ find_package(catkin REQUIRED COMPONENTS
 	actionlib
 	eigen_conversions
 	geometry_msgs
+	grasping_msgs
 	message_generation
-	moveit_task_constructor_msgs
+	moveit_msgs
 	roscpp
 	rosparam_shortcuts
 	sensor_msgs
@@ -61,16 +62,18 @@ catkin_package(
 	INCLUDE_DIRS include
 	LIBRARIES ${PROJECT_NAME}
 	CATKIN_DEPENDS
+		actionlib
 	  eigen_conversions
 		geometry_msgs
+		grasping_msgs
 		message_runtime
-		moveit_task_constructor_msgs
+		moveit_msgs
 		sensor_msgs
 		std_msgs
  	DEPENDS
  		EIGEN3
-		PCL
 		OpenCV
+		PCL
 )
 
 ###########

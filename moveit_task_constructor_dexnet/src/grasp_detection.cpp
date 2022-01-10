@@ -38,6 +38,7 @@
 #include <ros/ros.h>
 #include <rosparam_shortcuts/rosparam_shortcuts.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <moveit_msgs/Grasp.h>
 
 // C++
 #include <vector>
