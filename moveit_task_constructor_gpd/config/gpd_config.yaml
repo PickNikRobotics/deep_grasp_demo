@@ -30,7 +30,7 @@ image_size = 60
 image_num_channels = 15
 
 # Path to directory that contains neural network parameters
-weights_file = /home/bostoncleek/GPD/gpd/models/lenet/15channels/params/
+weights_file = /home/boston/libraries/gpd/models/lenet/15channels/params/
 
 # Preprocessing of point cloud
 #   voxelize: if the cloud gets voxelized/downsampled
