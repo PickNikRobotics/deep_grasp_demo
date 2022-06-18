@@ -167,16 +167,6 @@ moveit_msgs::CollisionObject createObjectMesh()
   object.mesh_poses.emplace_back(pose);
   object.operation = moveit_msgs::CollisionObject::ADD;
 
-  // moveit_msgs::CollisionObject object;
-  // object.id = object_name;
-  // object.header.frame_id = object_reference_frame;
-  // object.primitives.resize(1);
-  // object.primitives[0].type = shape_msgs::SolidPrimitive::BOX;
-  // object.primitives[0].dimensions = object_dimensions;
-  // pose.position.z += 0.5 * object_dimensions[0];
-  // object.primitive_poses.push_back(pose);
-  // object.operation = moveit_msgs::CollisionObject::ADD;
-
   return object;
 }
 
