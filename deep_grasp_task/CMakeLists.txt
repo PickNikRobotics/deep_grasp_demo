@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 	moveit_task_constructor_msgs
   roscpp
 	rosparam_shortcuts
+  rviz_marker_tools
 )
 
 ###################################
@@ -27,6 +28,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
  CATKIN_DEPENDS
+  actionlib
 	moveit_task_constructor_msgs
  	roscpp
 )

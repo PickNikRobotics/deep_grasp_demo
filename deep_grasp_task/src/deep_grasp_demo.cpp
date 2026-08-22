@@ -49,7 +49,7 @@
 #include <iostream>
 
 #include <geometric_shapes/shape_operations.h>
-#include <moveit_task_constructor_msgs/SampleGraspPosesAction.h>
+#include <grasping_msgs/GraspPlanningAction.h>
 #include <actionlib/client/simple_action_client.h>
 
 constexpr char LOGNAME[] = "deep_grasp_demo";
@@ -166,16 +166,6 @@ moveit_msgs::CollisionObject createObjectMesh()
   object.meshes.emplace_back(mesh);
   object.mesh_poses.emplace_back(pose);
   object.operation = moveit_msgs::CollisionObject::ADD;
-
-  // moveit_msgs::CollisionObject object;
-  // object.id = object_name;
-  // object.header.frame_id = object_reference_frame;
-  // object.primitives.resize(1);
-  // object.primitives[0].type = shape_msgs::SolidPrimitive::BOX;
-  // object.primitives[0].dimensions = object_dimensions;
-  // pose.position.z += 0.5 * object_dimensions[0];
-  // object.primitive_poses.push_back(pose);
-  // object.operation = moveit_msgs::CollisionObject::ADD;
 
   return object;
 }

@@ -49,54 +49,54 @@ namespace moveit_task_constructor_dexnet
 constexpr char LOGNAME[] = "image_server";
 
 /**
-* @brief Provides a service for saving RGB and depth images
-*/
+ * @brief Provides a service for saving RGB and depth images
+ */
 class ImageServer
 {
 public:
   /**
-  * @brief Constructor
-  * @param nh - node handle
-  */
+   * @brief Constructor
+   * @param nh - node handle
+   */
   ImageServer(ros::NodeHandle& nh);
 
 private:
   /**
-  * @brief Loads parameters
-  */
+   * @brief Loads parameters
+   */
   void loadParameters();
 
   /**
-  * @brief Initialize ROS communication
-  */
+   * @brief Initialize ROS communication
+   */
   void init();
 
   /**
-  * @brief RGB image callback
-  * @param msg - GGB image
-  */
+   * @brief RGB image callback
+   * @param msg - GGB image
+   */
   void colorCallback(const sensor_msgs::Image::ConstPtr& msg);
 
   /**
-  * @brief Depth image callback
-  * @param msg - Depth image
-  */
+   * @brief Depth image callback
+   * @param msg - Depth image
+   */
   void depthCallback(const sensor_msgs::Image::ConstPtr& msg);
 
   /**
-  * @brief Service callback for saving images
-  * @param req - Service request contains the file name
-  * @param res [out] - Service result true if image type is saved
-  */
+   * @brief Service callback for saving images
+   * @param req - Service request contains the file name
+   * @param res [out] - Service result true if image type is saved
+   */
   bool saveCallback(moveit_task_constructor_dexnet::Images::Request& req,
                     moveit_task_constructor_dexnet::Images::Response& res);
 
   /**
-  * @brief Saves image based on encoding and to specified file
-  * @param msg - Image
-  * @param image_name - File name of image
-  * @details Images are saved as CV_8UC3 (BGR8) by OpenCV by default
-  */
+   * @brief Saves image based on encoding and to specified file
+   * @param msg - Image
+   * @param image_name - File name of image
+   * @details Images are saved as CV_8UC3 (BGR8) by OpenCV by default
+   */
   bool saveImage(const sensor_msgs::Image::ConstPtr& msg, const std::string& image_name);
 
 private:

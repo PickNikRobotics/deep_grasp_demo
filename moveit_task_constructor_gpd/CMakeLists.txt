@@ -15,8 +15,9 @@ find_package(catkin REQUIRED COMPONENTS
 	actionlib
 	eigen_conversions
 	geometry_msgs
+	grasping_msgs
 	message_generation
-	moveit_task_constructor_msgs
+	moveit_msgs
 	roscpp
 	rosparam_shortcuts
 	sensor_msgs
@@ -26,6 +27,7 @@ find_package(catkin REQUIRED COMPONENTS
 # System dependencies are found with CMake's conventions
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.8 REQUIRED)
+find_package(OpenCV REQUIRED)
 
 find_library(GPD_LIB NAMES gpd PATHS /usr/local/lib PATH_SUFFIXES lib NO_DEFAULT_PATH)
 if (GPD_LIB)
@@ -60,14 +62,17 @@ catkin_package(
 	INCLUDE_DIRS include
 	LIBRARIES ${PROJECT_NAME}
 	CATKIN_DEPENDS
+		actionlib
 	  eigen_conversions
 		geometry_msgs
+		grasping_msgs
 		message_runtime
-		moveit_task_constructor_msgs
+		moveit_msgs
 		sensor_msgs
 		std_msgs
  	DEPENDS
  		EIGEN3
+		OpenCV
 		PCL
 )
 
@@ -82,6 +87,7 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
 	${PCL_INCLUDE_DIRS}
 	${GPD_INCLUDE_DIRS}
+	${OpenCV_INCLUDE_DIRS}
 )
 
 include_directories(
@@ -107,6 +113,7 @@ add_dependencies(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
 										  ${catkin_LIBRARIES}
 											${PCL_LIBRARIES}
+											${OpenCV_LIBRARIES}
 )
 
 # Declare a C++ executable
@@ -141,12 +148,14 @@ target_link_libraries(grasp_cloud_detection
 											${Eigen3_LIBRARIES}
 											${PCL_LIBRARIES}
 											${GPD_LIB}
+											${OpenCV_LIBRARIES}
 )
 
 target_link_libraries(point_cloud_server
                       ${catkin_LIBRARIES}
 											${PROJECT_NAME}
 											${PCL_LIBRARIES}
+											${OpenCV_LIBRARIES}
 )
 
 #############

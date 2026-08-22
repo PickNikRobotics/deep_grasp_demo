@@ -50,47 +50,47 @@ namespace moveit_task_constructor_gpd
 constexpr char LOGNAME[] = "cloud_server";
 
 /**
-* @brief Provides a service for saving and process a point cloud
-* @details When the service is called the point cloud received through
-*          the point cloud topic is saved. Optionally, either the ground plane
-*          is removed and/or points outside the specified cartesian limits
-*          are removed. The resulting cloud is published.
-*/
+ * @brief Provides a service for saving and process a point cloud
+ * @details When the service is called the point cloud received through
+ *          the point cloud topic is saved. Optionally, either the ground plane
+ *          is removed and/or points outside the specified cartesian limits
+ *          are removed. The resulting cloud is published.
+ */
 class CloudServer
 {
 public:
   /**
-  * @brief Constructor
-  * @param nh - node handle
-  */
+   * @brief Constructor
+   * @param nh - node handle
+   */
   CloudServer(ros::NodeHandle& nh);
 
 private:
   /**
-  * @brief Loads parameters
-  */
+   * @brief Loads parameters
+   */
   void loadParameters();
 
   /**
-  * @brief Initialize ROS communication
-  */
+   * @brief Initialize ROS communication
+   */
   void init();
 
   /**
-  * @brief Point cloud call back
-  * @param msg - point cloud message
-  * @details Optionally, either the ground plane
-  *          is removed and/or points outside the specified cartesian limits
-  *          are removed. The resulting cloud is published.
-  */
+   * @brief Point cloud call back
+   * @param msg - point cloud message
+   * @details Optionally, either the ground plane
+   *          is removed and/or points outside the specified cartesian limits
+   *          are removed. The resulting cloud is published.
+   */
   void cloudCallback(const sensor_msgs::PointCloud2::ConstPtr& msg);
 
   /**
-  * @brief Service callback for saving a point cloud
-  * @param req - Service request contains the file name
-  * @return true when called
-  * @details The response is empty
-  */
+   * @brief Service callback for saving a point cloud
+   * @param req - Service request contains the file name
+   * @return true when called
+   * @details The response is empty
+   */
   bool saveCallback(moveit_task_constructor_gpd::PointCloud::Request& req,
                     moveit_task_constructor_gpd::PointCloud::Response&);
 

@@ -16,10 +16,13 @@
   <depend>actionlib</depend>
   <depend>eigen_conversions</depend>
   <depend>geometry_msgs</depend>
-  <depend>moveit_task_constructor_msgs</depend>
+  <depend>grasping_msgs</depend>
   <depend>rosparam_shortcuts</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
+  <depend>moveit_msgs</depend>
+
+  <exec_depend>deep_grasp_task</exec_depend>
   <exec_depend>message_runtime</exec_depend>
   <!-- <exec_depend version_gte="0.7.4">panda_moveit_config</exec_depend> -->
 </package>
