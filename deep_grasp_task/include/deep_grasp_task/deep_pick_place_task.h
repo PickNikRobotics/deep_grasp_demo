@@ -117,6 +117,8 @@ private:
 
   // Pick metrics
   Eigen::Isometry3d grasp_frame_transform_;
+  geometry_msgs::Vector3 approach_vector_;
+  geometry_msgs::Vector3 retreat_vector_;
   double approach_object_min_dist_;
   double approach_object_max_dist_;
   double lift_object_min_dist_;

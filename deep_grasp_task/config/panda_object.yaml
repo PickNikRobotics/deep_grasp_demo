@@ -61,6 +61,11 @@ grasp_frame_transform: [0, 0, 0.1, 1.571, 0.785, 1.571]
 place_pose: [0.6, -0.15, 0, 0, 0, 0]
 place_surface_offset: 0.0001 # place offset from table
 
+# Approach vector in the hand frame
+approach_vector_x: 0.0
+approach_vector_y: 0.0
+approach_vector_z: 1.0
+
 # Valid distance range when approaching an object for picking
 approach_object_min_dist: 0.1
 approach_object_max_dist: 0.15
